@@ -1,6 +1,26 @@
 # MMA3001Project
 My project for MMA3001
 
+## Installation Instructions
+1. Open a terminal in the folder in which you want to the project files to be created
+2. clone the repository using:
+```
+git clone https://github.com/IgbyMcLaverty/MMA3001Project.git
+```
+3. Enter the folder created by the clone (MMA3001Project)
+4. In the terminal create a new venv virtual environment using
+```
+python -m venv .venv
+```
+5. Activate the virtual environment in your terminal
+```
+.\.venv\Scripts\activate
+```
+6. Install the required python modules using:
+```
+pip install -r requirements.txt
+```
+
 ## AI Acknowledgement
 
 This project was developed with assistance from generative artificial intelligence (AI) tools.
