@@ -1,13 +1,12 @@
 import numpy as np
 
-def run_simulation(dt, groundTemp, groundPressure, groundAltitude, lapseRate, initialVelocity, initialAltitude):
+def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude):
     """Runs the 1DOF simulation
     
     Args:
         dt (float): The timestep of the simulation
-        groundTemp (float): The temperature at ground level in Kelvin
-        groundPressure (float): The pressure at ground level in kilopascal
-        groundAltitude (float): The altitude above sea level at ground level in meters; the altitude at which the ground temperature and pressure were measured at
+        seaTemp (float): The temperature at sea level
+        seaPressure (float): The pressure at sea level
         lapseRate (float): The change in tempature as altitude increases in degrees celius per kilometer
         initialVelocity (float): The vertical velocity which the rocket begins at
         initialAltitude (float): The altitude at which the simulation begins, does not have to be ground altitude
@@ -19,15 +18,14 @@ def run_simulation(dt, groundTemp, groundPressure, groundAltitude, lapseRate, in
 
     print("Hello I am the run_simulation function!")
 
-def calculate_pressure(altitude, groundTemp, groundPressure, groundAltitude, lapseRate):
+def calculate_pressure(altitude, seaTemp, seaPressure, lapseRate):
     """Calculates the pressure at a given altitude using the barometric formula
 
     Args:
         altitude (float): The altitude to evaluate the pressure at in meters
-        groundTemp (float): The temperature at ground level in Kelvin
-        groundPressue (float): The pressure at ground level in pascal
-        groundAltitude (float): The altitude above sea level at ground level in meters; the altitude at which the ground temperature and pressure were measured at
-        lapseRate (float): The change in tempature as altitude increases in degrees celius per kilometer
+        seaTemp (float): The temperature at sea level in Kelvin
+        seaPressure (float): The pressure at sea level in pascal
+        lapseRate (float): The change in tempature as altitude increases in kelvin per meter
     
     Returns:
         pressure (float): The pressure at the given altitude in pascal
@@ -40,9 +38,8 @@ def calculate_pressure(altitude, groundTemp, groundPressure, groundAltitude, lap
     # silently passing as 1/0.
     numeric_args = {
         "altitude": altitude,
-        "groundTemp": groundTemp,
-        "groundPressure": groundPressure,
-        "groundAltitude": groundAltitude,
+        "seaTemp": seaTemp,
+        "seaPressure": seaPressure,
         "lapseRate": lapseRate,
     }
 
@@ -59,31 +56,25 @@ def calculate_pressure(altitude, groundTemp, groundPressure, groundAltitude, lap
             f"'altitude' must be between 0 and 100000 meters, got {altitude}"
         )
 
-    # Ground temperature: must be a physically valid, positive Kelvin value.
+    # sea temperature: must be a physically valid, positive Kelvin value.
     # Limited between reasonable upper and lower bounds, approximately -20 to 60 degrees celius
-    if not (-250 <= groundTemp <= 330):
+    if not (250 <= seaTemp <= 330):
         raise ValueError(
-            f"'groundTemp' must be between -250 and 330 Kelvin, got {groundTemp}"
+            f"'seaTemp' must be between -250 and 330 Kelvin, got {seaTemp}"
         )
 
-    # Ground pressure: must be positive; upper bound generous (sea-level is
+    # sea pressure: must be positive; upper bound generous (sea-level is
     # ~101325 Pa, extreme highs are still well under 150000 Pa).
-    if not (0.0 < groundPressure <= 150_000.0):
+    if not (0.0 < seaPressure <= 150_000.0):
         raise ValueError(
-            f"'groundPressure' must be between 0 (exclusive) and 150000 pascal, got {groundPressure}"
-        )
-
-    # Ground altitude: assuming no altitudes below sea level and none above 10k feet
-    if not (0 <= groundAltitude <= 3000):
-        raise ValueError(
-            f"'groundAltitude' must be between 0 and 3000 meters, got {groundAltitude}"
+            f"'seaPressure' must be between 0 (exclusive) and 150000 pascal, got {seaPressure}"
         )
 
     # Lapse rate: typical atmospheric lapse rates are a few degrees C per km;
     # allow a generous margin for unusual/inverted conditions.
-    if not (-50.0 <= lapseRate <= 50.0):
+    if not (-0.05 <= lapseRate <= 0.05):
         raise ValueError(
-            f"'lapseRate' must be between -50 and 50 degrees Celsius per km, got {lapseRate}"
+            f"'lapseRate' must be between -0.05 and 0.05 Kelvin per meter, got {lapseRate}"
         )
     # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
