@@ -64,8 +64,8 @@ def calculate_pressure(altitude, seaTemp, seaPressure, lapseRate):
         )
 
     # sea pressure: must be positive; upper bound generous (sea-level is
-    # ~101325 Pa, extreme highs are still well under 150000 Pa).
-    if not (0.0 < seaPressure <= 150_000.0):
+    # ~101325 Pa, extreme highs are still well under 150000 Pa). Lower bound set to prevent accidentally inputting kilopascal
+    if not (70_000 < seaPressure <= 150_000.0):
         raise ValueError(
             f"'seaPressure' must be between 0 (exclusive) and 150000 pascal, got {seaPressure}"
         )
@@ -78,4 +78,8 @@ def calculate_pressure(altitude, seaTemp, seaPressure, lapseRate):
         )
     # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-    print("Hello I am the calculate_pressure function!")
+    # define constants
+    g = 9.81 # acceleration due to gravity in m/s^2
+    R0 = 8.314462618 # univeral gas constant
+    M = 0.02896968 # molar mass of air
+    return seaPressure*(1+lapseRate*altitude/seaTemp)**(-g*M/(R0*lapseRate))
