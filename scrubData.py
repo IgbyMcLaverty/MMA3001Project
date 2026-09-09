@@ -11,11 +11,24 @@ for i in range(0, 201):
     # keep only the columns that are in the list AND actually exist in this frame
     cols_present = [col for col in columns_to_keep if col in frame.columns]
     chopped = frame[cols_present]
+
+    # new section added by claude after subsequent prompt, then modified manually ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    # find the first index where altitude_barometric decreases relative to the previous row
+    alt = chopped["altitude_barometric"]
+    decreased = alt.diff() < 0  # True where value dropped from the previous row
     
+    if decreased.any():
+        first_decrease_idx = decreased.idxmax()  # first True
+        # keep everything up to (but not including) the row where it first decreased
+        chopped = chopped.loc[:first_decrease_idx - 1]
+
+    # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
     chopped.to_csv(f"saturnSims/Without_Airbrakes_Scrubbed/SATURN_dataframe_{i}_scrubbed.csv", index=False)
 
     # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    
+
     print(f"progess: {(i/201)*100:.0f}%",end='\r')
 
 print("Program completed")
