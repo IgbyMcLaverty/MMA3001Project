@@ -23,7 +23,17 @@ plt.show()
 for i in range(0,10):
     frame = pd.read_csv(f"saturnSims/Without_Airbrakes/SATURN_dataframe_{i}.csv")
     plt.plot(frame['altitude_barometric'],frame['air_temperature'])
-    plt.xlabel("altitude")
-    plt.ylabel("air temperature")
+plt.xlabel("altitude")
+plt.ylabel("air temperature")
+plt.title("Air Temperature Vs Altitude")
+
+plt.show()
+
+for i in range(0,10):
+    frame = pd.read_csv(f"saturnSims/Without_Airbrakes/SATURN_dataframe_{i}.csv")
+    plt.plot(frame['altitude_barometric'],frame['air_pressure'])
+plt.xlabel("altitude")
+plt.ylabel("air pressure")
+plt.title("Air Pressure Vs Altitude")
 
 plt.show()
