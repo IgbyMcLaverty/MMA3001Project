@@ -1,7 +1,7 @@
 import numpy as np
 
-AIR_R = 0.287
-GRAVITY = 9.81
+AIR_R = 0.000287 # J/kg*kelvin
+GRAVITY = 9.81 # m/s^2
 
 def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDrag,area,mass):
     """Runs the 1DOF simulation
@@ -41,7 +41,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         fNet = fGrav + fDrag
 
         # acceleration should be negative as the forces both act downwards
-        acc = -mass/fNet
+        acc = -fNet/mass
 
         # Using naive integration
         # Assumes constant acceleration between the previous timestep and now. With the drag force at the later timestep.
