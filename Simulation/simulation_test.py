@@ -1,5 +1,6 @@
 import pytest
 from simulation import calculate_pressure
+from simulation import calculate_drag
 
 def test_calculate_pressure():
 
@@ -53,7 +54,44 @@ def test_calculate_pressure():
     assert calculate_pressure(1500,282,98000,0.02) == pytest.approx(82449.96662)
     assert calculate_pressure(70000,288,99999,0.016) == pytest.approx(3370.144564)
     assert calculate_pressure(455,296,102000,0.0078) == pytest.approx(96809.42093)
-    
 
-    
-    
+def test_calculate_drag():
+    # test type errors
+    # velocity
+    with pytest.raises(TypeError):
+        calculate_drag("100",1.4,0.2,1.225)
+    # drag coefficient
+    with pytest.raises(TypeError):
+        calculate_drag(100,"1.4",0.2,1.225)
+    # cross sectional area
+    with pytest.raises(TypeError):
+        calculate_drag(100,1.4,"0.2",1.225)
+    # air density
+    with pytest.raises(TypeError):
+        calculate_drag(100,1.4,0.2,"1.225")
+
+    # range checks
+    # velocity too high
+    with pytest.raises(ValueError):
+        calculate_drag(500,1.4,0.2,1.225)
+    # velocity too low
+    with pytest.raises(ValueError):
+        calculate_drag(-500,1.4,0.2,1.225)
+
+    # negative drag coefficent
+    with pytest.raises(ValueError):
+        calculate_drag(100,-1,0.2,1.225)
+
+    # negative area
+    with pytest.raises(ValueError):
+        calculate_drag(100,1.4,-0.2,1.225)
+
+    # negative air density
+    with pytest.raises(ValueError):
+        calculate_drag(100,1.4,0.2,-1.225)
+
+    assert calculate_drag(100,1.4,0.2,1.225) == pytest.approx(1715)
+    assert calculate_drag(212,0.61,0.212,1.4) == pytest.approx(4068.510656)
+    assert calculate_drag(12,10.1,15.6,0.81) == pytest.approx(9188.8992)
+    assert calculate_drag(276,1.273,8.87,0.98) == pytest.approx(1715)
+    assert calculate_drag(31,1.62,0.01,1.3) == pytest.approx(10.11933)
