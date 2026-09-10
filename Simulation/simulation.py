@@ -1,6 +1,6 @@
 import numpy as np
 
-AIR_R = 0.000287 # J/kg*kelvin
+AIR_R = 287 # J/kg*kelvin
 GRAVITY = 9.81 # m/s^2
 
 def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDrag,area,mass):
