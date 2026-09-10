@@ -11,9 +11,9 @@ initialAltitude = 1137.745636727661 # meters
 coefficientOfDrag = 0.39146244 # taken from meridian_final.csv under mach 0.6, no pitch, no roll, no extension
 crossectionalArea = 0.0754767635 # m^2
 mass = 24.510768830369635 # kg
-dt = 1 # seconds
+dt = 0.001 # seconds
 
-apogee,accHistory = run_simulation(
+apogee,altHistory,accHistory = run_simulation(
     dt=dt,
     seaTemp=seaLevelTemp,
     seaPressure=seaLevelPressure,
@@ -26,6 +26,12 @@ apogee,accHistory = run_simulation(
 )
 
 print(f"Final apogee: {apogee:.2f}")
+
+plt.plot(altHistory)
+plt.xlabel("Index")
+plt.ylabel("altitude (m)")
+
+plt.show()
 
 plt.plot(accHistory)
 plt.xlabel("Index")
