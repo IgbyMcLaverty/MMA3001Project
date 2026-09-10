@@ -1,22 +1,55 @@
 import numpy as np
 
-def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude):
+AIR_R = 0.287
+GRAVITY = 9.81
+
+def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDrag,area,mass):
     """Runs the 1DOF simulation
     
     Args:
-        dt (float): The timestep of the simulation
-        seaTemp (float): The temperature at sea level
-        seaPressure (float): The pressure at sea level
+        dt (float): The timestep of the simulation in seconds
+        seaTemp (float): The temperature at sea level in kelvin
+        seaPressure (float): The pressure at sea level in pascal
         lapseRate (float): The change in tempature as altitude increases in degrees celius per kilometer
-        initialVelocity (float): The vertical velocity which the rocket begins at
-        initialAltitude (float): The altitude at which the simulation begins, does not have to be ground altitude
+        initialVelocity (float): The vertical velocity which the rocket begins at in m/s
+        initialAltitude (float): The altitude at which the simulation begins, does not have to be ground altitude in meters
+        coeDrag (float): The coefficient of drag of the body
+        area (float): The cross sectional area of the body in m^2
+        mass (float): The mass of the body in kg 
     
     Returns:
         apogee (float): The maximum altitude the simulation reached in meters
 
     """
+    vel = initialVelocity
+    alt = initialAltitude
 
-    print("Hello I am the run_simulation function!")
+    # Force due to gravity only calculated once since the mass of the body is constant
+    fGrav = GRAVITY*mass
+
+    while vel > 0:
+        pressure = calculate_pressure(alt,seaTemp,seaPressure,lapseRate)
+        temperature = seaTemp - lapseRate*alt 
+        # from ideal gas law
+        density = pressure/(AIR_R*temperature) # WRITE AS A FUNCTION LATER
+
+        fDrag = calculate_drag(vel,coeDrag,area,density)
+        fNet = fGrav + fDrag
+
+        # acceleration should be negative as the forces both act downwards
+        acc = -mass/fNet
+
+        # Using naive integration
+        # Assumes constant acceleration between the previous timestep and now. With the drag force at the later timestep.
+        # will most likely overestimate the decrease in velocity at high dt's
+        vel += acc*dt
+
+        # Using naive integration
+        # assumes constant velocity between this timestep and the now. With the velocity that velocity being at the later timestep
+        # Will most likely underestimate altitude at high dt's
+        alt += vel
+
+    return alt
 
 def calculate_pressure(altitude, seaTemp, seaPressure, lapseRate):
     """Calculates the pressure at a given altitude using the barometric formula
