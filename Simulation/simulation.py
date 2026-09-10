@@ -53,7 +53,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         # Using naive integration
         # assumes constant velocity between this timestep and the now. With the velocity that velocity being at the later timestep
         # Will most likely underestimate altitude at high dt's
-        alt += vel
+        alt += vel*dt
 
         altHistory.append(alt)
         accHistory.append(acc)
