@@ -30,7 +30,8 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
     # Force due to gravity only calculated once since the mass of the body is constant
     fGrav = GRAVITY*mass
 
-    while vel > 0:
+    # temporary altitude check while the sim is behaving wrong
+    while vel > 0 and alt < 90000:
         pressure = calculate_pressure(alt,seaTemp,seaPressure,lapseRate)
         temperature = seaTemp - lapseRate*alt 
         # from ideal gas law

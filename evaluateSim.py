@@ -1,5 +1,6 @@
 from Simulation.simulation import run_simulation
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # values obtained manually from saturn frame 0
 seaLevelTemp = 280.8126697952598 # kelvin
@@ -12,7 +13,7 @@ crossectionalArea = 0.0754767635 # m^2
 mass = 24.510768830369635 # kg
 dt = 1 # seconds
 
-apogee = run_simulation(
+apogee,accHistory = run_simulation(
     dt=dt,
     seaTemp=seaLevelTemp,
     seaPressure=seaLevelPressure,
@@ -25,3 +26,9 @@ apogee = run_simulation(
 )
 
 print(f"Final apogee: {apogee:.2f}")
+
+plt.plot(accHistory)
+plt.xlabel("Index")
+plt.ylabel("Acceleration (m/s^2)")
+
+plt.show()
