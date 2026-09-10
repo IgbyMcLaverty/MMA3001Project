@@ -10,7 +10,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         dt (float): The timestep of the simulation in seconds
         seaTemp (float): The temperature at sea level in kelvin
         seaPressure (float): The pressure at sea level in pascal
-        lapseRate (float): The change in tempature as altitude increases in degrees celius per kilometer
+        lapseRate (float): The change in tempature as altitude increases in degrees kelvin per meter
         initialVelocity (float): The vertical velocity which the rocket begins at in m/s
         initialAltitude (float): The altitude at which the simulation begins, does not have to be ground altitude in meters
         coeDrag (float): The coefficient of drag of the body
