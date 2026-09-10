@@ -93,5 +93,5 @@ def test_calculate_drag():
     assert calculate_drag(100,1.4,0.2,1.225) == pytest.approx(1715)
     assert calculate_drag(212,0.61,0.212,1.4) == pytest.approx(4068.510656)
     assert calculate_drag(12,10.1,15.6,0.81) == pytest.approx(9188.8992)
-    assert calculate_drag(276,1.273,8.87,0.98) == pytest.approx(1715)
+    assert calculate_drag(276,1.273,8.87,0.98) == pytest.approx(421469.6122)
     assert calculate_drag(31,1.62,0.01,1.3) == pytest.approx(10.11933)
