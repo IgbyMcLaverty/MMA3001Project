@@ -83,3 +83,57 @@ def calculate_pressure(altitude, seaTemp, seaPressure, lapseRate):
     R0 = 8.314462618 # univeral gas constant
     M = 0.02896968 # molar mass of air
     return seaPressure*(1+lapseRate*altitude/seaTemp)**(-g*M/(R0*lapseRate))
+
+def calculate_drag(velocity, coeDrag, area, airDensity):
+    """Calculate the force due to drag given the velocity, body parameters and air density
+    
+    Args:
+        velocity (float): The velocity in m/s
+        coeDrag (float): The coefficient of drag for the body
+        area (float): the cross sectional area of the body in m^2
+        airDensity (float): The air density in kg/m^3
+    
+    Returns:
+        dragForce (float): The drag force experienced by the body in Newtons
+    """
+
+    # do type checks on all inputs
+    numeric_args = {
+        "altitude": velocity,
+        "seaTemp": coeDrag,
+        "seaPressure": area,
+        "lapseRate": airDensity,
+    }
+
+    for name, value in numeric_args.items():
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            raise TypeError(
+                f"'{name}' must be a number (int or float), got {type(value).__name__}"
+            )
+
+    # range check for velocity. Should be less than the speed of sound in either direction
+    if not (-343 <= velocity <= 343):
+        raise ValueError(
+            f"'velocity' must be between -343 and 343 meters per second, got {velocity}"
+        )
+    
+    # range check for coeDrag. Should be greater than or equal to 0
+    if not (0 <= coeDrag):
+        raise ValueError(
+            f"'coeDrag' must be greater than or equal to 0, got {coeDrag}"
+        )
+
+    # range check for area. Must be greater than 0
+    if not (0 < area):
+        raise ValueError(
+            f"'area' must be greater 0 square meters, got {area}"
+        )
+
+    # range check for density. Should be greater than 0
+    if not (airDensity > 0):
+        raise ValueError(
+            f"'airDensity' must greater than 0 kg/m^3, got {airDensity}"
+        )
+
+    # actually calculate the drag
+    return 0.5*airDensity*velocity**2*coeDrag*area

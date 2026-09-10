@@ -4,7 +4,6 @@ import pandas as pd
 
 # columns you want to keep
 columns_to_keep = ["time", "dt", "altitude_barometric", "mass_total", "density", "air_temperature","air_brakes_extension","air_pressure"]
-ACCEL_THRESHOLD = -5.0  # set your threshold here
 
 for i in range(0, 201):
     frame = pd.read_csv(f"saturnSims/Without_Airbrakes/SATURN_dataframe_{i}.csv")
