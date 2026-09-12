@@ -64,6 +64,60 @@ def eval_on_frames(frameLoc,dt,numFrames):
     print(f"All sims complete")
     print(f"final RMSE: {rmse:.2f} meters")
 
+def eval_sim_convergance(maxdt,tolerance):
+    """
+    Runs the sim with the same initial conditions multiple times with decreasing values time steps.
+    Each sim uses half the time step of the previous. Sims stop when the output apogee between one sim and the next drops below the tolerance
+    
+    Args:
+        maxdt (float): The starting time step in seconds which will then be halved each interation
+        tolerance (float): The acceptable absolute difference in meters between iterations after which the sims will stop.
+    
+    Returns:
+        None
+    """
+    if tolerance <= 0:
+        raise ValueError(f"tolerance must be greater than 0, got {tolerance}")
+
+    # values obtained manually from saturn frame 0
+    seaLevelTemp = 280.8126697952598 # kelvin
+    seaLevelPressure = 98851.6944512164 # pascal
+    lapseRate = 0.00118 # kelvin per meter
+    initialVelocity = 239.15 # m/s
+    initialAltitude = 1137.745636727661 # meters
+    coefficientOfDrag = 0.39146244 # taken from meridian_final.csv under mach 0.6, no pitch, no roll, no extension
+    crossectionalArea = 0.0754767635 # m^2
+    mass = 24.510768830369635 # kg
+
+    delta = 100000
+    prevApogee = 0
+
+    dt = maxdt
+
+    while(True):
+        apogee,altHistory,accHistory = run_simulation(
+            dt=dt,
+            seaTemp=seaLevelTemp,
+            seaPressure=seaLevelPressure,
+            lapseRate=lapseRate,
+            initialVelocity=initialVelocity,
+            initialAltitude=initialAltitude,
+            coeDrag=coefficientOfDrag,
+            area=crossectionalArea,
+            mass=mass
+        )
+
+        delta = abs(prevApogee-apogee)
+
+        # Stop running when sims converge
+        if delta < tolerance:
+            break
+
+        prevApogee = apogee
+        dt = dt/2
+
+    print(f"Final dt:{dt}, with delta: {delta}")
+
         
 
 def manual_sim_eval():
@@ -115,5 +169,6 @@ def manual_sim_eval():
 
 
 # uncommented required function
-# manual_sim_eval()
-eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.01,150)
+#manual_sim_eval()
+#eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.01,150)
+eval_sim_convergance(10,0.1)
