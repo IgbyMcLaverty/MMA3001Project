@@ -174,7 +174,51 @@ def eval_sim_convergance(maxdt,tolerance):
 
     print(f"Final dt:{dt}, with delta: {delta}")
 
-        
+def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
+    """
+    Runs the sim with intial condtions from a single frame then plots the various parameters for the sim vs saturn sim
+    
+    Args:
+        fileLoc (string): A string which contains the path to initial conditions csv.
+        frameLoc (string): A string containing a path to the folder with the scrubbed saturn frames. Should not include the final slash
+        frameNumber (int): The specific frame number to compare against
+        dt (float): The dt value to be used in the sim
+    
+    Returns:
+        None
+    """
+    # range and type check for frame number
+    if not isinstance(frameNumber, (int)):
+        raise TypeError(f"frameNumber must be an integer")
+
+    if frameNumber < 0 or frameNumber > 200:
+        raise ValueError(f"frameNumber must be between 0 and 200 inclusive, got {frameNumber}")
+
+    frame = pd.read_csv(fileLoc)
+
+    coefficientOfDrag = 0.39146244 # taken from meridian_final.csv under mach 0.6, no pitch, no roll, no extension
+    crossectionalArea = 0.0754767635 # m^2
+    mass = 24.510768830369635 # kg
+    seaLevelTemp = frame["groundTemp"][frameNumber]
+    seaLevelPressure = frame["groundPressure"][frameNumber]
+    lapseRate = frame["lapserate"][frameNumber]
+    initialVelocity = frame["initialVelocity"][frameNumber]
+    initialAltitude = frame["initialAltitude"][frameNumber]
+
+    apogee,altHistory,accHistory = run_simulation(
+        dt=dt,
+        seaTemp=seaLevelTemp,
+        seaPressure=seaLevelPressure,
+        lapseRate=lapseRate,
+        initialVelocity=initialVelocity,
+        initialAltitude=initialAltitude,
+        coeDrag=coefficientOfDrag,
+        area=crossectionalArea,
+        mass=mass
+    )
+
+    print(f"Predicted Apogee: {apogee}")
+
 
 def manual_sim_eval():
     """
@@ -226,5 +270,6 @@ def manual_sim_eval():
 
 # uncommented required function
 #manual_sim_eval()
-eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
+#eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
+eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",0,0.0003)
 #eval_sim_convergance(10,0.1)
