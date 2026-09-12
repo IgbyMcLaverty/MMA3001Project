@@ -7,6 +7,14 @@ columns_to_keep = ["time", "dt", "altitude_barometric", "mass_total", "density",
 
 for i in range(0, 201):
     frame = pd.read_csv(f"saturnSims/Without_Airbrakes/SATURN_dataframe_{i}.csv")
+
+    # intial conditions
+    columnNames = ["groundTemp","groundPressure","lapserate","initialVelocity","initialAltitude","apogee"]
+
+    initialConditions = pd.DataFrame(columns = columnNames)
+
+    groundPressure = frame["air_pressure"][0]
+    groundTemp = frame["air_temperature"][0]
     
     # keep only the columns that are in the list AND actually exist in this frame
     cols_present = [col for col in columns_to_keep if col in frame.columns]
@@ -18,18 +26,34 @@ for i in range(0, 201):
     
     # the last row where mass_motor actually changed is where it "settles" from
     start_idx = changed.index[-1] if not changed.empty else chopped.index[0]
+
+    # calculate the initial velcity using the centre difference
+    initVel = (frame['altitude_barometric'][start_idx+1]-frame['altitude_barometric'][start_idx-1])/(2*frame['dt'][0])
+
+    # get the initial altitude
+    initAlt = frame['altitude_barometric'][start_idx]
     
     # --- find end cutoff: first point where altitude_barometric decreases ---
     alt_diff = chopped["altitude_barometric"].diff()
     decreased = alt_diff < 0
     end_idx = (decreased.idxmax() - 1) if decreased.any() else chopped.index[-1]
+
+    # get apogee
+    apogee = chopped["altitude_barometric"][end_idx]
+
+    # calculate the lapse rate
+    lapseRate = (frame["air_temperature"][end_idx]-frame["air_temperature"][0])/frame["altitude_barometric"][end_idx]
     
     # apply both boundaries at once
     chopped = chopped.loc[start_idx:end_idx]
 
-    chopped.to_csv(f"saturnSims/Without_Airbrakes_Scrubbed/SATURN_dataframe_{i}_scrubbed.csv", index=False)
+    chopped.to_csv(f"saturnSims/Without_Airbrakes_Scrubbed/frame{i}_timeseries.csv", index=False)
 
     # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; - Verified by comparing against doing the process for dataframe_0 manually, outputs match
+
+    initialConditions.loc[0] = [groundTemp, groundPressure, lapseRate, initVel, initAlt, apogee]
+
+    initialConditions.to_csv(f"saturnSims/Without_Airbrakes_Scrubbed/frame{i}_initialconds.csv", index=False)
 
     print(f"progess: {(i/201)*100:.0f}%",end='\r')
 
