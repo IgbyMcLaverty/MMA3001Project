@@ -5,13 +5,12 @@ import pandas as pd
 # columns you want to keep
 columns_to_keep = ["time", "dt", "altitude_barometric", "mass_total", "density", "air_temperature","air_brakes_extension","air_pressure"]
 
+# intial conditions
+columnNames = ["groundTemp","groundPressure","lapserate","initialVelocity","initialAltitude","apogee"]
+initialConditions = pd.DataFrame(columns = columnNames)
+
 for i in range(0, 201):
     frame = pd.read_csv(f"saturnSims/Without_Airbrakes/SATURN_dataframe_{i}.csv")
-
-    # intial conditions
-    columnNames = ["groundTemp","groundPressure","lapserate","initialVelocity","initialAltitude","apogee"]
-
-    initialConditions = pd.DataFrame(columns = columnNames)
 
     groundPressure = frame["air_pressure"][0]
     groundTemp = frame["air_temperature"][0]
@@ -51,10 +50,11 @@ for i in range(0, 201):
 
     # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; - Verified by comparing against doing the process for dataframe_0 manually, outputs match
 
-    initialConditions.loc[0] = [groundTemp, groundPressure, lapseRate, initVel, initAlt, apogee]
-
-    initialConditions.to_csv(f"saturnSims/Without_Airbrakes_Scrubbed/frame{i}_initialconds.csv", index=False)
+    initialConditions.loc[i] = [groundTemp, groundPressure, lapseRate, initVel, initAlt, apogee]
 
     print(f"progess: {(i/201)*100:.0f}%",end='\r')
+
+
+initialConditions.to_csv(f"saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv", index=False)
 
 print("Program completed")
