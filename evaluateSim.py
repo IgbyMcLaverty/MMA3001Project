@@ -64,6 +64,62 @@ def eval_on_frames(frameLoc,dt,numFrames):
     print(f"All sims complete")
     print(f"final RMSE: {rmse:.2f} meters")
 
+    residuals = calcApogees - frame.loc[0:(numFrames-1), "apogee"]
+
+    fig, axes = plt.subplots(2, 3, figsize=(15, 8))
+    fig.suptitle("Residual plot", fontsize=16)
+
+    # Subplot [0, 0]
+    ax = axes[0, 0]
+    ax.scatter(frame.loc[0:(numFrames-1), "initialVelocity"],residuals)
+    ax.axhline(linestyle='--')
+    ax.set_title("Initial Velocity")
+    ax.set_xlabel("Velocity (m/s)")
+    ax.set_ylabel("Residual (m)")
+
+    # Subplot [0, 1]
+    ax = axes[0, 1]
+    ax.scatter(frame.loc[0:(numFrames-1), "initialAltitude"],residuals)
+    ax.axhline(linestyle='--')
+    ax.set_title("Initial Altitude")
+    ax.set_xlabel("Altitude (m)")
+    ax.set_ylabel("Residual (m)")
+
+    # Subplot [0, 2]
+    ax = axes[0, 2]
+    ax.scatter(frame.loc[0:(numFrames-1), "groundTemp"],residuals)
+    ax.axhline(linestyle='--')
+    ax.set_title("Sea Level Temeprature")
+    ax.set_xlabel("Temperature (K)")
+    ax.set_ylabel("Residual (m)")
+
+    # Subplot [1, 0]
+    ax = axes[1, 0]
+    ax.scatter(frame.loc[0:(numFrames-1), "groundPressure"],residuals)
+    ax.axhline(linestyle='--')
+    ax.set_title("Ground Pressure")
+    ax.set_xlabel("Pressure (Pa)")
+    ax.set_ylabel("Residual (m)")
+
+    # Subplot [1, 1]
+    ax = axes[1, 1]
+    ax.scatter(frame.loc[0:(numFrames-1), "lapserate"],residuals)
+    ax.axhline(linestyle='--')
+    ax.set_title("Lapse Rate")
+    ax.set_xlabel("Lapse Rate (K/m)")
+    ax.set_ylabel("Residual (m)")
+
+    # Subplot [1, 2]
+    ax = axes[1, 2]
+    ax.scatter(frame.loc[0:(numFrames-1), "apogee"],residuals)
+    ax.axhline(linestyle='--')
+    ax.set_title("True Apogee")
+    ax.set_xlabel("True Apogee (m)")
+    ax.set_ylabel("Residual (m)")
+
+    plt.tight_layout()
+    plt.show()
+
 def eval_sim_convergance(maxdt,tolerance):
     """
     Runs the sim with the same initial conditions multiple times with decreasing values time steps.
@@ -170,5 +226,5 @@ def manual_sim_eval():
 
 # uncommented required function
 #manual_sim_eval()
-#eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.01,150)
-eval_sim_convergance(10,0.1)
+eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
+#eval_sim_convergance(10,0.1)
