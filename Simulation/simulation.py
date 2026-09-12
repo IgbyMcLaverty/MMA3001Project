@@ -19,15 +19,18 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
     
     Returns:
         apogee (float): The maximum altitude the simulation reached in meters
-        altHistory (list): A list containing the calculated altitude at each time step
+        timeHistory (list): A list containing the time of each timestep
+        altHistory (list): A list containing the calculated altitude at each timestep
         accHistory (list): A list containing the calculated acceleration at each timestep
 
     """
     vel = initialVelocity
     alt = initialAltitude
+    time = 0
 
     altHistory = []
     accHistory = []
+    timeHistory = []
 
     # Force due to gravity only calculated once since the mass of the body is constant
     fGrav = GRAVITY*mass
@@ -57,8 +60,11 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
 
         altHistory.append(alt)
         accHistory.append(acc)
+        timeHistory.append(time)
 
-    return alt,altHistory,accHistory
+        time += dt
+
+    return alt,timeHistory,altHistory,accHistory
 
 def calculate_pressure(altitude, seaTemp, seaPressure, lapseRate):
     """Calculates the pressure at a given altitude using the barometric formula
