@@ -194,18 +194,19 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     if frameNumber < 0 or frameNumber > 200:
         raise ValueError(f"frameNumber must be between 0 and 200 inclusive, got {frameNumber}")
 
-    frame = pd.read_csv(fileLoc)
+    initConds = pd.read_csv(fileLoc)
+    frame = pd.read_csv(frameLoc + f"/frame{frameNumber}_timeseries.csv")
 
     coefficientOfDrag = 0.39146244 # taken from meridian_final.csv under mach 0.6, no pitch, no roll, no extension
     crossectionalArea = 0.0754767635 # m^2
     mass = 24.510768830369635 # kg
-    seaLevelTemp = frame["groundTemp"][frameNumber]
-    seaLevelPressure = frame["groundPressure"][frameNumber]
-    lapseRate = frame["lapserate"][frameNumber]
-    initialVelocity = frame["initialVelocity"][frameNumber]
-    initialAltitude = frame["initialAltitude"][frameNumber]
+    seaLevelTemp = initConds["groundTemp"][frameNumber]
+    seaLevelPressure = initConds["groundPressure"][frameNumber]
+    lapseRate = initConds["lapserate"][frameNumber]
+    initialVelocity = initConds["initialVelocity"][frameNumber]
+    initialAltitude = initConds["initialAltitude"][frameNumber]
 
-    apogee,altHistory,accHistory = run_simulation(
+    apogee,timeHistory,altHistory,accHistory = run_simulation(
         dt=dt,
         seaTemp=seaLevelTemp,
         seaPressure=seaLevelPressure,
@@ -218,6 +219,14 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     )
 
     print(f"Predicted Apogee: {apogee}")
+
+    trimmedTime = frame["time"]-frame["time"][0]
+
+    plt.plot(timeHistory,altHistory)
+    plt.plot(trimmedTime,frame["altitude_barometric"])
+    plt.xlabel("Time (s)")
+    plt.ylabel("Altitude (m)")
+    plt.show()
 
 
 def manual_sim_eval():
