@@ -10,7 +10,7 @@ def eval_on_frames(frameLoc,dt,numFrames):
     Coefficient of drag and cross sectional area are left as constants.
     
     Args:
-        frameLoc (string): A string which contains the path to the folder where the frames are stored. Should not include the final /
+        fileLoc (string): A string which contains the path to initial conditions csv.
         dt (float): The dt value to be used in the sim
         numFrames (int): The number of frames to compare against. Count starts from frame 0
     
@@ -26,21 +26,21 @@ def eval_on_frames(frameLoc,dt,numFrames):
     if numFrames <= 0:
         raise ValueError(f"numFrames must be > 0")
 
-    trueApogees = []
+    coefficientOfDrag = 0.39146244 # taken from meridian_final.csv under mach 0.6, no pitch, no roll, no extension
+    crossectionalArea = 0.0754767635 # m^2
+    mass = 24.510768830369635 # kg
+
+    frame = pd.read_csv(frameLoc)
+
     calcApogees = []
 
-    # each loop is a different input frame
+    # each loop is a different set of initial condtions
     for i in range(numFrames):
-        frame = pd.read_csv(frameLoc+f"/frame{i}_initialconds.csv")
-        seaLevelTemp = frame["groundTemp"][0]
-        seaLevelPressure = frame["groundPressure"][0]
-        lapseRate = frame["lapserate"][0]
-        initialVelocity = frame["initialVelocity"][0]
-        initialAltitude = frame["initialAltitude"][0]
-        coefficientOfDrag = 0.39146244 # taken from meridian_final.csv under mach 0.6, no pitch, no roll, no extension
-        crossectionalArea = 0.0754767635 # m^2
-        mass = 24.510768830369635 # kg
-        dt = 0.001 # seconds
+        seaLevelTemp = frame["groundTemp"][i]
+        seaLevelPressure = frame["groundPressure"][i]
+        lapseRate = frame["lapserate"][i]
+        initialVelocity = frame["initialVelocity"][i]
+        initialAltitude = frame["initialAltitude"][i]
 
         apogee,altHistory,accHistory = run_simulation(
             dt=dt,
@@ -54,11 +54,14 @@ def eval_on_frames(frameLoc,dt,numFrames):
             mass=mass
         )
 
-        trueApogees.append(frame["apogee"][0])
         calcApogees.append(apogee)
 
-    rmse = root_mean_squared_error(trueApogees,calcApogees)
+        print(f"progess: {(i/numFrames)*100:.0f}%",end='\r')
 
+    rmse = root_mean_squared_error(frame.loc[0:(numFrames-1), "apogee"],calcApogees)
+
+    print()
+    print(f"All sims complete")
     print(f"final RMSE: {rmse:.2f} meters")
 
         
@@ -113,4 +116,4 @@ def manual_sim_eval():
 
 # uncommented required function
 # manual_sim_eval()
-eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed",0.01,150)
+eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.01,150)
