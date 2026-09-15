@@ -111,10 +111,10 @@ def eval_on_frames(frameLoc,dt,numFrames):
 
     # Subplot [1, 2]
     ax = axes[1, 2]
-    ax.scatter(frame.loc[0:(numFrames-1), "apogee"],residuals)
+    ax.scatter(frame.loc[0:(numFrames-1), "pitch"],residuals)
     ax.axhline(linestyle='--')
-    ax.set_title("True Apogee")
-    ax.set_xlabel("True Apogee (m)")
+    ax.set_title("Pitch")
+    ax.set_xlabel("Pitch (degrees)")
     ax.set_ylabel("Residual (m)")
 
     plt.tight_layout()
