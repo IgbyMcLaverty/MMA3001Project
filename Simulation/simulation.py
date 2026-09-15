@@ -32,6 +32,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
     time = 0
 
     altHistory = []
+    velHistory = []
     accHistory = []
     timeHistory = []
     densityHistory = []
@@ -65,6 +66,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         alt += vel*dt
 
         altHistory.append(alt)
+        velHistory.append(vel)
         accHistory.append(acc)
         timeHistory.append(time)
         densityHistory.append(density)
@@ -73,7 +75,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
 
         time += dt
 
-    return alt,timeHistory,altHistory,accHistory,densityHistory,pressureHistory,tempHistory
+    return alt,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory
 
 def calculate_pressure(altitude, seaTemp, seaPressure, lapseRate):
     """Calculates the pressure at a given altitude using the barometric formula
