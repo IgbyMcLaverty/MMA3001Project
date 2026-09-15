@@ -206,7 +206,7 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     initialVelocity = initConds["initialVelocity"][frameNumber]
     initialAltitude = initConds["initialAltitude"][frameNumber]
 
-    apogee,timeHistory,altHistory,accHistory = run_simulation(
+    apogee,timeHistory,altHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation(
         dt=dt,
         seaTemp=seaLevelTemp,
         seaPressure=seaLevelPressure,
@@ -222,10 +222,18 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
 
     trimmedTime = frame["time"]-frame["time"][0]
 
-    plt.plot(timeHistory,altHistory)
-    plt.plot(trimmedTime,frame["altitude_barometric"])
+    plt.plot(timeHistory,altHistory,label="1DOF")
+    plt.plot(trimmedTime,frame["altitude_barometric"],label="SATURN")
     plt.xlabel("Time (s)")
     plt.ylabel("Altitude (m)")
+    plt.legend()
+    plt.show()
+
+    plt.plot(altHistory,densityHistory,label="1DOF")
+    plt.plot(frame["altitude_barometric"],frame["density"],label="SATURN")
+    plt.xlabel("Altitude (m)")
+    plt.ylabel("Air density")
+    plt.legend()
     plt.show()
 
 
@@ -279,6 +287,6 @@ def manual_sim_eval():
 
 # uncommented required function
 #manual_sim_eval()
-eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-#eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",0,0.0003)
+#eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
+eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",0,0.0003)
 #eval_sim_convergance(10,0.1)

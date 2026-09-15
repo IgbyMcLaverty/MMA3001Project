@@ -22,6 +22,9 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         timeHistory (list): A list containing the time of each timestep
         altHistory (list): A list containing the calculated altitude at each timestep
         accHistory (list): A list containing the calculated acceleration at each timestep
+        densityHistory (list): A list containing the calcualte air density at each timestep
+        tempHistory (list): A list containing the calculated temperature at each timestep
+        pressureHistory (list): A list containing the calculated pressure at each timestep
 
     """
     vel = initialVelocity
@@ -31,6 +34,9 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
     altHistory = []
     accHistory = []
     timeHistory = []
+    densityHistory = []
+    tempHistory = []
+    pressureHistory = []
 
     # Force due to gravity only calculated once since the mass of the body is constant
     fGrav = GRAVITY*mass
@@ -61,10 +67,13 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         altHistory.append(alt)
         accHistory.append(acc)
         timeHistory.append(time)
+        densityHistory.append(density)
+        pressureHistory.append(pressure)
+        tempHistory.append(temperature)
 
         time += dt
 
-    return alt,timeHistory,altHistory,accHistory
+    return alt,timeHistory,altHistory,accHistory,densityHistory,pressureHistory,tempHistory
 
 def calculate_pressure(altitude, seaTemp, seaPressure, lapseRate):
     """Calculates the pressure at a given altitude using the barometric formula
