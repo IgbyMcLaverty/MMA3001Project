@@ -34,7 +34,7 @@ def eval_on_frames(frameLoc,dt,numFrames):
         raise ValueError(f"numFrames must be > 0")
 
     coefficientOfDrag = 0.39146244 # taken from meridian_final.csv under mach 0.6, no pitch, no roll, no extension
-    crossectionalArea = 0.0754767635 # m^2
+    crossectionalArea = 0.01824 # m^2
     mass = 24.510768830369635 # kg
 
     frame = pd.read_csv(frameLoc)
@@ -205,7 +205,7 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     frame = pd.read_csv(frameLoc + f"/frame{frameNumber}_timeseries.csv")
 
     coefficientOfDrag = 0.39146244 # taken from meridian_final.csv under mach 0.6, no pitch, no roll, no extension
-    crossectionalArea = 0.0754767635 # m^2
+    crossectionalArea = 0.01824 # m^2
     mass = 24.510768830369635 # kg
     seaLevelTemp = initConds["groundTemp"][frameNumber]
     seaLevelPressure = initConds["groundPressure"][frameNumber]
