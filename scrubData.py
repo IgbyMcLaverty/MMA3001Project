@@ -6,7 +6,7 @@ import pandas as pd
 columns_to_keep = ["time", "dt", "altitude_barometric", "mass_total", "density", "air_temperature","air_brakes_extension","air_pressure"]
 
 # intial conditions
-columnNames = ["groundTemp","groundPressure","lapserate","initialVelocity","initialAltitude","apogee"]
+columnNames = ["groundTemp","groundPressure","lapserate","initialVelocity","initialAltitude","apogee","initialPitch"]
 initialConditions = pd.DataFrame(columns = columnNames)
 
 for i in range(0, 201):
@@ -31,6 +31,9 @@ for i in range(0, 201):
 
     # get the initial altitude
     initAlt = frame['altitude_barometric'][start_idx]
+
+    # get the initial pitch
+    initPitch = frame['pitch'][start_idx]
     
     # --- find end cutoff: first point where altitude_barometric decreases ---
     alt_diff = chopped["altitude_barometric"].diff()
@@ -50,7 +53,7 @@ for i in range(0, 201):
 
     # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; - Verified by comparing against doing the process for dataframe_0 manually, outputs match
 
-    initialConditions.loc[i] = [groundTemp, groundPressure, lapseRate, initVel, initAlt, apogee]
+    initialConditions.loc[i] = [groundTemp, groundPressure, lapseRate, initVel, initAlt, apogee, initPitch]
 
     print(f"progess: {(i/201)*100:.0f}%",end='\r')
 
