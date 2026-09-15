@@ -42,7 +42,7 @@ def eval_on_frames(frameLoc,dt,numFrames):
         initialVelocity = frame["initialVelocity"][i]
         initialAltitude = frame["initialAltitude"][i]
 
-        apogee,altHistory,accHistory = run_simulation(
+        apogee,timeHistory,altHistory,accHistory = run_simulation(
             dt=dt,
             seaTemp=seaLevelTemp,
             seaPressure=seaLevelPressure,
@@ -111,7 +111,7 @@ def eval_on_frames(frameLoc,dt,numFrames):
 
     # Subplot [1, 2]
     ax = axes[1, 2]
-    ax.scatter(frame.loc[0:(numFrames-1), "pitch"],residuals)
+    ax.scatter(frame.loc[0:(numFrames-1), "initialPitch"],residuals)
     ax.axhline(linestyle='--')
     ax.set_title("Pitch")
     ax.set_xlabel("Pitch (degrees)")
@@ -279,6 +279,6 @@ def manual_sim_eval():
 
 # uncommented required function
 #manual_sim_eval()
-#eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",0,0.0003)
+eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
+#eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",0,0.0003)
 #eval_sim_convergance(10,0.1)
