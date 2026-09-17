@@ -1,4 +1,5 @@
 from Simulation.simulation import run_simulation
+from Simulation.simulation import run_simulation_default
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import root_mean_squared_error
@@ -181,7 +182,7 @@ def eval_sim_convergance(maxdt,tolerance):
 
     print(f"Final dt:{dt}, with delta: {delta}")
 
-def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
+def eval_on_frame(fileLoc,frameLoc,frameNumber):
     """
     Runs the sim with intial condtions from a single frame then plots the various parameters for the sim vs saturn sim
     
@@ -213,16 +214,12 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     initialVelocity = initConds["initialVelocity"][frameNumber]
     initialAltitude = initConds["initialAltitude"][frameNumber]
 
-    apogee,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation(
-        dt=dt,
+    apogee,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
         seaTemp=seaLevelTemp,
         seaPressure=seaLevelPressure,
         lapseRate=lapseRate,
         initialVelocity=initialVelocity,
         initialAltitude=initialAltitude,
-        coeDrag=coefficientOfDrag,
-        area=crossectionalArea,
-        mass=mass
     )
 
     print(f"Predicted Apogee: {apogee}")
@@ -332,5 +329,5 @@ print("Program Start...")
 # uncommented required function
 #manual_sim_eval()
 #eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",0,0.0003)
+eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",0)
 #eval_sim_convergance(10,0.1)
