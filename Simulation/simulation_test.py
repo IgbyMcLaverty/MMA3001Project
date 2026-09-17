@@ -1,6 +1,8 @@
 import pytest
 from simulation import calculate_pressure
 from simulation import calculate_drag
+from simulation import interpolate_coe_drag
+from simulation import load_drag_data
 
 def test_calculate_pressure():
 
@@ -95,3 +97,41 @@ def test_calculate_drag():
     assert calculate_drag(12,10.1,15.6,0.81) == pytest.approx(9188.8992)
     assert calculate_drag(276,1.273,8.87,0.98) == pytest.approx(421469.6122)
     assert calculate_drag(31,1.62,0.01,1.3) == pytest.approx(10.11933)
+
+def test_interpolate_coe_drag():
+    # attempt to run the function without having loaded values
+    with pytest.raises(RuntimeError):
+        interpolate_coe_drag(100,270,0.5)
+
+    # load the drag data
+    load_drag_data("Simulation/drag_data.csv")
+
+    # test type errors
+    # velocity
+    with pytest.raises(TypeError):
+        interpolate_coe_drag("100",270,0.5)
+    # air temperature
+    with pytest.raises(TypeError):
+        interpolate_coe_drag(100,"270",0.5)
+    # extension
+    with pytest.raises(TypeError):
+        interpolate_coe_drag(100,270,"0.5")
+
+    # test out of range mach number
+    with pytest.raises(ValueError):
+        interpolate_coe_drag(1000,270,0.5)
+
+    # test >1 extension
+    with pytest.raises(ValueError):
+        interpolate_coe_drag(100,270,1.1)
+
+    # test <0 extension
+    with pytest.raises(ValueError):
+        interpolate_coe_drag(100,270,-0.01)
+
+    # mach 0.3036
+    assert interpolate_coe_drag(100,270,0.2) == pytest.approx(0.4247,rel=0.0001)
+    # mach 0.8758
+    #assert interpolate_coe_drag(300,292,0.76) == pytest.approx(0.4247)
+
+    #assert interpolate_coe_drag(100,270,0.2) == pytest.approx(0.4247)
