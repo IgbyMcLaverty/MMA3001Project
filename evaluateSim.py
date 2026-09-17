@@ -49,7 +49,7 @@ def eval_on_frames(frameLoc,dt,numFrames):
         initialVelocity = frame["initialVelocity"][i]
         initialAltitude = frame["initialAltitude"][i]
 
-        apogee,timeHistory,altHistory,accHistory = run_simulation(
+        apogee,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation(
             dt=dt,
             seaTemp=seaLevelTemp,
             seaPressure=seaLevelPressure,
