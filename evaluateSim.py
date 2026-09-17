@@ -1,5 +1,6 @@
 from Simulation.simulation import run_simulation
 from Simulation.simulation import run_simulation_default
+from Simulation.simulation import load_drag_data
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import root_mean_squared_error
@@ -326,6 +327,7 @@ def manual_sim_eval():
     plt.show()
 
 print("Program Start...")
+load_drag_data("Simulation/drag_data.csv")
 # uncommented required function
 #manual_sim_eval()
 #eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
