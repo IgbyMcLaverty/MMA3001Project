@@ -43,7 +43,7 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
         mass=MASS
     )
 
-def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDrag,area,mass):
+def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,area,mass):
     """Runs the 1DOF simulation
     
     Args:
