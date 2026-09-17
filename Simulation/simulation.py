@@ -5,7 +5,6 @@ from scipy.interpolate import RegularGridInterpolator
 AIR_R = 287 # J/kg*kelvin
 GRAVITY = 9.81 # m/s^2
 
-COE_DRAG = 0.39146244 # the default single coefficient of drag to be applied across the whole flight
 AREA = 0.01824 # the default cross sectional area of rocket with the air brakes retracted
 MASS = 24.510768830369635 # the default mass of the rocket
 DT = 0.0003 # the default timestep in seconds
@@ -40,7 +39,6 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
         lapseRate=lapseRate,
         initialAltitude=initialAltitude,
         initialVelocity=initialVelocity,
-        coeDrag=COE_DRAG,
         area=AREA,
         mass=MASS
     )
@@ -55,7 +53,6 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         lapseRate (float): The change in tempature as altitude increases in degrees kelvin per meter
         initialVelocity (float): The vertical velocity which the rocket begins at in m/s
         initialAltitude (float): The altitude at which the simulation begins, does not have to be ground altitude in meters
-        coeDrag (float): The coefficient of drag of the body
         area (float): The cross sectional area of the body in m^2
         mass (float): The mass of the body in kg 
     
@@ -90,6 +87,14 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         temperature = seaTemp - lapseRate*alt 
         # from ideal gas law
         density = pressure/(AIR_R*temperature) # WRITE AS A FUNCTION LATER
+
+        # get coefficient of drag from interpolation
+        # EXTENSION HARD CODED TO ZERO
+        coeDrag = interpolate_coe_drag(
+            velocity=vel,
+            airTemp=temperature,
+            extension=0
+        )
 
         fDrag = calculate_drag(vel,coeDrag,area,density)
         fNet = fGrav + fDrag
