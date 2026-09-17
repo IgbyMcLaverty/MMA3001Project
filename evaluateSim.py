@@ -13,14 +13,13 @@ def linear_regression_gradient(x, y):
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-def eval_on_frames(frameLoc,dt,numFrames):
+def eval_on_frames(frameLoc,numFrames):
     """
     Runs the sim with intial condtions from the supplied saturn sim with the set dt value. Plots residuals and RMSE.
     Coefficient of drag and cross sectional area are left as constants.
     
     Args:
         fileLoc (string): A string which contains the path to initial conditions csv.
-        dt (float): The dt value to be used in the sim
         numFrames (int): The number of frames to compare against. Count starts from frame 0
     
     Returns:
@@ -35,10 +34,6 @@ def eval_on_frames(frameLoc,dt,numFrames):
     if numFrames <= 0:
         raise ValueError(f"numFrames must be > 0")
 
-    coefficientOfDrag = 0.39146244 # taken from meridian_final.csv under mach 0.6, no pitch, no roll, no extension
-    crossectionalArea = 0.01824 # m^2
-    mass = 24.510768830369635 # kg
-
     frame = pd.read_csv(frameLoc)
 
     calcApogees = []
@@ -51,16 +46,12 @@ def eval_on_frames(frameLoc,dt,numFrames):
         initialVelocity = frame["initialVelocity"][i]
         initialAltitude = frame["initialAltitude"][i]
 
-        apogee,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation(
-            dt=dt,
+        apogee,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
             seaTemp=seaLevelTemp,
             seaPressure=seaLevelPressure,
             lapseRate=lapseRate,
             initialVelocity=initialVelocity,
             initialAltitude=initialAltitude,
-            coeDrag=coefficientOfDrag,
-            area=crossectionalArea,
-            mass=mass
         )
 
         calcApogees.append(apogee)
@@ -191,7 +182,6 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber):
         fileLoc (string): A string which contains the path to initial conditions csv.
         frameLoc (string): A string containing a path to the folder with the scrubbed saturn frames. Should not include the final slash
         frameNumber (int): The specific frame number to compare against
-        dt (float): The dt value to be used in the sim
     
     Returns:
         None
@@ -206,9 +196,6 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber):
     initConds = pd.read_csv(fileLoc)
     frame = pd.read_csv(frameLoc + f"/frame{frameNumber}_timeseries.csv")
 
-    coefficientOfDrag = 0.39146244 # taken from meridian_final.csv under mach 0.6, no pitch, no roll, no extension
-    crossectionalArea = 0.01824 # m^2
-    mass = 24.510768830369635 # kg
     seaLevelTemp = initConds["groundTemp"][frameNumber]
     seaLevelPressure = initConds["groundPressure"][frameNumber]
     lapseRate = initConds["lapserate"][frameNumber]
@@ -330,6 +317,6 @@ print("Program Start...")
 load_drag_data("Simulation/drag_data.csv")
 # uncommented required function
 #manual_sim_eval()
-#eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",0)
+eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",150)
+#eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",0)
 #eval_sim_convergance(10,0.1)
