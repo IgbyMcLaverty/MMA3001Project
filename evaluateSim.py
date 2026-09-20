@@ -306,6 +306,7 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     ax.set_ylabel("Acceleration (m/s^2)")
     ax.legend()
 
+    plt.tight_layout()
     plt.show()
 
 
