@@ -43,7 +43,7 @@ def eval_on_frames(frameLoc,dt,numFrames):
 
     # each loop is a different set of initial condtions
     for i in range(numFrames):
-        seaLevelTemp = frame["groundTemp"][i]
+        seaLevelTemp = frame["seaTemp"][i]
         seaLevelPressure = frame["groundPressure"][i]
         lapseRate = frame["lapserate"][i]
         initialVelocity = frame["initialVelocity"][i]
@@ -101,7 +101,7 @@ def eval_on_frames(frameLoc,dt,numFrames):
 
     # Subplot [0, 2]
     ax = axes[0, 2]
-    ax.scatter(frame.loc[0:(numFrames-1), "groundTemp"],residuals)
+    ax.scatter(frame.loc[0:(numFrames-1), "seaTemp"],residuals)
     ax.axhline(linestyle='--')
     ax.set_title("Sea Level Temeprature")
     ax.set_xlabel("Temperature (K)")
@@ -214,7 +214,7 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     coefficientOfDrag = 0.39146244 # taken from meridian_final.csv under mach 0.6, no pitch, no roll, no extension
     crossectionalArea = 0.01824 # m^2
     mass = 24.510768830369635 # kg
-    seaLevelTemp = initConds["groundTemp"][frameNumber]
+    seaLevelTemp = initConds["seaTemp"][frameNumber]
     seaLevelPressure = initConds["groundPressure"][frameNumber]
     lapseRate = initConds["lapserate"][frameNumber]
     initialVelocity = initConds["initialVelocity"][frameNumber]
@@ -357,6 +357,6 @@ def manual_sim_eval():
 print("Program Start...")
 # uncommented required function
 #manual_sim_eval()
-#eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",50,0.0003)
+eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
+#eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",50,0.0003)
 #eval_sim_convergance(10,0.1)
