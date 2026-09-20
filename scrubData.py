@@ -44,6 +44,10 @@ for i in range(0, 201):
 
     # get apogee
     apogee = chopped["altitude_barometric"][end_idx]
+    
+    
+    # apply both boundaries at once
+    chopped = chopped.loc[start_idx:end_idx]
 
     # Perform linear regression on temperature and altitude to get sea level temperature and lapse rate
     regression = linregress(chopped["altitude_barometric"], chopped["air_temperature"])
@@ -55,15 +59,12 @@ for i in range(0, 201):
     # plot the temperature and altitude in order to validate regression.
     # should be commented out in final version of code
     """
-    testAlts = np.arange(0,3000,100)
+    testAlts = np.arange(0,3500,100)
 
     plt.plot(chopped["altitude_barometric"],chopped["air_temperature"],label="True data")
     plt.plot(testAlts,seaTemp+lapseRate*testAlts,label="Regression")
     plt.show()
     """
-    
-    # apply both boundaries at once
-    chopped = chopped.loc[start_idx:end_idx]
 
     chopped.to_csv(f"saturnSims/Without_Airbrakes_Scrubbed/frame{i}_timeseries.csv", index=False)
 
