@@ -302,7 +302,7 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     ax = axes[0, 2]
     ax.plot(velHistory**2,accHistory,label="1DOF")
     ax.plot(saturnVel**2,saturnAcc,label="SATURN")
-    ax.set_xlabel("Velocity (m/s)")
+    ax.set_xlabel("Velocity^2 (m^2/s^2)")
     ax.set_ylabel("Acceleration (m/s^2)")
     ax.legend()
 
