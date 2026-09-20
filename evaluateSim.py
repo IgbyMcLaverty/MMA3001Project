@@ -236,39 +236,41 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
 
     trimmedTime = frame["time"]-frame["time"][0]
 
+    fig, axes = plt.subplots(2, 3, figsize=(15, 8))
+    fig.suptitle(f"Saturn vs 1DOF for frame {frameNumber}", fontsize=16)
+
     # plot altitude vs time
-    plt.plot(timeHistory,altHistory,label="1DOF")
-    plt.plot(trimmedTime,frame["altitude_barometric"],label="SATURN")
-    plt.xlabel("Time (s)")
-    plt.ylabel("Altitude (m)")
-    plt.legend()
-    plt.show()
+    ax = axes[0, 0]
+    ax.plot(timeHistory,altHistory,label="1DOF")
+    ax.plot(trimmedTime,frame["altitude_barometric"],label="SATURN")
+    ax.set_xlabel("Time (s)")
+    ax.set_ylabel("Altitude (m)")
+    ax.legend()
 
     # plot air density vs altitude
-    plt.plot(altHistory,densityHistory,label="1DOF")
-    plt.plot(frame["altitude_barometric"],frame["density"],label="SATURN")
-    plt.xlabel("Altitude (m)")
-    plt.ylabel("Air density (kg/m^3)")
-    plt.legend()
-    plt.show()
+    ax = axes[1, 0]
+    ax.plot(altHistory,densityHistory,label="1DOF")
+    ax.plot(frame["altitude_barometric"],frame["density"],label="SATURN")
+    ax.set_xlabel("Altitude (m)")
+    ax.set_ylabel("Air density (kg/m^3)")
+    ax.legend()
     
     # plot air pressure against altitude
+    ax = axes[1, 1]
+    ax.plot(altHistory,pressureHistory,label="1DOF")
+    ax.plot(frame["altitude_barometric"],frame["air_pressure"],label="SATURN")
+    ax.set_xlabel("Altitude (m)")
+    ax.set_ylabel("Pressure (Pa)")
+    ax.legend()
 
-    plt.plot(altHistory,pressureHistory,label="1DOF")
-    plt.plot(frame["altitude_barometric"],frame["air_pressure"],label="SATURN")
-    plt.xlabel("Altitude (m)")
-    plt.ylabel("Pressure (Pa)")
-    plt.legend()
-    plt.show()
 
     # plot air temperature against altitude
-    
-    plt.plot(altHistory,tempHistory,label="1DOF")
-    plt.plot(frame["altitude_barometric"],frame["air_temperature"],label="SATURN")
-    plt.xlabel("Altitude (m)")
-    plt.ylabel("Temperature (K)")
-    plt.legend()
-    plt.show()
+    ax = axes[1, 2]
+    ax.plot(altHistory,tempHistory,label="1DOF")
+    ax.plot(frame["altitude_barometric"],frame["air_temperature"],label="SATURN")
+    ax.set_xlabel("Altitude (m)")
+    ax.set_ylabel("Temperature (K)")
+
 
     # plot acceleration vs time
 
@@ -276,13 +278,13 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     saturnDt = frame["dt"][0]
     saturnAcc = np.gradient(np.gradient(frame["altitude_barometric"], saturnDt), saturnDt)
     # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ax = axes[0, 1]
+    ax.plot(timeHistory,accHistory,label="1DOF")
+    ax.plot(trimmedTime,saturnAcc,label="SATURN")
+    ax.set_xlabel("Time (s)")
+    ax.set_ylabel("Acceleration (m/s^2)")
+    ax.legend()
 
-    plt.plot(timeHistory,accHistory,label="1DOF")
-    plt.plot(trimmedTime,saturnAcc,label="SATURN")
-    plt.xlabel("Time (s)")
-    plt.ylabel("Acceleration (m/s^2)")
-    plt.legend()
-    plt.show()
 
     # plot acceleration vs velocity
 
@@ -297,11 +299,12 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
 
     print(f"saturnGrad:{saturnGrad}\nsimGrad:{simGrad}")
 
-    plt.plot(velHistory**2,accHistory,label="1DOF")
-    plt.plot(saturnVel**2,saturnAcc,label="SATURN")
-    plt.xlabel("Velocity (m/s)")
-    plt.ylabel("Acceleration (m/s^2)")
-    plt.legend()
+    ax = axes[0, 2]
+    ax.plot(velHistory**2,accHistory,label="1DOF")
+    ax.plot(saturnVel**2,saturnAcc,label="SATURN")
+    ax.set_xlabel("Velocity (m/s)")
+    ax.set_ylabel("Acceleration (m/s^2)")
+    ax.legend()
 
     plt.show()
 
@@ -358,5 +361,5 @@ print("Program Start...")
 # uncommented required function
 #manual_sim_eval()
 #eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",5,0.0003)
+eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
 #eval_sim_convergance(10,0.1)
