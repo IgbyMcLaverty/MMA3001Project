@@ -73,6 +73,13 @@ def eval_on_frames(frameLoc,dt,numFrames):
 
     residuals = calcApogees - frame.loc[0:(numFrames-1), "apogee"]
 
+    residualsNP = np.array(residuals)
+
+    maxIdx = np.argmax(residualsNP)
+    maxRes = residualsNP[maxIdx]
+
+    print(f"largest residual of {maxRes:.2f} comes from frame {maxIdx}")
+
     fig, axes = plt.subplots(2, 3, figsize=(15, 8))
     fig.suptitle("Residual plot", fontsize=16)
 
@@ -331,6 +338,6 @@ def manual_sim_eval():
 print("Program Start...")
 # uncommented required function
 #manual_sim_eval()
-#eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",0,0.0003)
+eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
+#eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",0,0.0003)
 #eval_sim_convergance(10,0.1)
