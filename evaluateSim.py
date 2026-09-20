@@ -248,7 +248,25 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     plt.plot(altHistory,densityHistory,label="1DOF")
     plt.plot(frame["altitude_barometric"],frame["density"],label="SATURN")
     plt.xlabel("Altitude (m)")
-    plt.ylabel("Air density")
+    plt.ylabel("Air density (kg/m^3)")
+    plt.legend()
+    plt.show()
+    
+    # plot air pressure against altitude
+
+    plt.plot(altHistory,pressureHistory,label="1DOF")
+    plt.plot(frame["altitude_barometric"],frame["air_pressure"],label="SATURN")
+    plt.xlabel("Altitude (m)")
+    plt.ylabel("Pressure (Pa)")
+    plt.legend()
+    plt.show()
+
+    # plot air temperature against altitude
+    
+    plt.plot(altHistory,tempHistory,label="1DOF")
+    plt.plot(frame["altitude_barometric"],frame["air_temperature"],label="SATURN")
+    plt.xlabel("Altitude (m)")
+    plt.ylabel("Temperature (K)")
     plt.legend()
     plt.show()
 
@@ -286,6 +304,7 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     plt.legend()
 
     plt.show()
+
 
 
 def manual_sim_eval():
@@ -338,6 +357,6 @@ def manual_sim_eval():
 print("Program Start...")
 # uncommented required function
 #manual_sim_eval()
-eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-#eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",0,0.0003)
+#eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
+eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",50,0.0003)
 #eval_sim_convergance(10,0.1)
