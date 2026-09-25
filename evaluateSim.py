@@ -135,7 +135,7 @@ def eval_on_frames(frameLoc,dt,numFrames):
     plt.tight_layout()
     plt.show()
 
-def eval_on_frames_with_brakes(frameLoc,dt,numFrames):
+def eval_on_frames_with_brakes(frameLoc,numFrames):
     """
     Runs the sim with intial condtions from the supplied saturn sim with the set dt value. Plots residuals and RMSE.
     Coefficient of drag and cross sectional area are interpolated based on extension. Extension is constant based on the initial conditions
@@ -179,7 +179,6 @@ def eval_on_frames_with_brakes(frameLoc,dt,numFrames):
             return constExtension
 
         apogee,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
-            dt=dt,
             seaTemp=seaLevelTemp,
             seaPressure=seaLevelPressure,
             lapseRate=lapseRate,
@@ -489,5 +488,6 @@ print("Program Start...")
 # uncommented required function
 #manual_sim_eval()
 #eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
+#eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
+eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
 #eval_sim_convergance(10,0.1)
