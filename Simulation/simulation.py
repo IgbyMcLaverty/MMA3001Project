@@ -44,7 +44,8 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
         areaClosed=AREA_CLOSED,
         areaOpen=AREA_OPEN,
         mass=MASS,
-        extension_function=extension_function
+        extension_function=extension_function,
+        extensionSpeed=0
     )
 
 def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDragClosed,coeDragOpen,areaClosed,areaOpen,mass,extension_function,extensionSpeed):
