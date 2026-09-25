@@ -39,7 +39,7 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
         lapseRate=lapseRate,
         initialAltitude=initialAltitude,
         initialVelocity=initialVelocity,
-        coeDragClose=COE_DRAG_CLOSED,
+        coeDragClosed=COE_DRAG_CLOSED,
         coeDragOpen=COE_DRAG_OPEN,
         areaClosed=AREA_CLOSED,
         areaOpen=AREA_OPEN,
