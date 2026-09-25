@@ -3,12 +3,14 @@ import numpy as np
 AIR_R = 287 # J/kg*kelvin
 GRAVITY = 9.81 # m/s^2
 
-COE_DRAG = 0.39146244 # the default single coefficient of drag to be applied across the whole flight
-AREA = 0.01824 # the default cross sectional area of rocket with the air brakes retracted
+COE_DRAG_CLOSED = 0.39146244 # the default coefficient of drag with the flaps retracted to be applied across the whole flight
+COE_DRAG_OPEN = 0.53332019 # the default coefficient of drag with the flaps extended to be applied across the whole flight
+AREA_CLOSED = 0.01824 # the default cross sectional area of rocket with the air brakes retracted
+AREA_OPEN = AREA_CLOSED + 0.0108 # the default cross sectional area of rocket with the air brakes extended
 MASS = 24.510768830369635 # the default mass of the rocket
 DT = 0.0003 # the default timestep in seconds
 
-def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude):
+def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude, extension_function):
     """Runs the 1DOF simulation with the time step, default coefficient of drag, cross sectional area and mass
     
     Args:
@@ -17,6 +19,7 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
         lapseRate (float): The change in tempature as altitude increases in degrees kelvin per meter
         initialVelocity (float): The vertical velocity which the rocket begins at in m/s
         initialAltitude (float): The altitude at which the simulation begins, does not have to be ground altitude in meters
+        extension_function (function): The function which takes in the rocket state and returns the requested Air Brakes extension. See run_simulation for argument structure
     
     Returns:
         apogee (float): The maximum altitude the simulation reached in meters
@@ -36,9 +39,12 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
         lapseRate=lapseRate,
         initialAltitude=initialAltitude,
         initialVelocity=initialVelocity,
-        coeDrag=COE_DRAG,
-        area=AREA,
-        mass=MASS
+        coeDragClose=COE_DRAG_CLOSED,
+        coeDragOpen=COE_DRAG_OPEN,
+        areaClosed=AREA_CLOSED,
+        areaOpen=AREA_OPEN,
+        mass=MASS,
+        extension_function=extension_function
     )
 
 def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDragClosed,coeDragOpen,areaClosed,areaOpen,mass,extension_function):
