@@ -1,5 +1,6 @@
 from Simulation.simulation import run_simulation_default
 import timeit
+import cProfile
 
 def const_extension(alt,vel,acc,extension,seaTemp,seaPressure):
     return 0.5
@@ -10,3 +11,5 @@ def timedFunc():
 n = 100
 executionTime = timeit.timeit(timedFunc,number=n)
 print(f"Average execution time: {executionTime/n}")
+
+cProfile.run('timedFunc()')
