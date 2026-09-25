@@ -1,5 +1,6 @@
 from Simulation.simulation import run_simulation
 from Simulation.simulation import run_simulation_default
+from Simulation.simulation import COE_DRAG_CLOSED, COE_DRAG_OPEN, AREA_CLOSED, AREA_OPEN, MASS
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import root_mean_squared_error
@@ -260,6 +261,9 @@ def eval_on_frames_with_brakes(frameLoc,numFrames):
     plt.tight_layout()
     plt.show()
 
+def const_extension(alt,vel,acc,extension,seaTemp,seaPressure):
+    return 0.5
+
 def eval_sim_convergance(maxdt,tolerance):
     """
     Runs the sim with the same initial conditions multiple times with decreasing values time steps.
@@ -291,16 +295,20 @@ def eval_sim_convergance(maxdt,tolerance):
     dt = maxdt
 
     while(True):
-        apogee,altHistory,accHistory = run_simulation(
+        apogee,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation(
             dt=dt,
-            seaTemp=seaLevelTemp,
-            seaPressure=seaLevelPressure,
-            lapseRate=lapseRate,
-            initialVelocity=initialVelocity,
-            initialAltitude=initialAltitude,
-            coeDrag=coefficientOfDrag,
-            area=crossectionalArea,
-            mass=mass
+            seaTemp=300,
+            seaPressure=100000,
+            lapseRate=-0.005,
+            initialVelocity=225,
+            initialAltitude=1100,
+            coeDragClosed=COE_DRAG_CLOSED,
+            coeDragOpen=COE_DRAG_OPEN,
+            areaClosed=AREA_CLOSED,
+            areaOpen=AREA_OPEN,
+            mass=MASS,
+            extension_function=const_extension,
+            extensionSpeed=0
         )
 
         delta = abs(prevApogee-apogee)
@@ -489,5 +497,5 @@ print("Program Start...")
 #manual_sim_eval()
 #eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
 #eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
-eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
-#eval_sim_convergance(10,0.1)
+#eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
+eval_sim_convergance(10,1)

@@ -8,7 +8,7 @@ COE_DRAG_OPEN = 0.53332019 # the default coefficient of drag with the flaps exte
 AREA_CLOSED = 0.01824 # the default cross sectional area of rocket with the air brakes retracted
 AREA_OPEN = AREA_CLOSED + 0.0108 # the default cross sectional area of rocket with the air brakes extended
 MASS = 24.510768830369635 # the default mass of the rocket
-DT = 0.0003 # the default timestep in seconds
+DT = 0.01 # the default timestep in seconds
 
 def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude, extension_function):
     """Runs the 1DOF simulation with the time step, default coefficient of drag, cross sectional area and mass
@@ -99,6 +99,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
 
     # temporary altitude check while the sim is behaving wrong
     while vel > 0 and alt < 90000:
+        # first round of RK2
         pressure = calculate_pressure(alt,seaTemp,seaPressure,lapseRate)
         temperature = seaTemp + lapseRate*alt 
         # from ideal gas law
@@ -111,11 +112,26 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         fNet = fGrav + fDrag
 
         # acceleration should be negative as the forces both act downwards
-        acc = -fNet/mass
+        acc1 = -fNet/mass
 
-        # Using naive integration
-        # Assumes constant acceleration between the previous timestep and now. With the drag force at the later timestep.
-        # will most likely overestimate the decrease in velocity at high dt's
+        # evaluate altitude and velocity at at the half step.
+        alt1 = alt + vel*dt/2
+        vel1 = vel + acc1*dt/2
+
+        # recalculate the acceleration at this midpoint
+
+        pressure2 = calculate_pressure(alt1,seaTemp,seaPressure,lapseRate)
+        temperature2 = seaTemp + lapseRate*alt1 
+        # from ideal gas law
+        density2 = pressure2/(AIR_R*temperature2) # WRITE AS A FUNCTION LATER
+
+        fDrag2 = calculate_drag(vel1,coeDrag,area,density2)
+        fNet2 = fGrav + fDrag2
+
+        # acceleration should be negative as the forces both act downwards
+        acc = -fNet2/mass
+
+        # use the acceleration from the midpoint as the average acceleration
         vel += acc*dt
 
         # Using naive integration
