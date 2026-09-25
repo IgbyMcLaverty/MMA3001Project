@@ -251,10 +251,10 @@ def eval_on_frames_with_brakes(frameLoc,numFrames):
 
     # Subplot [1, 2]
     ax = axes[1, 2]
-    ax.scatter(frame.loc[0:(numFrames-1), "initialPitch"],residuals)
+    ax.scatter(frame.loc[0:(numFrames-1), "extension"],residuals)
     ax.axhline(linestyle='--')
-    ax.set_title("Pitch")
-    ax.set_xlabel("Pitch (degrees)")
+    ax.set_title("Extension")
+    ax.set_xlabel("Extension")
     ax.set_ylabel("Residual (m)")
 
     plt.tight_layout()
