@@ -83,7 +83,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
     # temporary altitude check while the sim is behaving wrong
     while vel > 0 and alt < 90000:
         pressure = calculate_pressure(alt,seaTemp,seaPressure,lapseRate)
-        temperature = seaTemp - lapseRate*alt 
+        temperature = seaTemp + lapseRate*alt 
         # from ideal gas law
         density = pressure/(AIR_R*temperature) # WRITE AS A FUNCTION LATER
 
