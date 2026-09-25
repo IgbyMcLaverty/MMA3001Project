@@ -41,7 +41,7 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
         mass=MASS
     )
 
-def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDrag,area,mass):
+def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDragClosed,coeDragOpen,areaClosed,areaOpen,mass,extension_function):
     """Runs the 1DOF simulation
     
     Args:
@@ -51,9 +51,12 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         lapseRate (float): The change in tempature as altitude increases in degrees kelvin per meter
         initialVelocity (float): The vertical velocity which the rocket begins at in m/s
         initialAltitude (float): The altitude at which the simulation begins, does not have to be ground altitude in meters
-        coeDrag (float): The coefficient of drag of the body
-        area (float): The cross sectional area of the body in m^2
+        coeDragClosed (float): The coefficient of drag of the body with the flaps retracted
+        coeDragOpen (float): The coefficient of drag of the body with the flaps extended
+        areaClosed (float): The cross sectional area of the body with the flaps retracted in m^2
+        areaOpen (float): The cross sectional area of the body with the flaps extened in m^2
         mass (float): The mass of the body in kg 
+        extension_function (function): The function which takes in the rocket state and returns the requested Air Brakes extension. Must return a single float. Arguments: alt (altitude in meters), vel (velocity in m/s), acc (acceleration in m/s^2), currExt (The current extension between 0 and 1), gndTemp (The ground temperature in Kelvin), gndPres (The ground pressure in pascal)
     
     Returns:
         apogee (float): The maximum altitude the simulation reached in meters
@@ -68,6 +71,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
     vel = initialVelocity
     alt = initialAltitude
     time = 0
+    extension = 0
 
     altHistory = []
     velHistory = []
@@ -76,6 +80,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
     densityHistory = []
     tempHistory = []
     pressureHistory = []
+    extensionHistory = []
 
     # Force due to gravity only calculated once since the mass of the body is constant
     fGrav = GRAVITY*mass
@@ -86,6 +91,11 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         temperature = seaTemp + lapseRate*alt 
         # from ideal gas law
         density = pressure/(AIR_R*temperature) # WRITE AS A FUNCTION LATER
+
+        extension = extension_function(alt,vel,acc,extension,seaTemp,seaPressure)
+
+        coeDrag = coeDragClosed + (coeDragOpen-coeDragClosed)*extension
+        area = areaClosed + (areaOpen-areaClosed)*extension
 
         fDrag = calculate_drag(vel,coeDrag,area,density)
         fNet = fGrav + fDrag
@@ -110,6 +120,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         densityHistory.append(density)
         pressureHistory.append(pressure)
         tempHistory.append(temperature)
+        extensionHistory.append(extension)
 
         time += dt
 
