@@ -98,8 +98,6 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         # from ideal gas law
         density = pressure/(AIR_R*temperature) # WRITE AS A FUNCTION LATER
 
-        extension = extension_function(alt,vel,acc,extension,seaTemp,seaPressure)
-
         coeDrag = coeDragClosed + (coeDragOpen-coeDragClosed)*extension
         area = areaClosed + (areaOpen-areaClosed)*extension
 
@@ -118,6 +116,8 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         # assumes constant velocity between this timestep and the now. With the velocity that velocity being at the later timestep
         # Will most likely underestimate altitude at high dt's
         alt += vel*dt
+
+        extension = extension_function(alt,vel,acc,extension,seaTemp,seaPressure)
 
         altHistory.append(alt)
         velHistory.append(vel)
