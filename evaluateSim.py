@@ -1,4 +1,5 @@
 from Simulation.simulation import run_simulation
+from Simulation.simulation import run_simulation_default
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import root_mean_squared_error
@@ -129,6 +130,131 @@ def eval_on_frames(frameLoc,dt,numFrames):
     ax.axhline(linestyle='--')
     ax.set_title("Pitch")
     ax.set_xlabel("Pitch (degrees)")
+    ax.set_ylabel("Residual (m)")
+
+    plt.tight_layout()
+    plt.show()
+
+def eval_on_frames_with_brakes(frameLoc,numFrames):
+    """
+    Runs the sim with intial condtions from the supplied saturn sim with the set dt value. Plots residuals and RMSE.
+    Coefficient of drag and cross sectional area are interpolated based on extension. Extension is constant based on the initial conditions
+    
+    Args:
+        fileLoc (string): A string which contains the path to initial conditions csv.
+        dt (float): The dt value to be used in the sim
+        numFrames (int): The number of frames to compare against. Count starts from frame 0
+    
+    Returns:
+        None
+    """
+
+    # type and value checks for arguments
+
+    if not isinstance(numFrames, (int)):
+        raise TypeError(f"numFrames must be an integer")
+
+    if numFrames <= 0:
+        raise ValueError(f"numFrames must be > 0")
+
+    coefficientOfDrag = 0.39146244 # taken from meridian_final.csv under mach 0.6, no pitch, no roll, no extension
+    crossectionalArea = 0.01824 # m^2
+    mass = 24.510768830369635 # kg
+
+    frame = pd.read_csv(frameLoc)
+
+    calcApogees = []
+
+    # each loop is a different set of initial condtions
+    for i in range(numFrames):
+        seaLevelTemp = frame["seaTemp"][i]
+        seaLevelPressure = frame["groundPressure"][i]
+        lapseRate = frame["lapserate"][i]
+        initialVelocity = frame["initialVelocity"][i]
+        initialAltitude = frame["initialAltitude"][i]
+        constExtension = frame["extension"][i]
+
+        # function defined in here so that the required constant acceleration does not need be passed into the simulation as an argument
+        def constant_extension(alt,vel,acc,extension,seaTemp,seaPressure):
+            return constExtension/100
+
+        apogee,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
+            seaTemp=seaLevelTemp,
+            seaPressure=seaLevelPressure,
+            lapseRate=lapseRate,
+            initialVelocity=initialVelocity,
+            initialAltitude=initialAltitude,
+            extension_function=constant_extension
+        )
+
+        calcApogees.append(apogee)
+
+        print(f"progess: {(i/numFrames)*100:.0f}%",end='\r')
+
+    rmse = root_mean_squared_error(frame.loc[0:(numFrames-1), "apogee"],calcApogees)
+
+    print()
+    print(f"All sims complete")
+    print(f"final RMSE: {rmse:.2f} meters")
+
+    residuals = calcApogees - frame.loc[0:(numFrames-1), "apogee"]
+
+    residualsNP = np.array(residuals)
+
+    maxIdx = np.argmax(residualsNP)
+    maxRes = residualsNP[maxIdx]
+
+    print(f"largest residual of {maxRes:.2f} comes from frame {maxIdx}")
+
+    fig, axes = plt.subplots(2, 3, figsize=(15, 8))
+    fig.suptitle("Residual plot", fontsize=16)
+
+    # Subplot [0, 0]
+    ax = axes[0, 0]
+    ax.scatter(frame.loc[0:(numFrames-1), "initialVelocity"],residuals)
+    ax.axhline(linestyle='--')
+    ax.set_title("Initial Velocity")
+    ax.set_xlabel("Velocity (m/s)")
+    ax.set_ylabel("Residual (m)")
+
+    # Subplot [0, 1]
+    ax = axes[0, 1]
+    ax.scatter(frame.loc[0:(numFrames-1), "initialAltitude"],residuals)
+    ax.axhline(linestyle='--')
+    ax.set_title("Initial Altitude")
+    ax.set_xlabel("Altitude (m)")
+    ax.set_ylabel("Residual (m)")
+
+    # Subplot [0, 2]
+    ax = axes[0, 2]
+    ax.scatter(frame.loc[0:(numFrames-1), "seaTemp"],residuals)
+    ax.axhline(linestyle='--')
+    ax.set_title("Sea Level Temeprature")
+    ax.set_xlabel("Temperature (K)")
+    ax.set_ylabel("Residual (m)")
+
+    # Subplot [1, 0]
+    ax = axes[1, 0]
+    ax.scatter(frame.loc[0:(numFrames-1), "groundPressure"],residuals)
+    ax.axhline(linestyle='--')
+    ax.set_title("Ground Pressure")
+    ax.set_xlabel("Pressure (Pa)")
+    ax.set_ylabel("Residual (m)")
+
+    # Subplot [1, 1]
+    ax = axes[1, 1]
+    ax.scatter(frame.loc[0:(numFrames-1), "lapserate"],residuals)
+    ax.axhline(linestyle='--')
+    ax.set_title("Lapse Rate")
+    ax.set_xlabel("Lapse Rate (K/m)")
+    ax.set_ylabel("Residual (m)")
+
+    # Subplot [1, 2]
+    ax = axes[1, 2]
+    ax.scatter(frame.loc[0:(numFrames-1), "extension"],residuals)
+    ax.axhline(linestyle='--')
+    ax.set_title("Extension")
+    ax.set_xlabel("Extension")
     ax.set_ylabel("Residual (m)")
 
     plt.tight_layout()
@@ -362,5 +488,6 @@ print("Program Start...")
 # uncommented required function
 #manual_sim_eval()
 #eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
+#eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
+eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
 #eval_sim_convergance(10,0.1)

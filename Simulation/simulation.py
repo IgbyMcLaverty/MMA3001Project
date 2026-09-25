@@ -3,12 +3,14 @@ import numpy as np
 AIR_R = 287 # J/kg*kelvin
 GRAVITY = 9.81 # m/s^2
 
-COE_DRAG = 0.39146244 # the default single coefficient of drag to be applied across the whole flight
-AREA = 0.01824 # the default cross sectional area of rocket with the air brakes retracted
+COE_DRAG_CLOSED = 0.39146244 # the default coefficient of drag with the flaps retracted to be applied across the whole flight
+COE_DRAG_OPEN = 0.53332019 # the default coefficient of drag with the flaps extended to be applied across the whole flight
+AREA_CLOSED = 0.01824 # the default cross sectional area of rocket with the air brakes retracted
+AREA_OPEN = AREA_CLOSED + 0.0108 # the default cross sectional area of rocket with the air brakes extended
 MASS = 24.510768830369635 # the default mass of the rocket
 DT = 0.0003 # the default timestep in seconds
 
-def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude):
+def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude, extension_function):
     """Runs the 1DOF simulation with the time step, default coefficient of drag, cross sectional area and mass
     
     Args:
@@ -17,6 +19,7 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
         lapseRate (float): The change in tempature as altitude increases in degrees kelvin per meter
         initialVelocity (float): The vertical velocity which the rocket begins at in m/s
         initialAltitude (float): The altitude at which the simulation begins, does not have to be ground altitude in meters
+        extension_function (function): The function which takes in the rocket state and returns the requested Air Brakes extension. See run_simulation for argument structure
     
     Returns:
         apogee (float): The maximum altitude the simulation reached in meters
@@ -36,12 +39,16 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
         lapseRate=lapseRate,
         initialAltitude=initialAltitude,
         initialVelocity=initialVelocity,
-        coeDrag=COE_DRAG,
-        area=AREA,
-        mass=MASS
+        coeDragClosed=COE_DRAG_CLOSED,
+        coeDragOpen=COE_DRAG_OPEN,
+        areaClosed=AREA_CLOSED,
+        areaOpen=AREA_OPEN,
+        mass=MASS,
+        extension_function=extension_function,
+        extensionSpeed=0
     )
 
-def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDrag,area,mass):
+def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDragClosed,coeDragOpen,areaClosed,areaOpen,mass,extension_function,extensionSpeed):
     """Runs the 1DOF simulation
     
     Args:
@@ -51,9 +58,13 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         lapseRate (float): The change in tempature as altitude increases in degrees kelvin per meter
         initialVelocity (float): The vertical velocity which the rocket begins at in m/s
         initialAltitude (float): The altitude at which the simulation begins, does not have to be ground altitude in meters
-        coeDrag (float): The coefficient of drag of the body
-        area (float): The cross sectional area of the body in m^2
+        coeDragClosed (float): The coefficient of drag of the body with the flaps retracted
+        coeDragOpen (float): The coefficient of drag of the body with the flaps extended
+        areaClosed (float): The cross sectional area of the body with the flaps retracted in m^2
+        areaOpen (float): The cross sectional area of the body with the flaps extened in m^2
         mass (float): The mass of the body in kg 
+        extension_function (function): The function which takes in the rocket state and returns the requested Air Brakes extension. Must return a single float. Arguments: alt (altitude in meters), vel (velocity in m/s), acc (acceleration in m/s^2), currExt (The current extension between 0 and 1), gndTemp (The ground temperature in Kelvin), gndPres (The ground pressure in pascal)
+        extensionSpeed (float): The time taken to extended from 0 to 100 percent in seconds. Set to 0 for no extension delay
     
     Returns:
         apogee (float): The maximum altitude the simulation reached in meters
@@ -68,6 +79,10 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
     vel = initialVelocity
     alt = initialAltitude
     time = 0
+    extension = 0
+
+    if extensionSpeed > 0:
+        maxExtensionDelta = dt/extensionSpeed
 
     altHistory = []
     velHistory = []
@@ -76,6 +91,8 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
     densityHistory = []
     tempHistory = []
     pressureHistory = []
+    extensionHistory = []
+    targetExtensionHistory = []
 
     # Force due to gravity only calculated once since the mass of the body is constant
     fGrav = GRAVITY*mass
@@ -86,6 +103,9 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         temperature = seaTemp + lapseRate*alt 
         # from ideal gas law
         density = pressure/(AIR_R*temperature) # WRITE AS A FUNCTION LATER
+
+        coeDrag = coeDragClosed + (coeDragOpen-coeDragClosed)*extension
+        area = areaClosed + (areaOpen-areaClosed)*extension
 
         fDrag = calculate_drag(vel,coeDrag,area,density)
         fNet = fGrav + fDrag
@@ -103,6 +123,24 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         # Will most likely underestimate altitude at high dt's
         alt += vel*dt
 
+        # calculate the target extension based on the input algorithm
+        TargetExtension = extension_function(alt,vel,acc,extension,seaTemp,seaPressure)
+
+        # limit the target extension to between 0 and 1
+        if TargetExtension < 0: TargetExtension = 0
+        if TargetExtension > 1: TargetExtension = 1
+
+        if extensionSpeed > 0:
+            # if within 1 step of the target, set extension exactly to the target
+            if extension > TargetExtension-maxExtensionDelta and extension < TargetExtension+maxExtensionDelta:
+                extension = TargetExtension
+            # other wise, increase or decrease by the maximum amount allowed
+            elif extension < TargetExtension: extension += maxExtensionDelta
+            else: extension += maxExtensionDelta
+        else:
+            extension = TargetExtension
+
+
         altHistory.append(alt)
         velHistory.append(vel)
         accHistory.append(acc)
@@ -110,6 +148,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         densityHistory.append(density)
         pressureHistory.append(pressure)
         tempHistory.append(temperature)
+        extensionHistory.append(extension)
 
         time += dt
 
