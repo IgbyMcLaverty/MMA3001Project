@@ -176,7 +176,7 @@ def eval_on_frames_with_brakes(frameLoc,numFrames):
 
         # function defined in here so that the required constant acceleration does not need be passed into the simulation as an argument
         def constant_extension(alt,vel,acc,extension,seaTemp,seaPressure):
-            return constExtension
+            return constExtension/100
 
         apogee,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
             seaTemp=seaLevelTemp,
