@@ -8,7 +8,7 @@ COE_DRAG_OPEN = 0.53332019 # the default coefficient of drag with the flaps exte
 AREA_CLOSED = 0.01824 # the default cross sectional area of rocket with the air brakes retracted
 AREA_OPEN = AREA_CLOSED + 0.0108 # the default cross sectional area of rocket with the air brakes extended
 MASS = 24.510768830369635 # the default mass of the rocket
-DT = 0.005 # the default timestep in seconds
+DT = 0.01 # the default timestep in seconds
 
 def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude, extension_function):
     """Runs the 1DOF simulation with the time step, default coefficient of drag, cross sectional area and mass
