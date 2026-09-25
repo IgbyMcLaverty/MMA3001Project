@@ -95,13 +95,18 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
     extensionHistory = []
     targetExtensionHistory = []
 
+    # define constants
+    g = 9.81 # acceleration due to gravity in m/s^2
+    R0 = 8.314462618 # univeral gas constant
+    M = 0.02896968 # molar mass of air
+
     # Force due to gravity only calculated once since the mass of the body is constant
     fGrav = GRAVITY*mass
 
     # temporary altitude check while the sim is behaving wrong
     while vel > 0 and alt < 90000:
         # first round of RK2
-        pressure = calculate_pressure(alt,seaTemp,seaPressure,lapseRate)
+        pressure = seaPressure*(1+lapseRate*alt/seaTemp)**(-g*M/(R0*lapseRate))
         temperature = seaTemp + lapseRate*alt 
         # from ideal gas law
         density = pressure/(AIR_R*temperature) # WRITE AS A FUNCTION LATER
@@ -109,7 +114,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         coeDrag = coeDragClosed + (coeDragOpen-coeDragClosed)*extension
         area = areaClosed + (areaOpen-areaClosed)*extension
 
-        fDrag = calculate_drag(vel,coeDrag,area,density)
+        fDrag = 0.5*density*vel**2*coeDrag*area
         fNet = fGrav + fDrag
 
         # acceleration should be negative as the forces both act downwards
@@ -121,12 +126,12 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
 
         # recalculate the acceleration at this midpoint
 
-        pressure2 = calculate_pressure(alt1,seaTemp,seaPressure,lapseRate)
+        pressure2 = seaPressure*(1+lapseRate*alt1/seaTemp)**(-g*M/(R0*lapseRate))
         temperature2 = seaTemp + lapseRate*alt1 
         # from ideal gas law
         density2 = pressure2/(AIR_R*temperature2) # WRITE AS A FUNCTION LATER
 
-        fDrag2 = calculate_drag(vel1,coeDrag,area,density2)
+        fDrag2 = 0.5*density2*vel1**2*coeDrag*area
         fNet2 = fGrav + fDrag2
 
         # acceleration should be negative as the forces both act downwards
