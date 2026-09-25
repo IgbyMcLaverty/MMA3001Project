@@ -1,4 +1,5 @@
 import numpy as np
+from line_profiler import profile
 
 AIR_R = 287 # J/kg*kelvin
 GRAVITY = 9.81 # m/s^2
@@ -47,7 +48,7 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
         extension_function=extension_function,
         extensionSpeed=0
     )
-
+@profile
 def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDragClosed,coeDragOpen,areaClosed,areaOpen,mass,extension_function,extensionSpeed):
     """Runs the 1DOF simulation
     
