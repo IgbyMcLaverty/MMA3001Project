@@ -47,7 +47,7 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
         extension_function=extension_function
     )
 
-def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDragClosed,coeDragOpen,areaClosed,areaOpen,mass,extension_function):
+def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDragClosed,coeDragOpen,areaClosed,areaOpen,mass,extension_function,extensionSpeed):
     """Runs the 1DOF simulation
     
     Args:
@@ -63,6 +63,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         areaOpen (float): The cross sectional area of the body with the flaps extened in m^2
         mass (float): The mass of the body in kg 
         extension_function (function): The function which takes in the rocket state and returns the requested Air Brakes extension. Must return a single float. Arguments: alt (altitude in meters), vel (velocity in m/s), acc (acceleration in m/s^2), currExt (The current extension between 0 and 1), gndTemp (The ground temperature in Kelvin), gndPres (The ground pressure in pascal)
+        extensionSpeed (float): The time taken to extended from 0 to 100 percent in seconds. Set to 0 for no extension delay
     
     Returns:
         apogee (float): The maximum altitude the simulation reached in meters
@@ -79,6 +80,9 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
     time = 0
     extension = 0
 
+    if extensionSpeed > 0:
+        maxExtensionDelta = dt/extensionSpeed
+
     altHistory = []
     velHistory = []
     accHistory = []
@@ -87,6 +91,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
     tempHistory = []
     pressureHistory = []
     extensionHistory = []
+    targetExtensionHistory = []
 
     # Force due to gravity only calculated once since the mass of the body is constant
     fGrav = GRAVITY*mass
@@ -117,7 +122,23 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         # Will most likely underestimate altitude at high dt's
         alt += vel*dt
 
-        extension = extension_function(alt,vel,acc,extension,seaTemp,seaPressure)
+        # calculate the target extension based on the input algorithm
+        TargetExtension = extension_function(alt,vel,acc,extension,seaTemp,seaPressure)
+
+        # limit the target extension to between 0 and 1
+        if TargetExtension < 0: TargetExtension = 0
+        if TargetExtension > 1: TargetExtension = 1
+
+        if extensionSpeed > 0:
+            # if within 1 step of the target, set extension exactly to the target
+            if extension > TargetExtension-maxExtensionDelta and extension < TargetExtension+maxExtensionDelta:
+                extension = TargetExtension
+            # other wise, increase or decrease by the maximum amount allowed
+            elif extension < TargetExtension: extension += maxExtensionDelta
+            else: extension += maxExtensionDelta
+        else:
+            extension = TargetExtension
+
 
         altHistory.append(alt)
         velHistory.append(vel)
