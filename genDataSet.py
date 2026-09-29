@@ -2,11 +2,11 @@ from Simulation.simulation import run_simulation_default
 import random
 import os
 
-MIN_VEL = 190 # m/s
-MAX_VEL = 160 # m/s
+MIN_VEL = 200 # m/s
+MAX_VEL = 260 # m/s
 
 MIN_ALT = 1000 # m
-MAX_ALT = 1300 # m
+MAX_ALT = 1500 # m
 
 MIN_TEMP = 250 # Kelvin
 MAX_TEMP = 310 # Kelvin
@@ -60,7 +60,7 @@ for i in range(NUM_TRAILS_TRAIN):
 
     if apogeeZero < TARGET_ALT:
         undershots += 1
-        print("Couldn't reach target, undershot")
+        print(f"Couldn't reach target, undershot, apogee: {apogeeZero}")
         continue
 
     def const_ext2(alt,vel,acc,extension,seaTemp,seaPressure):
@@ -77,7 +77,7 @@ for i in range(NUM_TRAILS_TRAIN):
 
     if apogeeOne > TARGET_ALT:
         overshots += 1
-        print("Couldn't reach target, overshot")
+        print(f"Couldn't reach target, overshot, apogee: {apogeeOne}")
         continue
 
 print(f"undershots: {undershots}, overshots: {overshots}")
