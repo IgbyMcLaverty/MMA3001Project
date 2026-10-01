@@ -6,7 +6,7 @@ import pandas as pd
 MIN_VEL = 200 # m/s
 MAX_VEL = 260 # m/s
 
-MIN_ALT = 1000 # m
+MIN_ALT = 1100 # m
 MAX_ALT = 1500 # m
 
 MIN_TEMP = 250 # Kelvin
@@ -26,114 +26,116 @@ SAMPLES_PER_TRAIL = 100
 
 RAND_SEED = 1234
 
-OUTPUT_LOC = "data"
-
 TARGET_ALT = 3048 # m, 10,000 feet in meters
 TARGET_TOLERANCE = 0.1 # m, altitude above or below which is considered close enough
 
 random.seed(RAND_SEED)
 
-# if the directory does not exist create it
-if not os.path.exists(OUTPUT_LOC):
-    os.makedirs(OUTPUT_LOC)
+def generate_data(outputDirectory,outputFileName,numberTrails):
 
-# dataframe for the initial conditions which will be saved to a csv
-columnNames = ["altitude","velocity","acceleration1","seaTemp","groundPressure","lapserate","extension","undershot","overshot"]
-testDataFrame = pd.DataFrame(columns = columnNames)
-testDataFrameIndex = 0
+    # if the directory does not exist create it
+    if not os.path.exists(outputDirectory):
+        os.makedirs(outputDirectory)
 
-undershots = 0
-overshots = 0
+    # dataframe for the initial conditions which will be saved to a csv
+    columnNames = ["altitude","velocity","acceleration1","seaTemp","groundPressure","lapserate","extension","undershot","overshot"]
+    dataFrame = pd.DataFrame(columns = columnNames)
+    dataFrameIndex = 0
 
-for i in range(NUM_TRAILS_TRAIN):
-    vel = random.uniform(MIN_VEL,MAX_VEL)
-    alt = random.uniform(MIN_ALT,MAX_ALT)
-    temp = random.uniform(MIN_TEMP,MAX_TEMP)
-    pres = random.uniform(MIN_PRES,MAX_PRES)
-    lapse = random.uniform(MIN_LAPSE,MAX_LAPSE)
+    undershots = 0
+    overshots = 0
 
-    extLower = 0.0
-    extUpper = 1.0
+    for i in range(numberTrails):
+        vel = random.uniform(MIN_VEL,MAX_VEL)
+        alt = random.uniform(MIN_ALT,MAX_ALT)
+        temp = random.uniform(MIN_TEMP,MAX_TEMP)
+        pres = random.uniform(MIN_PRES,MAX_PRES)
+        lapse = random.uniform(MIN_LAPSE,MAX_LAPSE)
 
-    extFinal = None
-    undershot = 0
-    overshot = 0
+        extLower = 0.0
+        extUpper = 1.0
 
-    # run the simulation with the minimum possible extension
+        extFinal = None
+        undershot = 0
+        overshot = 0
 
-    def const_extLower(alt,vel,acc,extension,seaTemp,seaPressure):
-        return extLower
+        # run the simulation with the minimum possible extension
 
-    apogeeLower,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
-        seaTemp=temp,
-        seaPressure=pres,
-        lapseRate=lapse,
-        initialVelocity=vel,
-        initialAltitude=alt,
-        extension_function=const_extLower
-    )
+        def const_extLower(alt,vel,acc,extension,seaTemp,seaPressure):
+            return extLower
 
-    # if the even with the minimum possible extension we don't reach apogee,
-    # we should at least get as close as possible. Hence we save 0 as our correct extension.
-    if apogeeLower < TARGET_ALT:
-        undershots += 1
-        extFinal = extLower
-        undershot = 1
-    else:
-        def const_extUpper(alt,vel,acc,extension,seaTemp,seaPressure):
-            return extUpper
-
-        apogeeUpper,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
+        apogeeLower,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
             seaTemp=temp,
             seaPressure=pres,
             lapseRate=lapse,
             initialVelocity=vel,
             initialAltitude=alt,
-            extension_function=const_extUpper
+            extension_function=const_extLower
         )
 
-        if apogeeUpper > TARGET_ALT:
-            overshots += 1
-            extFinal = extUpper
-            overshot = 1
+        # if the even with the minimum possible extension we don't reach apogee,
+        # we should at least get as close as possible. Hence we save 0 as our correct extension.
+        if apogeeLower < TARGET_ALT:
+            undershots += 1
+            extFinal = extLower
+            undershot = 1
         else:
-            # using the false position method to find narrow in on value
+            def const_extUpper(alt,vel,acc,extension,seaTemp,seaPressure):
+                return extUpper
 
-            apogeeBest = 0
-            while(abs(apogeeBest-TARGET_ALT) > TARGET_TOLERANCE):
-                errorLower = apogeeLower - TARGET_ALT
-                errorUpper = apogeeUpper - TARGET_ALT
-                extFinal = (errorUpper*extLower - errorLower*extUpper)/(errorUpper - errorLower)
+            apogeeUpper,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
+                seaTemp=temp,
+                seaPressure=pres,
+                lapseRate=lapse,
+                initialVelocity=vel,
+                initialAltitude=alt,
+                extension_function=const_extUpper
+            )
 
-                def const_extFinal(alt,vel,acc,extension,seaTemp,seaPressure):
-                    return extFinal
+            if apogeeUpper > TARGET_ALT:
+                overshots += 1
+                extFinal = extUpper
+                overshot = 1
+            else:
+                # using the false position method to find narrow in on value
 
-                apogeeBest,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
-                    seaTemp=temp,
-                    seaPressure=pres,
-                    lapseRate=lapse,
-                    initialVelocity=vel,
-                    initialAltitude=alt,
-                    extension_function=const_extFinal
-                )
+                apogeeBest = 0
+                while(abs(apogeeBest-TARGET_ALT) > TARGET_TOLERANCE):
+                    errorLower = apogeeLower - TARGET_ALT
+                    errorUpper = apogeeUpper - TARGET_ALT
+                    extFinal = (errorUpper*extLower - errorLower*extUpper)/(errorUpper - errorLower)
 
-                if apogeeBest - TARGET_ALT > 0:
-                    extLower = extFinal
-                    apogeeLower = apogeeBest
-                else:
-                    extUpper = extFinal
-                    apogeeUpper = apogeeBest
+                    def const_extFinal(alt,vel,acc,extension,seaTemp,seaPressure):
+                        return extFinal
 
-    
-    # save result into the dataframe
-    samples = random.sample(range(len(timeHistory)), SAMPLES_PER_TRAIL)
-    for j in samples:
-        testDataFrame.loc[testDataFrameIndex] = [altHistory[j], velHistory[j], accHistory[j], temp, pres, lapse, extFinal, undershot, overshot]
-        testDataFrameIndex += 1
+                    apogeeBest,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
+                        seaTemp=temp,
+                        seaPressure=pres,
+                        lapseRate=lapse,
+                        initialVelocity=vel,
+                        initialAltitude=alt,
+                        extension_function=const_extFinal
+                    )
 
-    print(f"progess: {(i/NUM_TRAILS_TRAIN)*100:.0f}%",end='\r')
+                    if apogeeBest - TARGET_ALT > 0:
+                        extLower = extFinal
+                        apogeeLower = apogeeBest
+                    else:
+                        extUpper = extFinal
+                        apogeeUpper = apogeeBest
 
-# save the test data to a csv
-testDataFrame.to_csv(f"{OUTPUT_LOC}/testData.csv", index=False)
+        
+        # save result into the dataframe
+        samples = random.sample(range(len(timeHistory)), SAMPLES_PER_TRAIL)
+        for j in samples:
+            dataFrame.loc[dataFrameIndex] = [altHistory[j], velHistory[j], accHistory[j], temp, pres, lapse, extFinal, undershot, overshot]
+            dataFrameIndex += 1
 
-print(f"undershots: {undershots}, overshots: {overshots}")
+        print(f"progess: {(i/numberTrails)*100:.0f}%",end='\r')
+
+    # save the test data to a csv
+    dataFrame.to_csv(f"{outputDirectory}/{outputFileName}.csv", index=False)
+    print(f"Finished generating for file {outputFileName}.csv")
+    print(f"undershots: {undershots}, overshots: {overshots}")
+
+generate_data("data","testData",NUM_TRAILS_TRAIN)
