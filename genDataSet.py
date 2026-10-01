@@ -79,7 +79,6 @@ for i in range(NUM_TRAILS_TRAIN):
         undershots += 1
         extFinal = extLower
         undershot = 1
-        print(f"Couldn't reach target, undershot, apogee: {apogeeLower}")
     else:
         def const_extUpper(alt,vel,acc,extension,seaTemp,seaPressure):
             return extUpper
@@ -97,11 +96,8 @@ for i in range(NUM_TRAILS_TRAIN):
             overshots += 1
             extFinal = extUpper
             overshot = 1
-            print(f"Couldn't reach target, overshot, apogee: {apogeeUpper}")
         else:
             # using the false position method to find narrow in on value
-
-            test = 0
 
             apogeeBest = 0
             while(abs(apogeeBest-TARGET_ALT) > TARGET_TOLERANCE):
@@ -128,17 +124,14 @@ for i in range(NUM_TRAILS_TRAIN):
                     extUpper = extFinal
                     apogeeUpper = apogeeBest
 
-                test += 1
-
-            print(f"extFinal = {extFinal}, apogeeBest = {apogeeBest}")
-            print(f"took {test} iterations")
-
     
     # save result into the dataframe
     samples = random.sample(range(len(timeHistory)), SAMPLES_PER_TRAIL)
     for j in samples:
         testDataFrame.loc[testDataFrameIndex] = [altHistory[j], velHistory[j], accHistory[j], temp, pres, lapse, extFinal, undershot, overshot]
         testDataFrameIndex += 1
+
+    print(f"progess: {(i/NUM_TRAILS_TRAIN)*100:.0f}%",end='\r')
 
 # save the test data to a csv
 testDataFrame.to_csv(f"{OUTPUT_LOC}/testData.csv", index=False)
