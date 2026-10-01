@@ -29,6 +29,7 @@ RAND_SEED = 1234
 OUTPUT_LOC = "data"
 
 TARGET_ALT = 3048 # m, 10,000 feet in meters
+TARGET_TOLERANCE = 0.1 # m, altitude above or below which is considered close enough
 
 random.seed(RAND_SEED)
 
@@ -51,8 +52,8 @@ for i in range(NUM_TRAILS_TRAIN):
     pres = random.uniform(MIN_PRES,MAX_PRES)
     lapse = random.uniform(MIN_LAPSE,MAX_LAPSE)
 
-    extMin = 0.0
-    extMax = 1.0
+    extLower = 0.0
+    extUpper = 1.0
 
     extFinal = None
     undershot = 0
@@ -60,46 +61,78 @@ for i in range(NUM_TRAILS_TRAIN):
 
     # run the simulation with the minimum possible extension
 
-    def const_extMin(alt,vel,acc,extension,seaTemp,seaPressure):
-        return extMin
+    def const_extLower(alt,vel,acc,extension,seaTemp,seaPressure):
+        return extLower
 
-    apogeeMin,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
+    apogeeLower,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
         seaTemp=temp,
         seaPressure=pres,
         lapseRate=lapse,
         initialVelocity=vel,
         initialAltitude=alt,
-        extension_function=const_extMin
+        extension_function=const_extLower
     )
 
     # if the even with the minimum possible extension we don't reach apogee,
     # we should at least get as close as possible. Hence we save 0 as our correct extension.
-    if apogeeMin < TARGET_ALT:
+    if apogeeLower < TARGET_ALT:
         undershots += 1
-        extFinal = extMin
+        extFinal = extLower
         undershot = 1
-        print(f"Couldn't reach target, undershot, apogee: {apogeeMin}")
+        print(f"Couldn't reach target, undershot, apogee: {apogeeLower}")
     else:
-        def const_extMax(alt,vel,acc,extension,seaTemp,seaPressure):
-            return extMax
+        def const_extUpper(alt,vel,acc,extension,seaTemp,seaPressure):
+            return extUpper
 
-        apogeeOne,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
+        apogeeUpper,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
             seaTemp=temp,
             seaPressure=pres,
             lapseRate=lapse,
             initialVelocity=vel,
             initialAltitude=alt,
-            extension_function=const_extMax
+            extension_function=const_extUpper
         )
 
-        if apogeeOne > TARGET_ALT:
+        if apogeeUpper > TARGET_ALT:
             overshots += 1
-            extFinal = extMax
+            extFinal = extUpper
             overshot = 1
-            print(f"Couldn't reach target, overshot, apogee: {apogeeMin}")
+            print(f"Couldn't reach target, overshot, apogee: {apogeeUpper}")
         else:
-            print("Would have run further")
-            # add code to run the bisection method
+            # using the false position method to find narrow in on value
+
+            test = 0
+
+            apogeeBest = 0
+            while(abs(apogeeBest-TARGET_ALT) > TARGET_TOLERANCE):
+                errorLower = apogeeLower - TARGET_ALT
+                errorUpper = apogeeUpper - TARGET_ALT
+                extFinal = (errorUpper*extLower - errorLower*extUpper)/(errorUpper - errorLower)
+
+                def const_extFinal(alt,vel,acc,extension,seaTemp,seaPressure):
+                    return extFinal
+
+                apogeeBest,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
+                    seaTemp=temp,
+                    seaPressure=pres,
+                    lapseRate=lapse,
+                    initialVelocity=vel,
+                    initialAltitude=alt,
+                    extension_function=const_extFinal
+                )
+
+                if apogeeBest - TARGET_ALT > 0:
+                    extLower = extFinal
+                    apogeeLower = apogeeBest
+                else:
+                    extUpper = extFinal
+                    apogeeUpper = apogeeBest
+
+                test += 1
+
+            print(f"extFinal = {extFinal}, apogeeBest = {apogeeBest}")
+            print(f"took {test} iterations")
+
     
     # save result into the dataframe
     samples = random.sample(range(len(timeHistory)), SAMPLES_PER_TRAIL)
