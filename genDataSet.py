@@ -1,6 +1,7 @@
 from Simulation.simulation import run_simulation_default
 import random
 import os
+import pandas as pd
 
 MIN_VEL = 200 # m/s
 MAX_VEL = 260 # m/s
@@ -21,6 +22,8 @@ NUM_TRAILS_TRAIN = 150
 NUM_TRIALS_VAL = 50
 NUM_TRAILS_TEST = 100
 
+SAMPLES_PER_TRAIL = 100
+
 RAND_SEED = 1234
 
 OUTPUT_LOC = "data"
@@ -32,6 +35,11 @@ random.seed(RAND_SEED)
 # if the directory does not exist create it
 if not os.path.exists(OUTPUT_LOC):
     os.makedirs(OUTPUT_LOC)
+
+# dataframe for the initial conditions which will be saved to a csv
+columnNames = ["altitude","velocity","acceleration1","seaTemp","groundPressure","lapserate","extension","undershot","overshot"]
+testDataFrame = pd.DataFrame(columns = columnNames)
+testDataFrameIndex = 0
 
 undershots = 0
 overshots = 0
@@ -92,5 +100,14 @@ for i in range(NUM_TRAILS_TRAIN):
         else:
             print("Would have run further")
             # add code to run the bisection method
+    
+    # save result into the dataframe
+    samples = random.sample(range(len(timeHistory)), SAMPLES_PER_TRAIL)
+    for j in samples:
+        testDataFrame.loc[testDataFrameIndex] = [altHistory[j], velHistory[j], accHistory[j], temp, pres, lapse, extFinal, undershot, overshot]
+        testDataFrameIndex += 1
+
+# save the test data to a csv
+testDataFrame.to_csv(f"{OUTPUT_LOC}/testData.csv", index=False)
 
 print(f"undershots: {undershots}, overshots: {overshots}")
