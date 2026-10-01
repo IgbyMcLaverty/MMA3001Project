@@ -43,41 +43,54 @@ for i in range(NUM_TRAILS_TRAIN):
     pres = random.uniform(MIN_PRES,MAX_PRES)
     lapse = random.uniform(MIN_LAPSE,MAX_LAPSE)
 
-    ext1 = 0.0
-    ext2 = 1.0
+    extMin = 0.0
+    extMax = 1.0
 
-    def const_ext1(alt,vel,acc,extension,seaTemp,seaPressure):
-        return ext1
+    extFinal = None
+    undershot = 0
+    overshot = 0
 
-    apogeeZero,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
+    # run the simulation with the minimum possible extension
+
+    def const_extMin(alt,vel,acc,extension,seaTemp,seaPressure):
+        return extMin
+
+    apogeeMin,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
         seaTemp=temp,
         seaPressure=pres,
         lapseRate=lapse,
         initialVelocity=vel,
         initialAltitude=alt,
-        extension_function=const_ext1
+        extension_function=const_extMin
     )
 
-    if apogeeZero < TARGET_ALT:
+    # if the even with the minimum possible extension we don't reach apogee,
+    # we should at least get as close as possible. Hence we save 0 as our correct extension.
+    if apogeeMin < TARGET_ALT:
         undershots += 1
-        print(f"Couldn't reach target, undershot, apogee: {apogeeZero}")
-        continue
+        extFinal = extMin
+        undershot = 1
+        print(f"Couldn't reach target, undershot, apogee: {apogeeMin}")
+    else:
+        def const_extMax(alt,vel,acc,extension,seaTemp,seaPressure):
+            return extMax
 
-    def const_ext2(alt,vel,acc,extension,seaTemp,seaPressure):
-        return ext2
+        apogeeOne,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
+            seaTemp=temp,
+            seaPressure=pres,
+            lapseRate=lapse,
+            initialVelocity=vel,
+            initialAltitude=alt,
+            extension_function=const_extMax
+        )
 
-    apogeeOne,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
-        seaTemp=temp,
-        seaPressure=pres,
-        lapseRate=lapse,
-        initialVelocity=vel,
-        initialAltitude=alt,
-        extension_function=const_ext2
-    )
-
-    if apogeeOne > TARGET_ALT:
-        overshots += 1
-        print(f"Couldn't reach target, overshot, apogee: {apogeeOne}")
-        continue
+        if apogeeOne > TARGET_ALT:
+            overshots += 1
+            extFinal = extMax
+            overshot = 1
+            print(f"Couldn't reach target, overshot, apogee: {apogeeMin}")
+        else:
+            print("Would have run further")
+            # add code to run the bisection method
 
 print(f"undershots: {undershots}, overshots: {overshots}")
