@@ -18,9 +18,9 @@ MAX_PRES = 100000 # Pascal
 MIN_LAPSE = -0.015 # Kelvin/m
 MAX_LAPSE = 0.015 # Kelvin/m
 
-NUM_TRAILS_TRAIN = 150
+NUM_TRIALS_TRAIN = 150
 NUM_TRIALS_VAL = 50
-NUM_TRAILS_TEST = 100
+NUM_TRIALS_TEST = 100
 
 SAMPLES_PER_TRAIL = 100
 
@@ -148,4 +148,11 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
     print(f"Finished generating for file {outputFileName}.csv")
     print(f"undershots: {undershots}, overshots: {overshots}")
 
-generate_data("data","testData",NUM_TRAILS_TRAIN)
+# generate training dataset
+generate_data("data","trainingData",NUM_TRIALS_TRAIN)
+
+# generatre validation dataset
+generate_data("data","validationData",NUM_TRIALS_VAL)
+
+# generatre test dataset
+generate_data("data","testData",NUM_TRIALS_TEST)
