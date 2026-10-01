@@ -32,7 +32,17 @@ TARGET_TOLERANCE = 0.1 # m, altitude above or below which is considered close en
 random.seed(RAND_SEED)
 
 def generate_data(outputDirectory,outputFileName,numberTrails):
+    """
+    Generates optimal Air Brakes values for a range of initial conditions.
+    Initial conditions are generated randomly using the bounds specified in genDataSet.py
+    Uses the false position method to find optimal extensions.
+    From each set of initial conditions, a specified number of points in time are saved to the output csv file.
 
+    Args:
+        outputDirectory (string): The folder to which the data should be saved
+        outputFileName (string): The name of the file which will be created in the supplied directory. Do not include .csv
+        numberTrails (integer): The number of sets of initial conditions to generate.
+    """
     # if the directory does not exist create it
     if not os.path.exists(outputDirectory):
         os.makedirs(outputDirectory)
