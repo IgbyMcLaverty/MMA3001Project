@@ -219,6 +219,7 @@ __marimo__/
 
 # Data for this project
 saturnSims/
+data/
 
 # line profiler outputs
 profile_*
