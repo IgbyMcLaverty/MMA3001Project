@@ -24,7 +24,7 @@ def p_controller(alt,vel,acc,extension,seaTemp,seaPressure):
         targetExtension (float): The new requested target extension based on the current conditions
     """
 
-    return pControllerKP(TARGET_APOGEE-alt)
+    return pControllerKP*(TARGET_APOGEE-alt)
 
 def tune_p_controller(inputFileLoc,tolerance):
     """
