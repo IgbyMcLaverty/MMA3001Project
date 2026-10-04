@@ -21,19 +21,21 @@ def p_controller(alt,vel,acc,extension,seaTemp,seaPressure):
 
     return pControllerKP(TARGET_APOGEE-alt)
 
-def tune_p_controller():
+def tune_p_controller(inputFileLoc):
     """
     Uses a set of initial conditions to find best average proportional gain for those conditions.
+    Prints the file gain to the console.
     
     Args:
-        alt (float): The current altitude of the rocket in meters
-        vel (float): The current vertical velocity of the rocket in m/s
-        acc (float): The current acceleration of the rocket in m/s^2
-        extension (float): The current extension of the Air Brakes between 0 and 1
-        seaTemp (float): The temperature at sea level in kelvin
-        seaPressure (float): The pressure at sea level in pascal
+        inputFileLoc (string): The location of the initial condition data csv file 
     
     Returns:
-        targetExtension (float): The new requested target extension based on the current conditions
+        None
     """
+
+    lowerKP = 0
+    lowerError = None
+    upperKP = 0.01
+    upperError = None
+
     
