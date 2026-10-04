@@ -52,14 +52,14 @@ def tune_p_controller(inputFileLoc,tolerance):
 
     # evaluate initial error for lower KP
     pControllerKP = lowerKP
-    lowerMean,lowerSTD = eval_controller(initialConditions,p_controller)
+    lowerMean,lowerSTD = eval_controller_mean(initialConditions,p_controller)
     lowerError = TARGET_APOGEE - lowerMean
     print(f"lower KP is {lowerKP}")
     print(f"lower bound undershot by {lowerError} meters")
 
     # evaluate initial error for upper KP
     pControllerKP = upperKP
-    upperMean,upperSTD = eval_controller(initialConditions,p_controller)
+    upperMean,upperSTD = eval_controller_mean(initialConditions,p_controller)
     upperError = TARGET_APOGEE - upperMean
     print(f"upper KP is {upperKP}")
     print(f"upper bound undershot by {upperError} meters")
@@ -70,7 +70,7 @@ def tune_p_controller(inputFileLoc,tolerance):
         print(f"evaluating with new KP of {newKP}")
 
         pControllerKP = newKP
-        newMean, newSTD = eval_controller(initialConditions,p_controller)
+        newMean, newSTD = eval_controlle_mean(initialConditions,p_controller)
 
         newError = TARGET_APOGEE - newMean
 
@@ -86,7 +86,7 @@ def tune_p_controller(inputFileLoc,tolerance):
     print(f"Final KP value of {upperKP} with error of {upperError}")
 
 
-def eval_controller(initialConditions,controller):
+def eval_controller_mean(initialConditions,controller):
     """
     Takes in a set of initial conditions and a controller and returns the average apogee achieved and RMSE
     
