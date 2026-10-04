@@ -144,6 +144,6 @@ if __name__ == "__main__":
     plt.plot(simResults["altHistory"],simResults["targetExtensionHistory"])
     plt.show()
     """
-    tune_p_controller("data/testData_initialConditions.csv",0.1)
+    tune_p_controller("data/trainingData_initialConditions.csv",0.1)
 
     

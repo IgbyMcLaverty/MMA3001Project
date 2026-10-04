@@ -1,3 +1,6 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 from Simulation.simulation import run_simulation_default
 
 def eval_controller(inputFileLoc,controller):
@@ -13,3 +16,32 @@ def eval_controller(inputFileLoc,controller):
     Returns:
         None
     """
+
+    initialConditions = pd.read_csv(inputFileLoc)
+
+    numConditions = len(initialConditions)
+    apogees = []
+
+    for i in range(numConditions):
+        seaLevelTemp = initialConditions["seaTemp"][i]
+        seaLevelPressure = initialConditions["groundPressure"][i]
+        lapseRate = initialConditions["lapserate"][i]
+        initialVelocity = initialConditions["initialVelocity"][i]
+        initialAltitude = initialConditions["initialAltitude"][i]
+
+        simResults = run_simulation_default(
+            seaTemp=seaLevelTemp,
+            seaPressure=seaLevelPressure,
+            lapseRate=lapseRate,
+            initialAltitude=initialAltitude,
+            initialVelocity=initialVelocity,
+            extension_function=controller
+        )
+
+        apogees.append(simResults["apogee"])
+
+    plt.hist(apogees)
+    plt.show()
+
+if __name__ == "__main__":
+    eval_controller("data/validationData_initialConditions")
