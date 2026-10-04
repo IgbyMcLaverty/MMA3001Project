@@ -23,7 +23,6 @@ def p_controller(alt,vel,acc,extension,seaTemp,seaPressure):
     Returns:
         targetExtension (float): The new requested target extension based on the current conditions
     """
-
     return pControllerKP*(TARGET_APOGEE-alt)
 
 def tune_p_controller(inputFileLoc,tolerance):
@@ -45,7 +44,7 @@ def tune_p_controller(inputFileLoc,tolerance):
     # initial guesses for use in the false position method
     lowerKP = 0
     lowerError = None
-    upperKP = 0.01
+    upperKP = 1
     upperError = None
 
     initialConditions = pd.read_csv(inputFileLoc)
@@ -103,4 +102,19 @@ def eval_controller(initialConditions,controller):
     return meanApogee, standardDeviation
 
 if __name__ == "__main__":
+    # show what happens for a single run of p controller
+
+    simResults = run_simulation_default(
+        seaTemp=20+273,
+        seaPressure=100000,
+        lapseRate=-0.005,
+        initialVelocity=260,
+        initialAltitude=1050,
+        extension_function=p_controller
+    )
+
+    
+
     tune_p_controller("data/testData_initialConditions.csv",0.1)
+
+    

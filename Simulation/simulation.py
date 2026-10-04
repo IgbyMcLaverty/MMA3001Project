@@ -145,21 +145,23 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         alt += vel*dt
 
         # calculate the target extension based on the input algorithm
-        TargetExtension = extension_function(alt,vel,acc,extension,seaTemp,seaPressure)
+        targetExtension = extension_function(alt,vel,acc,extension,seaTemp,seaPressure)
+
+        targetExtensionHistory.append(targetExtension)
 
         # limit the target extension to between 0 and 1
-        if TargetExtension < 0: TargetExtension = 0
-        if TargetExtension > 1: TargetExtension = 1
+        if targetExtension < 0: targetExtension = 0
+        if targetExtension > 1: targetExtension = 1
 
         if extensionSpeed > 0:
             # if within 1 step of the target, set extension exactly to the target
-            if extension > TargetExtension-maxExtensionDelta and extension < TargetExtension+maxExtensionDelta:
-                extension = TargetExtension
+            if extension > targetExtension-maxExtensionDelta and extension < targetExtension+maxExtensionDelta:
+                extension = targetExtension
             # other wise, increase or decrease by the maximum amount allowed
-            elif extension < TargetExtension: extension += maxExtensionDelta
+            elif extension < targetExtension: extension += maxExtensionDelta
             else: extension += maxExtensionDelta
         else:
-            extension = TargetExtension
+            extension = targetExtension
 
 
         altHistory.append(alt)
@@ -181,7 +183,9 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         "accHistory":accHistory,
         "densityHistory":densityHistory,
         "pressureHistory":pressureHistory,
-        "tempHistory":tempHistory
+        "tempHistory":tempHistory,
+        "extensionHistory":extensionHistory,
+        "targetExtensionHistory":targetExtensionHistory
     }
 
     return returnDictionary
