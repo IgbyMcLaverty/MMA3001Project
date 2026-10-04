@@ -23,13 +23,14 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
         extension_function (function): The function which takes in the rocket state and returns the requested Air Brakes extension. See run_simulation for argument structure
     
     Returns:
-        apogee (float): The maximum altitude the simulation reached in meters
-        timeHistory (list): A list containing the time of each timestep
-        altHistory (list): A list containing the calculated altitude at each timestep
-        accHistory (list): A list containing the calculated acceleration at each timestep
-        densityHistory (list): A list containing the calcualte air density at each timestep
-        tempHistory (list): A list containing the calculated temperature at each timestep
-        pressureHistory (list): A list containing the calculated pressure at each timestep
+        returnDictionary (dictionary): A dictionary containing the results of the simulation. Entries:
+            "apogee" (float): The maximum altitude the simulation reached in meters
+            "timeHistory" (list): A list containing the time of each timestep
+            "altHistory" (list): A list containing the calculated altitude at each timestep
+            "accHistory" (list): A list containing the calculated acceleration at each timestep
+            "densityHistory" (list): A list containing the calcualte air density at each timestep
+            "tempHistory" (list): A list containing the calculated temperature at each timestep
+            "pressureHistory" (list): A list containing the calculated pressure at each timestep
 
     """
 
@@ -70,13 +71,14 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         extensionSpeed (float): The time taken to extended from 0 to 100 percent in seconds. Set to 0 for no extension delay
     
     Returns:
-        apogee (float): The maximum altitude the simulation reached in meters
-        timeHistory (list): A list containing the time of each timestep
-        altHistory (list): A list containing the calculated altitude at each timestep
-        accHistory (list): A list containing the calculated acceleration at each timestep
-        densityHistory (list): A list containing the calcualte air density at each timestep
-        tempHistory (list): A list containing the calculated temperature at each timestep
-        pressureHistory (list): A list containing the calculated pressure at each timestep
+        returnDictionary (dictionary): A dictionary containing the results of the simulation. Entries:
+            "apogee" (float): The maximum altitude the simulation reached in meters
+            "timeHistory" (list): A list containing the time of each timestep
+            "altHistory" (list): A list containing the calculated altitude at each timestep
+            "accHistory" (list): A list containing the calculated acceleration at each timestep
+            "densityHistory" (list): A list containing the calcualte air density at each timestep
+            "tempHistory" (list): A list containing the calculated temperature at each timestep
+            "pressureHistory" (list): A list containing the calculated pressure at each timestep
 
     """
     vel = initialVelocity
@@ -171,7 +173,18 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
 
         time += dt
 
-    return alt,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory
+    returnDictionary = {
+        "apogee": alt,
+        "timeHistory": timeHistory,
+        "altHistory":altHistory,
+        "velHistory":velHistory,
+        "accHistory":accHistory,
+        "densityHistory":densityHistory,
+        "pressureHistory":pressureHistory,
+        "tempHistory":tempHistory
+    }
+
+    return returnDictionary
 
 def calculate_pressure(altitude, seaTemp, seaPressure, lapseRate):
     """Calculates the pressure at a given altitude using the barometric formula
