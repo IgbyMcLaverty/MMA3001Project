@@ -53,7 +53,7 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
     dataFrameIndex = 0
 
     # dataframe for the initial conditions used for each set of data
-    initialConditionColumnNames = ["altitude","velocity","seaTemp","groundPressure","lapserate"]
+    initialConditionColumnNames = ["initialAltitude","initialVelocity","seaTemp","groundPressure","lapserate"]
     initialConditions = pd.DataFrame(columns = initialConditionColumnNames)
     initialConditionsIndex = 0
 
