@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from Simulation.simulation import run_simulation_default
 
+from controllers import p_controller
+
 def eval_controller(inputFileLoc,controller):
     """
     Uses a set of initial conditions and a provided controller and calculates evaluation criteria.
@@ -44,4 +46,4 @@ def eval_controller(inputFileLoc,controller):
     plt.show()
 
 if __name__ == "__main__":
-    eval_controller("data/validationData_initialConditions")
+    eval_controller("data/validationData_initialConditions",p_controller)
