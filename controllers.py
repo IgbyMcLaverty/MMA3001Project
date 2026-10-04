@@ -54,13 +54,37 @@ def tune_p_controller(inputFileLoc,tolerance):
     pControllerKP = lowerKP
     lowerMean,lowerSTD = eval_controller(initialConditions,p_controller)
     lowerError = TARGET_APOGEE - lowerMean
+    print(f"lower KP is {lowerKP}")
     print(f"lower bound undershot by {lowerError} meters")
 
     # evaluate initial error for upper KP
     pControllerKP = upperKP
     upperMean,upperSTD = eval_controller(initialConditions,p_controller)
     upperError = TARGET_APOGEE - upperMean
+    print(f"upper KP is {upperKP}")
     print(f"upper bound undershot by {upperError} meters")
+
+    while abs(upperError) > tolerance:
+        newKP = (upperError*lowerKP - lowerError*upperKP)/(upperError - lowerError)
+
+        print(f"evaluating with new KP of {newKP}")
+
+        pControllerKP = newKP
+        newMean, newSTD = eval_controller(initialConditions,p_controller)
+
+        newError = TARGET_APOGEE - newMean
+
+        if newError < 0:
+            lowerKP = newKP
+            lowerError = newError
+        else:
+            upperKP = newKP
+            upperError = newError
+
+        print(f"Got error of {newError}")
+
+    print(f"Final KP value of {upperKP} with error of {upperError}")
+
 
 def eval_controller(initialConditions,controller):
     """
@@ -102,6 +126,7 @@ def eval_controller(initialConditions,controller):
     return meanApogee, standardDeviation
 
 if __name__ == "__main__":
+    print("Program Start")
     # show what happens for a single run of p controller
     """
     pControllerKP = 0.01
