@@ -6,7 +6,7 @@ from sklearn.metrics import root_mean_squared_error
 
 TARGET_APOGEE = 3048 # target apogee in meters
 
-pControllerKP = 0 # the propotional gain for p_controller
+pControllerKP = 0.00055 # the propotional gain for p_controller
 
 def p_controller(alt,vel,acc,extension,seaTemp,seaPressure):
     """
