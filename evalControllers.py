@@ -5,7 +5,7 @@ from Simulation.simulation import run_simulation_default
 
 from controllers import p_controller
 
-def eval_controller(inputFileLoc,controller):
+def eval_controller(inputFileLoc,controller,controllerName):
     """
     Uses a set of initial conditions and a provided controller and calculates evaluation criteria.
     Plots residuals for the controller against initial conditons.
@@ -14,6 +14,7 @@ def eval_controller(inputFileLoc,controller):
     Args:
         inputFileLoc (string): The location of the initial condition data csv file. Include directory and .csv in string
         controller (function): A function which contains the control algorithm being evaluated
+        controllerName (straing): The name of the controller which will be put in title of plots
     
     Returns:
         None
@@ -42,8 +43,13 @@ def eval_controller(inputFileLoc,controller):
 
         apogees.append(simResults["apogee"])
 
-    plt.hist(apogees)
+
+
+    plt.hist(apogees,bins=np.arange(2000,4000,100))
+    plt.title(f"{controllerName} apogee Histogram")
+    plt.xlabel("Apogee")
+    plt.ylabel("Occurances")
     plt.show()
 
 if __name__ == "__main__":
-    eval_controller("data/validationData_initialConditions",p_controller)
+    eval_controller("data/validationData_initialConditions.csv",p_controller,"P controller")
