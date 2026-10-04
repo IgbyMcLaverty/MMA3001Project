@@ -48,6 +48,8 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
         extension_function=extension_function,
         extensionSpeed=0
     )
+
+# @profile placed here for use with timeSim.py. Does not effect code otherwise
 @profile
 def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDragClosed,coeDragOpen,areaClosed,areaOpen,mass,extension_function,extensionSpeed):
     """Runs the 1DOF simulation
