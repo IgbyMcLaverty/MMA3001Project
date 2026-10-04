@@ -47,10 +47,15 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
     if not os.path.exists(outputDirectory):
         os.makedirs(outputDirectory)
 
-    # dataframe for the initial conditions which will be saved to a csv
-    columnNames = ["altitude","velocity","acceleration1","seaTemp","groundPressure","lapserate","extension","undershot","overshot"]
+    # dataframe for the data at a given timestep which will be saved
+    columnNames = ["altitude","velocity","acceleration","seaTemp","groundPressure","lapserate","extension","undershot","overshot"]
     dataFrame = pd.DataFrame(columns = columnNames)
     dataFrameIndex = 0
+
+    # dataframe for the initial conditions used for each set of data
+    initialConditionColumnNames = ["altitude","velocity","seaTemp","groundPressure","lapserate"]
+    initialConditions = pd.DataFrame(columns = initialConditionColumnNames)
+    initialConditionsIndex = 0
 
     undershots = 0
     overshots = 0
@@ -141,12 +146,20 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
             dataFrame.loc[dataFrameIndex] = [altHistory[j], velHistory[j], accHistory[j], temp, pres, lapse, extFinal, undershot, overshot]
             dataFrameIndex += 1
 
+        # save the initial condition for this set of points
+        initialConditions.loc[initialConditionsIndex] = [alt, vel, temp, pres, lapse]
+        initialConditionsIndex += 1
+
         print(f"progess: {(i/numberTrails)*100:.0f}%",end='\r')
 
-    # save the test data to a csv
+    # save the data to a csv
     dataFrame.to_csv(f"{outputDirectory}/{outputFileName}.csv", index=False)
     print(f"Finished generating for file {outputFileName}.csv")
     print(f"undershots: {undershots}, overshots: {overshots}")
+
+    # save the initial conditions to a seperate csv
+    initialConditions.to_csv(f"{outputDirectory}/{outputFileName}_initialConditions.csv", index=False)
+    print(f"Saved initial condtions to {outputFileName}_initialConditions.csv")
 
 # generate training dataset
 generate_data("data","trainingData",NUM_TRIALS_TRAIN)
