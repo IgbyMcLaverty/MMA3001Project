@@ -26,17 +26,21 @@ def p_controller(alt,vel,acc,extension,seaTemp,seaPressure):
 
     return pControllerKP(TARGET_APOGEE-alt)
 
-def tune_p_controller(inputFileLoc):
+def tune_p_controller(inputFileLoc,tolerance):
     """
     Uses a set of initial conditions to find best average proportional gain for those conditions.
     Prints the file gain to the console.
     
     Args:
         inputFileLoc (string): The location of the initial condition data csv file. Include directory and .csv in string
+        tolerance (float): The acceptable error above or below the target apogee in meters
     
     Returns:
         None
     """
+
+    # load pControllerKP as a global variable so it can updated as we close in on a value
+    global pControllerKP
 
     # initial guesses for use in the false position method
     lowerKP = 0
@@ -47,8 +51,17 @@ def tune_p_controller(inputFileLoc):
     initialConditions = pd.read_csv(inputFileLoc)
     numConditions = len(initialConditions)
 
-    for i in range(numConditions):
-        print("temp")
+    # evaluate initial error for lower KP
+    pControllerKP = lowerKP
+    lowerMean,lowerSTD = eval_controller(initialConditions,p_controller)
+    lowerError = TARGET_APOGEE - lowerMean
+    print(f"lower bound undershot by {lowerError} meters")
+
+    # evaluate initial error for upper KP
+    pControllerKP = upperKP
+    upperMean,upperSTD = eval_controller(initialConditions,p_controller)
+    upperError = TARGET_APOGEE - lowerMean
+    print(f"upper bound undershot by {upperError} meters")
 
 def eval_controller(initialConditions,controller):
     """
@@ -88,3 +101,6 @@ def eval_controller(initialConditions,controller):
     standardDeviation = np.std(apogees)
 
     return meanApogee, standardDeviation
+
+if __name__ == "__main__":
+    tune_p_controller("data/testData_initialConditions.csv",0.1)
