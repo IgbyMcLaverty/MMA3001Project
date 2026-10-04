@@ -79,7 +79,7 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
         def const_extLower(alt,vel,acc,extension,seaTemp,seaPressure):
             return extLower
 
-        apogeeLower,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
+        lowerSimResults = run_simulation_default(
             seaTemp=temp,
             seaPressure=pres,
             lapseRate=lapse,
@@ -87,6 +87,8 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
             initialAltitude=alt,
             extension_function=const_extLower
         )
+
+        apogeeLower = lowerSimResults["apogee"]
 
         # if the even with the minimum possible extension we don't reach apogee,
         # we should at least get as close as possible. Hence we save 0 as our correct extension.
@@ -98,7 +100,7 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
             def const_extUpper(alt,vel,acc,extension,seaTemp,seaPressure):
                 return extUpper
 
-            apogeeUpper,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
+            upperSimResults = run_simulation_default(
                 seaTemp=temp,
                 seaPressure=pres,
                 lapseRate=lapse,
@@ -106,6 +108,8 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
                 initialAltitude=alt,
                 extension_function=const_extUpper
             )
+
+            apogeeUpper = upperSimResults["apogee"]
 
             if apogeeUpper > TARGET_ALT:
                 overshots += 1
@@ -123,7 +127,7 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
                     def const_extFinal(alt,vel,acc,extension,seaTemp,seaPressure):
                         return extFinal
 
-                    apogeeBest,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
+                    newSimResults = run_simulation_default(
                         seaTemp=temp,
                         seaPressure=pres,
                         lapseRate=lapse,
@@ -131,6 +135,8 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
                         initialAltitude=alt,
                         extension_function=const_extFinal
                     )
+
+                    apogeeBest = newSimResults["apogee"]
 
                     if apogeeBest - TARGET_ALT > 0:
                         extLower = extFinal
@@ -141,6 +147,22 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
 
         
         # save result into the dataframe
+        if undershot == 1:
+            timeHistory = lowerSimResults["timeHistory"]
+            altHistory = lowerSimResults["altHistory"]
+            velHistory = lowerSimResults["velHistory"]
+            accHistory = lowerSimResults["accHistory"]
+        elif overshot == 1:
+            timeHistory = upperSimResults["timeHistory"]
+            altHistory = upperSimResults["altHistory"]
+            velHistory = upperSimResults["velHistory"]
+            accHistory = upperSimResults["accHistory"]
+        else:
+            timeHistory = newSimResults["timeHistory"]
+            altHistory = newSimResults["altHistory"]
+            velHistory = newSimResults["velHistory"]
+            accHistory = newSimResults["accHistory"]
+
         samples = random.sample(range(len(timeHistory)), SAMPLES_PER_TRAIL)
         for j in samples:
             dataFrame.loc[dataFrameIndex] = [altHistory[j], velHistory[j], accHistory[j], temp, pres, lapse, extFinal, undershot, overshot]
