@@ -6,7 +6,7 @@ from sklearn.metrics import root_mean_squared_error
 
 TARGET_APOGEE = 3048 # target apogee in meters
 
-pControllerKP = 0.01 # the propotional gain for p_controller
+pControllerKP = 0 # the propotional gain for p_controller
 
 def p_controller(alt,vel,acc,extension,seaTemp,seaPressure):
     """
@@ -45,11 +45,10 @@ def tune_p_controller(inputFileLoc,tolerance):
     # initial guesses for use in the false position method
     lowerKP = 0
     lowerError = None
-    upperKP = 1
+    upperKP = 0.01
     upperError = None
 
     initialConditions = pd.read_csv(inputFileLoc)
-    numConditions = len(initialConditions)
 
     # evaluate initial error for lower KP
     pControllerKP = lowerKP
@@ -60,7 +59,7 @@ def tune_p_controller(inputFileLoc,tolerance):
     # evaluate initial error for upper KP
     pControllerKP = upperKP
     upperMean,upperSTD = eval_controller(initialConditions,p_controller)
-    upperError = TARGET_APOGEE - lowerMean
+    upperError = TARGET_APOGEE - upperMean
     print(f"upper bound undershot by {upperError} meters")
 
 def eval_controller(initialConditions,controller):
@@ -104,7 +103,8 @@ def eval_controller(initialConditions,controller):
 
 if __name__ == "__main__":
     # show what happens for a single run of p controller
-
+    """
+    pControllerKP = 0.01
     simResults = run_simulation_default(
         seaTemp=20+273,
         seaPressure=100000,
@@ -114,9 +114,11 @@ if __name__ == "__main__":
         extension_function=p_controller
     )
 
+    print(f"final apogee: {simResults['apogee']}")
+
     plt.plot(simResults["altHistory"],simResults["targetExtensionHistory"])
     plt.show()
-
+    """
     tune_p_controller("data/testData_initialConditions.csv",0.1)
 
     
