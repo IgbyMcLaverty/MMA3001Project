@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from Simulation.simulation import run_simulation_default
 from sklearn.metrics import root_mean_squared_error
 
@@ -113,7 +114,8 @@ if __name__ == "__main__":
         extension_function=p_controller
     )
 
-    
+    plt.plot(simResults["altHistory"],simResults["targetExtensionHistory"])
+    plt.show()
 
     tune_p_controller("data/testData_initialConditions.csv",0.1)
 
