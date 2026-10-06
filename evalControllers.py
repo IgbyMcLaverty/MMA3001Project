@@ -51,7 +51,7 @@ def eval_controller(inputFileLoc,controller,controllerName):
     print(f"Standard deviation of {controllerName} is {standardDeviation} meters")
 
     plt.hist(apogees,bins=np.arange(2000,4000,100))
-    plt.title(f"{controllerName} apogee Histogram")
+    plt.title(f"{controllerName} apogee histogram")
     plt.xlabel("Apogee")
     plt.ylabel("Occurances")
     plt.show()

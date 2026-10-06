@@ -217,6 +217,23 @@ def train_linear_regression(inputFileLoc):
     print(f"lrSeaPressureCoef = {float(coefs[4])!r}")
     print(f"lrLapseRateCoef = {float(coefs[5])!r}")
 
+    # residuals (actual - predicted) against each input and against the predicted extension
+    residuals = labels - predictions
+    plotX = [features[:,i] for i in range(len(featureColumns))] + [predictions]
+    plotLabels = featureColumns + ["predicted extension"]
+ 
+    fig, axes = plt.subplots(2, 4, figsize=(16, 8))
+    axes = axes.flatten()
+    for ax, x, label in zip(axes, plotX, plotLabels):
+        ax.scatter(x, residuals, s=4, alpha=0.3)
+        ax.axhline(0, color="red", linewidth=1)
+        ax.set_xlabel(label)
+        ax.set_ylabel("residual")
+        ax.set_title(f"Residuals vs {label}")
+    axes[-1].axis("off") # 7 plots on a 2x4 grid, so hide the unused panel
+    fig.tight_layout()
+    plt.show()
+
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 if __name__ == "__main__":
