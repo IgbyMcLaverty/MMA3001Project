@@ -43,7 +43,7 @@ def eval_on_frames(frameLoc,dt,numFrames):
 
     calcApogees = []
 
-    def constant_extension(alt,vel,acc,extension,seaTemp,seaPressure):
+    def zero_extension(alt,vel,acc,extension,seaTemp,seaPressure):
         return 0
 
     # each loop is a different set of initial condtions
@@ -60,7 +60,7 @@ def eval_on_frames(frameLoc,dt,numFrames):
             lapseRate=lapseRate,
             initialVelocity=initialVelocity,
             initialAltitude=initialAltitude,
-            extension_function=const_extension
+            extension_function=zero_extension
         )
 
         calcApogees.append(simResults["apogee"])
@@ -260,9 +260,6 @@ def eval_on_frames_with_brakes(frameLoc,numFrames):
 
     plt.tight_layout()
     plt.show()
-
-def const_extension(alt,vel,acc,extension,seaTemp,seaPressure):
-    return 0.5
 
 def eval_sim_convergance(maxdt,tolerance):
     """
@@ -501,8 +498,8 @@ def manual_sim_eval():
 
 print("Program Start...")
 # uncommented required function
-manual_sim_eval()
+#manual_sim_eval()
 eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
-eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
-eval_sim_convergance(10,1)
+#eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
+#eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
+#eval_sim_convergance(10,1)
