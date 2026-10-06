@@ -12,6 +12,8 @@ def linear_regression_gradient(x, y):
     return gradient
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+def zero_extension(alt,vel,acc,extension,seaTemp,seaPressure):
+    return 0
 
 def eval_on_frames(frameLoc,dt,numFrames):
     """
@@ -35,16 +37,9 @@ def eval_on_frames(frameLoc,dt,numFrames):
     if numFrames <= 0:
         raise ValueError(f"numFrames must be > 0")
 
-    coefficientOfDrag = 0.39146244 # taken from meridian_final.csv under mach 0.6, no pitch, no roll, no extension
-    crossectionalArea = 0.01824 # m^2
-    mass = 24.510768830369635 # kg
-
     frame = pd.read_csv(frameLoc)
 
     calcApogees = []
-
-    def zero_extension(alt,vel,acc,extension,seaTemp,seaPressure):
-        return 0
 
     # each loop is a different set of initial condtions
     for i in range(numFrames):
@@ -342,28 +337,22 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     initConds = pd.read_csv(fileLoc)
     frame = pd.read_csv(frameLoc + f"/frame{frameNumber}_timeseries.csv")
 
-    coefficientOfDrag = 0.39146244 # taken from meridian_final.csv under mach 0.6, no pitch, no roll, no extension
-    crossectionalArea = 0.01824 # m^2
-    mass = 24.510768830369635 # kg
     seaLevelTemp = initConds["seaTemp"][frameNumber]
     seaLevelPressure = initConds["groundPressure"][frameNumber]
     lapseRate = initConds["lapserate"][frameNumber]
     initialVelocity = initConds["initialVelocity"][frameNumber]
     initialAltitude = initConds["initialAltitude"][frameNumber]
 
-    apogee,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation(
-        dt=dt,
+    simResults = run_simulation_default(
         seaTemp=seaLevelTemp,
         seaPressure=seaLevelPressure,
         lapseRate=lapseRate,
         initialVelocity=initialVelocity,
         initialAltitude=initialAltitude,
-        coeDrag=coefficientOfDrag,
-        area=crossectionalArea,
-        mass=mass
+        extension_function=zero_extension
     )
 
-    print(f"Predicted Apogee: {apogee}")
+    print(f"Predicted Apogee: {simResults['apogee']}")
 
     trimmedTime = frame["time"]-frame["time"][0]
 
@@ -372,7 +361,7 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
 
     # plot altitude vs time
     ax = axes[0, 0]
-    ax.plot(timeHistory,altHistory,label="1DOF")
+    ax.plot(simResults['timeHistory'],simResults['altHistory'],label="1DOF")
     ax.plot(trimmedTime,frame["altitude_barometric"],label="SATURN")
     ax.set_xlabel("Time (s)")
     ax.set_ylabel("Altitude (m)")
@@ -380,7 +369,7 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
 
     # plot air density vs altitude
     ax = axes[1, 0]
-    ax.plot(altHistory,densityHistory,label="1DOF")
+    ax.plot(simResults['altHistory'],simResults['densityHistory'],label="1DOF")
     ax.plot(frame["altitude_barometric"],frame["density"],label="SATURN")
     ax.set_xlabel("Altitude (m)")
     ax.set_ylabel("Air density (kg/m^3)")
@@ -388,7 +377,7 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     
     # plot air pressure against altitude
     ax = axes[1, 1]
-    ax.plot(altHistory,pressureHistory,label="1DOF")
+    ax.plot(simResults['altHistory'],simResults['pressureHistory'],label="1DOF")
     ax.plot(frame["altitude_barometric"],frame["air_pressure"],label="SATURN")
     ax.set_xlabel("Altitude (m)")
     ax.set_ylabel("Pressure (Pa)")
@@ -397,7 +386,7 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
 
     # plot air temperature against altitude
     ax = axes[1, 2]
-    ax.plot(altHistory,tempHistory,label="1DOF")
+    ax.plot(simResults['altHistory'],simResults['tempHistory'],label="1DOF")
     ax.plot(frame["altitude_barometric"],frame["air_temperature"],label="SATURN")
     ax.set_xlabel("Altitude (m)")
     ax.set_ylabel("Temperature (K)")
@@ -410,7 +399,7 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     saturnAcc = np.gradient(np.gradient(frame["altitude_barometric"], saturnDt), saturnDt)
     # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ax = axes[0, 1]
-    ax.plot(timeHistory,accHistory,label="1DOF")
+    ax.plot(simResults['timeHistory'],simResults['accHistory'],label="1DOF")
     ax.plot(trimmedTime,saturnAcc,label="SATURN")
     ax.set_xlabel("Time (s)")
     ax.set_ylabel("Acceleration (m/s^2)")
@@ -423,15 +412,15 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     saturnVel = np.gradient(frame["altitude_barometric"], saturnDt)
     # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-    velHistory = np.array(velHistory)
+    velHistory = np.array(simResults['velHistory'])
 
     saturnGrad = linear_regression_gradient(saturnVel**2,saturnAcc)
-    simGrad = linear_regression_gradient(velHistory**2,accHistory)
+    simGrad = linear_regression_gradient(velHistory**2,simResults['accHistory'])
 
     print(f"saturnGrad:{saturnGrad}\nsimGrad:{simGrad}")
 
     ax = axes[0, 2]
-    ax.plot(velHistory**2,accHistory,label="1DOF")
+    ax.plot(velHistory**2,simResults['accHistory'],label="1DOF")
     ax.plot(saturnVel**2,saturnAcc,label="SATURN")
     ax.set_xlabel("Velocity^2 (m^2/s^2)")
     ax.set_ylabel("Acceleration (m/s^2)")
@@ -499,7 +488,7 @@ def manual_sim_eval():
 print("Program Start...")
 # uncommented required function
 #manual_sim_eval()
-eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-#eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
+#eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
+eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
 #eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
 #eval_sim_convergance(10,1)
