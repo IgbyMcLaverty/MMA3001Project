@@ -43,6 +43,9 @@ def eval_on_frames(frameLoc,dt,numFrames):
 
     calcApogees = []
 
+    def constant_extension(alt,vel,acc,extension,seaTemp,seaPressure):
+        return 0
+
     # each loop is a different set of initial condtions
     for i in range(numFrames):
         seaLevelTemp = frame["seaTemp"][i]
@@ -51,19 +54,16 @@ def eval_on_frames(frameLoc,dt,numFrames):
         initialVelocity = frame["initialVelocity"][i]
         initialAltitude = frame["initialAltitude"][i]
 
-        apogee,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation(
-            dt=dt,
+        simResults = run_simulation_default(
             seaTemp=seaLevelTemp,
             seaPressure=seaLevelPressure,
             lapseRate=lapseRate,
             initialVelocity=initialVelocity,
             initialAltitude=initialAltitude,
-            coeDrag=coefficientOfDrag,
-            area=crossectionalArea,
-            mass=mass
+            extension_function=const_extension
         )
 
-        calcApogees.append(apogee)
+        calcApogees.append(simResults["apogee"])
 
         print(f"progess: {(i/numFrames)*100:.0f}%",end='\r')
 
@@ -295,7 +295,7 @@ def eval_sim_convergance(maxdt,tolerance):
     dt = maxdt
 
     while(True):
-        apogee,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation(
+        simResults = run_simulation(
             dt=dt,
             seaTemp=300,
             seaPressure=100000,
@@ -311,13 +311,13 @@ def eval_sim_convergance(maxdt,tolerance):
             extensionSpeed=0
         )
 
-        delta = abs(prevApogee-apogee)
+        delta = abs(prevApogee-simResults["apogee"])
 
         # Stop running when sims converge
         if delta < tolerance:
             break
 
-        prevApogee = apogee
+        prevApogee = simResults["apogee"]
         dt = dt/2
 
     print(f"Final dt:{dt}, with delta: {delta}")
