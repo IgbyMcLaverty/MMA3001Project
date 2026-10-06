@@ -466,27 +466,34 @@ def manual_sim_eval():
     mass = 24.510768830369635 # kg
     dt = 0.001 # seconds
 
-    apogee,altHistory,accHistory = run_simulation(
+    def constant_extension(alt,vel,acc,extension,seaTemp,seaPressure):
+        return 0
+
+    simResults = run_simulation(
         dt=dt,
         seaTemp=seaLevelTemp,
         seaPressure=seaLevelPressure,
         lapseRate=lapseRate,
         initialVelocity=initialVelocity,
         initialAltitude=initialAltitude,
-        coeDrag=coefficientOfDrag,
-        area=crossectionalArea,
-        mass=mass
+        coeDragClosed=coefficientOfDrag,
+        coeDragOpen=coefficientOfDrag,
+        areaClosed=crossectionalArea,
+        areaOpen=crossectionalArea,
+        mass=mass,
+        extension_function=constant_extension,
+        extensionSpeed=0
     )
 
-    print(f"Final apogee: {apogee:.2f}")
+    print(f"Final apogee: {simResults['apogee']:.2f}")
 
-    plt.plot(altHistory)
+    plt.plot(simResults["altHistory"])
     plt.xlabel("Index")
     plt.ylabel("altitude (m)")
 
     plt.show()
 
-    plt.plot(accHistory)
+    plt.plot(simResults["accHistory"])
     plt.xlabel("Index")
     plt.ylabel("Acceleration (m/s^2)")
 
@@ -494,8 +501,8 @@ def manual_sim_eval():
 
 print("Program Start...")
 # uncommented required function
-#manual_sim_eval()
-#eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-#eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
-#eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
+manual_sim_eval()
+eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
+eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
+eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
 eval_sim_convergance(10,1)
