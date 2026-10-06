@@ -153,9 +153,6 @@ def eval_on_frames_with_brakes(frameLoc,numFrames):
     if numFrames <= 0:
         raise ValueError(f"numFrames must be > 0")
 
-    coefficientOfDrag = 0.39146244 # taken from meridian_final.csv under mach 0.6, no pitch, no roll, no extension
-    crossectionalArea = 0.01824 # m^2
-    mass = 24.510768830369635 # kg
 
     frame = pd.read_csv(frameLoc)
 
@@ -174,7 +171,7 @@ def eval_on_frames_with_brakes(frameLoc,numFrames):
         def constant_extension(alt,vel,acc,extension,seaTemp,seaPressure):
             return constExtension/100
 
-        apogee,timeHistory,altHistory,velHistory,accHistory,densityHistory,pressureHistory,tempHistory = run_simulation_default(
+        simResults = run_simulation_default(
             seaTemp=seaLevelTemp,
             seaPressure=seaLevelPressure,
             lapseRate=lapseRate,
@@ -183,7 +180,7 @@ def eval_on_frames_with_brakes(frameLoc,numFrames):
             extension_function=constant_extension
         )
 
-        calcApogees.append(apogee)
+        calcApogees.append(simResults['apogee'])
 
         print(f"progess: {(i/numFrames)*100:.0f}%",end='\r')
 
@@ -489,6 +486,6 @@ print("Program Start...")
 # uncommented required function
 #manual_sim_eval()
 #eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
-#eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
+#eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
+eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
 #eval_sim_convergance(10,1)
