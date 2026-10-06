@@ -8,7 +8,7 @@ TARGET_APOGEE = 3048 # target apogee in meters
 
 pControllerKP = 0.0005441101615246514 # the propotional gain for p_controller
 
-def p_controller(alt,vel,acc,extension,seaTemp,seaPressure):
+def p_controller(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate):
     """
     Applies a proportional gain to the altitude error (target-altitude) in order to determine extension value.
     Uses the global variable "pControllerKP" defined controllers.py as it's gain
@@ -30,13 +30,13 @@ def p_controller(alt,vel,acc,extension,seaTemp,seaPressure):
 
 # Linear regression coefficients for linear_regression_controller.
 # Run train_linear_regression() and paste the printed values here.
-lrIntercept = 0.0
-lrAltCoef = 0.0
-lrVelCoef = 0.0
-lrAccCoef = 0.0
-lrSeaTempCoef = 0.0
-lrSeaPressureCoef = 0.0
-lrLapseRateCoef = 0.0
+lrIntercept = -9.796413955554184
+lrAltCoef = 0.0012939384345603084
+lrVelCoef = 0.004093336774252004
+lrAccCoef = -0.1178210318044365
+lrSeaTempCoef = 0.002307614046847522
+lrSeaPressureCoef = 4.560181055376712e-05
+lrLapseRateCoef = 4.579864426857139
  
 def linear_regression_controller(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate):
     """
@@ -238,7 +238,7 @@ if __name__ == "__main__":
     plt.plot(simResults["altHistory"],simResults["targetExtensionHistory"])
     plt.show()
     """
-    tune_p_controller("data/trainingData_initialConditions.csv",0.1)
+    #tune_p_controller("data/trainingData_initialConditions.csv",0.1)
     train_linear_regression("data/trainingData.csv")
 
     

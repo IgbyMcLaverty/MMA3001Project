@@ -145,7 +145,7 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         alt += vel*dt
 
         # calculate the target extension based on the input algorithm
-        targetExtension = extension_function(alt,vel,acc,extension,seaTemp,seaPressure)
+        targetExtension = extension_function(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate)
 
         targetExtensionHistory.append(targetExtension)
 
