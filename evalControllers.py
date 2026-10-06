@@ -5,6 +5,7 @@ from Simulation.simulation import run_simulation_default
 
 from controllers import p_controller
 from controllers import linear_regression_controller
+from controllers import TARGET_APOGEE
 
 def eval_controller(inputFileLoc,controller,controllerName):
     """
@@ -45,7 +46,8 @@ def eval_controller(inputFileLoc,controller,controllerName):
         apogees.append(simResults["apogee"])
 
     standardDeviation = np.std(apogees)
-
+    mean = np.mean(apogees)
+    print(f"Mean apogee of {controllerName} is {mean} meters, which is an error of {mean - TARGET_APOGEE}")
     print(f"Standard deviation of {controllerName} is {standardDeviation} meters")
 
     plt.hist(apogees,bins=np.arange(2000,4000,100))
