@@ -70,17 +70,17 @@ ax2d.set_title("extension by velocity and altitude")
 fig2.colorbar(ScalarMappable(norm=norm, cmap=cmap), ax=[ax3d, ax2d],
               label="extension", shrink=0.8)
 
-# ---- Figure 3: extension vs velocity / altitude ----
-df["velocity_over_altitude"] = df["velocity"] / df["altitude"]
+# ---- Figure 3: extension vs altitude + 0.036 * velocity^2 ----
+df["alt_plus_vel_sq"] = df["altitude"] + 0.036 * df["velocity"] ** 2
 
 fig3, ax = plt.subplots(figsize=(8, 6))
 for outcome, colour in colours.items():
     sub = df[df["outcome"] == outcome]
-    ax.scatter(sub["velocity_over_altitude"], sub["extension"], s=4, alpha=0.4,
+    ax.scatter(sub["alt_plus_vel_sq"], sub["extension"], s=4, alpha=0.4,
                color=colour, label=outcome)
-ax.set_xlabel("velocity / altitude (1/s)")
+ax.set_xlabel("alt + 0.036*vel^2")
 ax.set_ylabel("extension")
-ax.set_title("extension vs velocity / altitude")
+ax.set_title("extension vs alt + 0.036*vel^2")
 ax.legend(markerscale=4, title="outcome")
 fig3.tight_layout()
 
