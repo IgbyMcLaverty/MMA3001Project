@@ -2,13 +2,16 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
- 
+from matplotlib.cm import ScalarMappable
+from matplotlib.colors import Normalize
+from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 (registers 3D projection)
+
 df = pd.read_csv("data/trainingData.csv")
- 
+
 # Columns to plot on the x axis (everything except the y variable and the flags)
 flag_cols = ["undershot", "overshot"]
 x_cols = [c for c in df.columns if c not in ["extension"] + flag_cols]
- 
+
 # Categorise each row for colouring
 df["outcome"] = np.select(
     [df["undershot"] == 1, df["overshot"] == 1],
@@ -16,11 +19,11 @@ df["outcome"] = np.select(
     default="on target",
 )
 colours = {"on target": "tab:green", "undershot": "tab:blue", "overshot": "tab:red"}
- 
+
 n_cols = 3
 n_rows = int(np.ceil(len(x_cols) / n_cols))
 fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 4.5 * n_rows), squeeze=False)
- 
+
 for ax, col in zip(axes.flat, x_cols):
     for outcome, colour in colours.items():
         sub = df[df["outcome"] == outcome]
@@ -29,15 +32,44 @@ for ax, col in zip(axes.flat, x_cols):
     ax.set_xlabel(col)
     ax.set_ylabel("extension")
     ax.set_title(f"extension vs {col}")
- 
+
 # Hide any unused subplots
 for ax in axes.flat[len(x_cols):]:
     ax.set_visible(False)
- 
+
 # One shared legend with larger markers
 handles, labels = axes.flat[0].get_legend_handles_labels()
 fig.legend(handles, labels, loc="upper right", markerscale=4, title="outcome")
- 
+
 fig.tight_layout()
+
+# ---- Figure 2: 3D scatter (left) + 2D gradient map (right), shared colour scale ----
+cmap = "viridis"
+norm = Normalize(vmin=df["extension"].min(), vmax=df["extension"].max())
+
+fig2 = plt.figure(figsize=(15, 7), layout="constrained")
+
+# Left: 3D scatter, altitude & velocity horizontal, extension vertical
+ax3d = fig2.add_subplot(1, 2, 1, projection="3d")
+ax3d.scatter(df["altitude"], df["velocity"], df["extension"],
+             c=df["extension"], cmap=cmap, norm=norm, s=4, alpha=0.5)
+ax3d.set_xlabel("altitude")
+ax3d.set_ylabel("velocity")
+ax3d.set_zlabel("extension")
+ax3d.set_title("extension vs altitude and velocity")
+
+# Right: smooth gradient from a triangulation of the scattered points
+ax2d = fig2.add_subplot(1, 2, 2)
+levels = np.linspace(norm.vmin, norm.vmax, 256)
+ax2d.tricontourf(df["velocity"], df["altitude"], df["extension"],
+                 levels=levels, cmap=cmap, norm=norm)
+ax2d.set_xlabel("velocity")
+ax2d.set_ylabel("altitude")
+ax2d.set_title("extension map")
+
+# One shared colorbar for both subplots
+fig2.colorbar(ScalarMappable(norm=norm, cmap=cmap), ax=[ax3d, ax2d],
+              label="extension", shrink=0.8)
+
 plt.show()
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
