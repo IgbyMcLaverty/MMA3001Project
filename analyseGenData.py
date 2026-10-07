@@ -43,7 +43,7 @@ fig.legend(handles, labels, loc="upper right", markerscale=4, title="outcome")
 
 fig.tight_layout()
 
-# ---- Figure 2: 3D scatter (left) + 2D gradient map (right), shared colour scale ----
+# ---- Figure 2: 3D scatter (left) + 2D scatter (right), shared colour scale ----
 cmap = "viridis"
 norm = Normalize(vmin=df["extension"].min(), vmax=df["extension"].max())
 
@@ -58,18 +58,31 @@ ax3d.set_ylabel("velocity")
 ax3d.set_zlabel("extension")
 ax3d.set_title("extension vs altitude and velocity")
 
-# Right: smooth gradient from a triangulation of the scattered points
+# Right: 2D scatter, coloured by extension (same colour scale as the 3D plot)
 ax2d = fig2.add_subplot(1, 2, 2)
-levels = np.linspace(norm.vmin, norm.vmax, 256)
-ax2d.tricontourf(df["velocity"], df["altitude"], df["extension"],
-                 levels=levels, cmap=cmap, norm=norm)
+ax2d.scatter(df["velocity"], df["altitude"], c=df["extension"],
+             cmap=cmap, norm=norm, s=4, alpha=0.4)
 ax2d.set_xlabel("velocity")
 ax2d.set_ylabel("altitude")
-ax2d.set_title("extension map")
+ax2d.set_title("extension by velocity and altitude")
 
 # One shared colorbar for both subplots
 fig2.colorbar(ScalarMappable(norm=norm, cmap=cmap), ax=[ax3d, ax2d],
               label="extension", shrink=0.8)
+
+# ---- Figure 3: extension vs velocity / altitude ----
+df["velocity_over_altitude"] = df["velocity"] / df["altitude"]
+
+fig3, ax = plt.subplots(figsize=(8, 6))
+for outcome, colour in colours.items():
+    sub = df[df["outcome"] == outcome]
+    ax.scatter(sub["velocity_over_altitude"], sub["extension"], s=4, alpha=0.4,
+               color=colour, label=outcome)
+ax.set_xlabel("velocity / altitude (1/s)")
+ax.set_ylabel("extension")
+ax.set_title("extension vs velocity / altitude")
+ax.legend(markerscale=4, title="outcome")
+fig3.tight_layout()
 
 plt.show()
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
