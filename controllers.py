@@ -417,7 +417,8 @@ def train_svr(inputFileLoc,modelFileLoc,C,epsilon,gamma):
     model to a .npz file so svr_controller can run without retraining.
     Rows where undershot or overshot equal 1 are excluded from training.
     Also shows a figure of the residuals (actual - predicted extension) against each input
-    and against the predicted extension, using the training rows.
+    and against the predicted extension, using the training rows. The figure title shows the
+    C, epsilon and gamma values used (gamma as the number it resolves to).
     
     Args:
         inputFileLoc (string): The location of the training data csv file. Include directory and .csv in string
@@ -493,7 +494,10 @@ def train_svr(inputFileLoc,modelFileLoc,C,epsilon,gamma):
         ax.set_ylabel("residual")
         ax.set_title(f"Residuals vs {label}")
     axes[-1].axis("off") # 7 plots on a 2x4 grid, so hide the unused panel
-    fig.tight_layout()
+
+    # title for the whole figure showing the hyperparameters used (gamma as the resolved number)
+    fig.suptitle(f"SVR residuals: C={C:.4g}, epsilon={epsilon:.4g}, gamma={gammaValue:.4g}")
+    fig.tight_layout(rect=[0, 0, 1, 0.96]) # leave room at the top for the figure title
     plt.show()
 
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
