@@ -467,6 +467,8 @@ def train_svr(inputFileLoc,modelFileLoc,C,epsilon,gamma):
              dualCoef=model.dual_coef_[0],
              intercept=model.intercept_[0],
              gamma=gammaValue,
+             C=C,
+             epsilon=epsilon,
              means=means,
              stds=stds)
 
@@ -524,6 +526,6 @@ if __name__ == "__main__":
     #tune_p_controller("data/trainingData_initialConditions.csv",0.1)
     #train_linear_regression("data/trainingData.csv")
     #train_linear_regression_2("data/trainingData.csv")
-    train_svr("data/trainingData.csv",SVR_MODEL_FILE,1,0.1,"scale")
+    train_svr("data/trainingData.csv",SVR_MODEL_FILE,1,0.05,"scale")
 
     
