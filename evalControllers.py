@@ -6,7 +6,10 @@ from Simulation.simulation import run_simulation_default
 from controllers import p_controller
 from controllers import linear_regression_controller
 from controllers import linear_regression_2_controller
+from controllers import svr_controller
 from controllers import TARGET_APOGEE
+from controllers import SVR_MODEL_FILE
+from controllers import _svrModel
 
 def eval_controller(inputFileLoc,controller,controllerName):
     """
@@ -60,4 +63,5 @@ def eval_controller(inputFileLoc,controller,controllerName):
 if __name__ == "__main__":
     #eval_controller("data/validationData_initialConditions.csv",p_controller,"P controller")
     #eval_controller("data/validationData_initialConditions.csv",linear_regression_controller,"Linear Regression controller")
-    eval_controller("data/validationData_initialConditions.csv",linear_regression_2_controller,"Linear Regression 2 controller")
+    #eval_controller("data/validationData_initialConditions.csv",linear_regression_2_controller,"Linear Regression 2 controller")
+    eval_controller("data/validationData_initialConditions.csv",svr_controller,"SVR controller")
