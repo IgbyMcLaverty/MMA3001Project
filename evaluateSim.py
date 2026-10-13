@@ -288,8 +288,7 @@ def eval_sim_convergance(maxdt,tolerance):
 
     dt = maxdt
 
-    def const_extension(alt,vel,acc,extension,seaTemp,seaPressure):
-        return 0.5
+    set_constant_extension(0.5)
 
     while(True):
         simResults = run_simulation(
@@ -304,7 +303,7 @@ def eval_sim_convergance(maxdt,tolerance):
             areaClosed=AREA_CLOSED,
             areaOpen=AREA_OPEN,
             mass=MASS,
-            extension_function=const_extension,
+            extension_function=constant_extension,
             extensionSpeed=0
         )
 
@@ -502,5 +501,5 @@ print("Program Start...")
 #manual_sim_eval()
 #eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
 #eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
-eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
-#eval_sim_convergance(10,1)
+#eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
+eval_sim_convergance(10,1)
