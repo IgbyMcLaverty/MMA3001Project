@@ -18,10 +18,8 @@ from controllers import _svrModel
 def eval_controller(inputFileLoc,controller,controllerName):
     """
     Uses a set of initial conditions and a provided controller and calculates evaluation criteria.
-    Rows where undershot or overshot equal 1 are excluded from the evaluation. The excluded rows are
-    kept in separate dataframes (undershotRows and overshotRows) for later use.
-    Plots residuals for the controller against initial conditons.
-    Plots histogram of achieved apogees.
+    Initial conditions which result in over and under shooting are plot on one histogram. The undershooting and overshooting conditions are plot seperately where instead 
+    of plotting the achieved apogees directly, it plots the error between what the controller achieved and the apogee if the Air Brakes had be fully extended or retracted.
     
     Args:
         inputFileLoc (string): The location of the initial condition data csv file. Include directory and .csv in string
