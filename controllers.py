@@ -143,7 +143,7 @@ def svr_controller(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate):
     model = _svrModel
 
     # standardize the inputs the same way as in training (order matches the training feature columns)
-    x = (np.array([alt,vel,acc,seaTemp,seaPressure,lapseRate]) - model["means"])/model["stds"]
+    x = (np.array([alt,vel,seaTemp,seaPressure,lapseRate]) - model["means"])/model["stds"]
 
     # RBF kernel between the input and every support vector, then the weighted sum plus intercept
     diff = model["supportVectors"] - x
@@ -508,7 +508,7 @@ def train_svr(inputFileLoc,modelFileLoc,C,epsilon,gamma):
     data = data[(data["undershot"] == 0) & (data["overshot"] == 0)]
     print(f"Training on {len(data)} of {totalRows} rows")
 
-    featureColumns = ["altitude","velocity","acceleration","seaTemp","groundPressure","lapserate"]
+    featureColumns = ["altitude","velocity","seaTemp","groundPressure","lapserate"]
     features = data[featureColumns].to_numpy(dtype=float)
     labels = data["extension"].to_numpy(dtype=float)
 
@@ -551,8 +551,8 @@ def train_svr(inputFileLoc,modelFileLoc,C,epsilon,gamma):
 
     # residuals (actual - predicted) against each input and against the predicted extension
     residuals = labels - predictions
-    plotX = [features[:,i] for i in range(len(featureColumns))] + [predictions]
-    plotLabels = featureColumns + ["predicted extension"]
+    plotX = [features[:,i] for i in range(len(featureColumns))] + [predictions, data["acceleration"]]
+    plotLabels = featureColumns + ["predicted extension","acceleration"]
 
     fig, axes = plt.subplots(2, 4, figsize=(16, 8))
     axes = axes.flatten()
@@ -1076,10 +1076,10 @@ if __name__ == "__main__":
     plt.show()
     """
     #tune_p_controller("data/trainingData_initialConditions.csv",0.1)
-    train_linear_regression("data/trainingData.csv")
+    #train_linear_regression("data/trainingData.csv")
     #train_linear_regression_2("data/trainingData.csv")
-    #train_svr("data/trainingData.csv",SVR_MODEL_FILE,2,0.1,"scale")
-    #eval_svr("data/validationData.csv","svr_model.npz")
+    train_svr("data/trainingData.csv",SVR_MODEL_FILE,2,0.1,"scale")
+    eval_svr("data/validationData.csv","svr_model.npz")
     #train_nn("data/trainingData.csv",NN_MODEL_FILE,patience=100,hiddenSizes=[32,16,8])
     #train_nn_2("data/trainingData_initialConditions.csv",NN_MODEL_FILE,NN_MODEL_FILE,populationSize=4,sigma=0.1,learningRate=0.02)
     #eval_nn("data/validationData.csv",NN_MODEL_FILE)
