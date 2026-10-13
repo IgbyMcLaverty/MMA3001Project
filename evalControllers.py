@@ -161,13 +161,13 @@ def eval_controller(inputFileLoc,controller,controllerName):
     axes[0].set_ylabel("Occurances")
 
     # plot histogram for error with undershooting data
-    axes[1].hist(undershotErrors,bins=np.arange(-100,5,5),color="blue")
+    axes[1].hist(undershotErrors,bins=np.arange(np.min(undershotErrors),5,5),color="blue")
     axes[1].set_title(f"{controllerName} undershot error histogram")
     axes[1].set_xlabel("apogee with controller vs constant extension")
     axes[1].set_ylabel("Occurances")
 
     # plot histogram for error with overshooting data
-    axes[2].hist(overshotErrors,bins=np.arange(0,100,5),color="red")
+    axes[2].hist(overshotErrors,bins=np.arange(0,np.max(overshotErrors),5),color="red")
     axes[2].set_title(f"{controllerName} overshot error histogram")
     axes[2].set_xlabel("apogee with controller vs constant extension")
     axes[2].set_ylabel("Occurances")
@@ -180,6 +180,6 @@ def eval_controller(inputFileLoc,controller,controllerName):
 if __name__ == "__main__":
     #eval_controller("data/validationData_initialConditions.csv",p_controller,"P controller")
     #eval_controller("data/validationData_initialConditions.csv",linear_regression_controller,"Linear Regression controller")
-    eval_controller("data/validationData_initialConditions.csv",linear_regression_2_controller,"Linear Regression 2 controller")
+    #eval_controller("data/validationData_initialConditions.csv",linear_regression_2_controller,"Linear Regression 2 controller")
     #eval_controller("data/validationData_initialConditions.csv",svr_controller,"SVR controller")
-    #eval_controller("data/validationData_initialConditions.csv",nn_controller,"NN controller")
+    eval_controller("data/validationData_initialConditions.csv",nn_controller,"NN controller")
