@@ -8,6 +8,37 @@ import copy
 import torch
 import torch.nn as nn
 
+setExtension = None # the extesion for constant_extension, set by set_constant_extension
+
+def constant_extension(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate):
+    """
+    Regardless of input arguments, simply outputs a constant extension value. Value can be changed
+    by calling set_constant_extension().
+    
+    Args:
+        alt (float): The current altitude of the rocket in meters
+        vel (float): The current vertical velocity of the rocket in m/s
+        acc (float): The current acceleration of the rocket in m/s^2
+        extension (float): The current extension of the Air Brakes between 0 and 1
+        seaTemp (float): The temperature at sea level in kelvin
+        seaPressure (float): The pressure at sea level in pascal
+        lapseRate (float): The temperature lapse rate in K/m
+    
+    Returns:
+        targetExtension (float): The new requested target extension based on the current conditions
+    """
+    return setExtension
+
+def set_constant_extension(newExtension):
+    """
+    Sets the extension used by constant_extension().
+    
+    Args:
+        newExtension (float): The new extension value to be used by constant_extension
+    """
+    global setExtension
+    setExtension = newExtension
+
 TARGET_APOGEE = 3048 # target apogee in meters
 
 P_CONTROLLER_MODEL_FILE = "p_controller_model.npz" # where tune_p_controller saves the gain and where p_controller loads it from
