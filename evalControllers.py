@@ -8,6 +8,7 @@ from controllers import linear_regression_controller
 from controllers import linear_regression_2_controller
 from controllers import svr_controller
 from controllers import nn_controller
+from controllers import constant_extension,set_constant_extension
 from controllers import TARGET_APOGEE
 from controllers import SVR_MODEL_FILE
 from controllers import _svrModel

@@ -55,7 +55,7 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
     dataFrameIndex = 0
 
     # dataframe for the initial conditions used for each set of data
-    initialConditionColumnNames = ["initialAltitude","initialVelocity","seaTemp","groundPressure","lapserate"]
+    initialConditionColumnNames = ["initialAltitude","initialVelocity","seaTemp","groundPressure","lapserate","undershot","overshot"]
     initialConditions = pd.DataFrame(columns = initialConditionColumnNames)
     initialConditionsIndex = 0
 
@@ -168,7 +168,7 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
             dataFrameIndex += 1
 
         # save the initial condition for this set of points
-        initialConditions.loc[initialConditionsIndex] = [alt, vel, temp, pres, lapse]
+        initialConditions.loc[initialConditionsIndex] = [alt, vel, temp, pres, lapse, undershot, overshot]
         initialConditionsIndex += 1
 
         print(f"progess: {(i/numberTrails)*100:.0f}%",end='\r')
