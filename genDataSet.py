@@ -3,6 +3,8 @@ import random
 import os
 import pandas as pd
 
+from controllers import constant_extension, set_constant_extension
+
 MIN_VEL = 200 # m/s
 MAX_VEL = 260 # m/s
 
@@ -76,8 +78,7 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
 
         # run the simulation with the minimum possible extension
 
-        def const_extLower(alt,vel,acc,extension,seaTemp,seaPressure):
-            return extLower
+        set_constant_extension(extLower)
 
         lowerSimResults = run_simulation_default(
             seaTemp=temp,
@@ -85,7 +86,7 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
             lapseRate=lapse,
             initialVelocity=vel,
             initialAltitude=alt,
-            extension_function=const_extLower
+            extension_function=constant_extension
         )
 
         apogeeLower = lowerSimResults["apogee"]
@@ -97,8 +98,7 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
             extFinal = extLower
             undershot = 1
         else:
-            def const_extUpper(alt,vel,acc,extension,seaTemp,seaPressure):
-                return extUpper
+            set_constant_extension(extUpper)
 
             upperSimResults = run_simulation_default(
                 seaTemp=temp,
@@ -106,7 +106,7 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
                 lapseRate=lapse,
                 initialVelocity=vel,
                 initialAltitude=alt,
-                extension_function=const_extUpper
+                extension_function=constant_extension
             )
 
             apogeeUpper = upperSimResults["apogee"]
@@ -124,8 +124,7 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
                     errorUpper = apogeeUpper - TARGET_ALT
                     extFinal = (errorUpper*extLower - errorLower*extUpper)/(errorUpper - errorLower)
 
-                    def const_extFinal(alt,vel,acc,extension,seaTemp,seaPressure):
-                        return extFinal
+                    set_constant_extension(extFinal)
 
                     newSimResults = run_simulation_default(
                         seaTemp=temp,
@@ -133,7 +132,7 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
                         lapseRate=lapse,
                         initialVelocity=vel,
                         initialAltitude=alt,
-                        extension_function=const_extFinal
+                        extension_function=constant_extension
                     )
 
                     apogeeBest = newSimResults["apogee"]
