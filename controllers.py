@@ -34,12 +34,12 @@ def p_controller(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate):
 
 # Linear regression coefficients for linear_regression_controller.
 # Run train_linear_regression() and paste the printed values here.
-lrIntercept = -9.796413955554184
-lrAltCoef = 0.0012939384345603084
-lrVelCoef = 0.004093336774252004
-lrSeaTempCoef = 0.002307614046847522
-lrSeaPressureCoef = 4.560181055376712e-05
-lrLapseRateCoef = 4.579864426857139
+lrIntercept = -9.630511670912702
+lrAltCoef = 0.00048062959126317264
+lrVelCoef = 0.0038294381730787836
+lrSeaTempCoef = 0.001700241732032854
+lrSeaPressureCoef = 8.172945993883545e-05
+lrLapseRateCoef = 2.8266344473209393
  
 def linear_regression_controller(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate):
     """
@@ -1076,8 +1076,8 @@ if __name__ == "__main__":
     plt.show()
     """
     #tune_p_controller("data/trainingData_initialConditions.csv",0.1)
-    #train_linear_regression("data/trainingData.csv")
-    train_linear_regression_2("data/trainingData.csv")
+    train_linear_regression("data/trainingData.csv")
+    #train_linear_regression_2("data/trainingData.csv")
     #train_svr("data/trainingData.csv",SVR_MODEL_FILE,2,0.1,"scale")
     #eval_svr("data/validationData.csv","svr_model.npz")
     #train_nn("data/trainingData.csv",NN_MODEL_FILE,patience=100,hiddenSizes=[32,16,8])
