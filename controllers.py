@@ -28,6 +28,10 @@ def constant_extension(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate):
     Returns:
         targetExtension (float): The new requested target extension based on the current conditions
     """
+    if setExtension == None:
+        raise ValueError(
+            "Constant extension value was not set before constant_extension was called. Use set_constant_extension() to set extension value"
+        )
     return setExtension
 
 def set_constant_extension(newExtension):
