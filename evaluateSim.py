@@ -440,8 +440,6 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     plt.tight_layout()
     plt.show()
 
-
-
 def manual_sim_eval():
     """
     Used for debugging purposes only. Code needs to be altered in order to change initial condtions
@@ -463,8 +461,7 @@ def manual_sim_eval():
     mass = 24.510768830369635 # kg
     dt = 0.001 # seconds
 
-    def constant_extension(alt,vel,acc,extension,seaTemp,seaPressure):
-        return 0
+    set_constant_extension(0) # set the extension value
 
     simResults = run_simulation(
         dt=dt,
@@ -497,9 +494,9 @@ def manual_sim_eval():
     plt.show()
 
 print("Program Start...")
-# uncommented required function
-#manual_sim_eval()
+# uncomment required function
+manual_sim_eval()
 #eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
 #eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
 #eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
-eval_sim_convergance(10,1)
+#eval_sim_convergance(10,1)
