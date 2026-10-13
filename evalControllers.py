@@ -113,20 +113,64 @@ def eval_controller(inputFileLoc,controller,controllerName):
     # error of the controller relative to the best achievable apogee (arrays so they can be subtracted)
     undershotErrors = np.array(undershotApogees) - np.array(undershotBestApogees)
 
+    # evaluate on the overshot data
+    numConditions = len(overshotRows)
+    overshotApogees = []
+    overshotBestApogees = []
+
+    set_constant_extension(1)
+
+    for i in range(numConditions):
+        seaLevelTemp = overshotRows["seaTemp"][i]
+        seaLevelPressure = overshotRows["groundPressure"][i]
+        lapseRate = overshotRows["lapserate"][i]
+        initialVelocity = overshotRows["initialVelocity"][i]
+        initialAltitude = overshotRows["initialAltitude"][i]
+
+        simResults = run_simulation_default(
+            seaTemp=seaLevelTemp,
+            seaPressure=seaLevelPressure,
+            lapseRate=lapseRate,
+            initialAltitude=initialAltitude,
+            initialVelocity=initialVelocity,
+            extension_function=controller
+        )
+
+        overshotApogees.append(simResults["apogee"])
+
+        simResults = run_simulation_default(
+            seaTemp=seaLevelTemp,
+            seaPressure=seaLevelPressure,
+            lapseRate=lapseRate,
+            initialAltitude=initialAltitude,
+            initialVelocity=initialVelocity,
+            extension_function=constant_extension
+        )
+
+        overshotBestApogees.append(simResults["apogee"])
+
+    # error of the controller relative to the best achievable apogee (arrays so they can be subtracted)
+    overshotErrors = np.array(overshotApogees) - np.array(overshotBestApogees)
+
     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
 
-    axes[0].hist(apogees,bins=np.arange(2000,4000,100))
+    # plot histogram for non shooting data
+    axes[0].hist(apogees,bins=np.arange(2000,4000,100),color="grey")
     axes[0].set_title(f"{controllerName} apogee histogram")
     axes[0].set_xlabel("Apogee")
     axes[0].set_ylabel("Occurances")
 
-    axes[1].hist(undershotErrors,bins=np.arange(-100,5,5))
+    # plot histogram for error with undershooting data
+    axes[1].hist(undershotErrors,bins=np.arange(-100,5,5),color="blue")
     axes[1].set_title(f"{controllerName} undershot error histogram")
     axes[1].set_xlabel("apogee with controller vs constant extension")
     axes[1].set_ylabel("Occurances")
 
-    # third subplot is reserved for the overshot errors, hidden until it is filled in
-    axes[2].axis("off")
+    # plot histogram for error with overshooting data
+    axes[2].hist(overshotErrors,bins=np.arange(0,100,5),color="red")
+    axes[2].set_title(f"{controllerName} overshot error histogram")
+    axes[2].set_xlabel("apogee with controller vs constant extension")
+    axes[2].set_ylabel("Occurances")
 
     fig.tight_layout()
     plt.show()
