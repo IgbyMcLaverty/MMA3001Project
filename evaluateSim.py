@@ -170,9 +170,11 @@ def eval_on_frames_with_brakes(frameLoc,numFrames):
         initialAltitude = frame["initialAltitude"][i]
         constExtension = frame["extension"][i]
 
-        # function defined in here so that the required constant acceleration does not need be passed into the simulation as an argument
-        def constant_extension(alt,vel,acc,extension,seaTemp,seaPressure):
-            return constExtension/100
+        # convert from percentage to decimal
+        extension = constExtension/100
+
+        # update constant extension
+        set_constant_extension(extension)
 
         simResults = run_simulation_default(
             seaTemp=seaLevelTemp,
@@ -499,6 +501,6 @@ print("Program Start...")
 # uncommented required function
 #manual_sim_eval()
 #eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
-#eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
+#eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
+eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
 #eval_sim_convergance(10,1)
