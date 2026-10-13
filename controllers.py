@@ -14,6 +14,7 @@ def constant_extension(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate):
     """
     Regardless of input arguments, simply outputs a constant extension value. Value can be changed
     by calling set_constant_extension().
+    Value is not clamped between 0 and 1 since this is done by the simulation.
     
     Args:
         alt (float): The current altitude of the rocket in meters
@@ -32,11 +33,18 @@ def constant_extension(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate):
 def set_constant_extension(newExtension):
     """
     Sets the extension used by constant_extension().
+    Value is not not clamped between 0 and 1 since this is done by the simulation.
     
     Args:
         newExtension (float): The new extension value to be used by constant_extension
     """
     global setExtension
+
+    if isinstance(newExtension, bool) or not isinstance(newExtension, (int, float)):
+        raise TypeError(
+            f"'newExtension' must be a number (int or float), got {type(newExtension).__name__}"
+        )
+
     setExtension = newExtension
 
 TARGET_APOGEE = 3048 # target apogee in meters
