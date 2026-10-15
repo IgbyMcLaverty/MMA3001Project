@@ -704,6 +704,21 @@ def train_svr(inputFileLoc,modelFileLoc,C,epsilon,gamma):
     Returns:
         None
     """
+
+    argumentTypes = {
+            "inputFileLoc": [inputFileLoc,str],
+            "modelFileLoc": [modelFileLoc,str],
+            "C": [C,(int,float)],
+            "epsilon": [epsilon,(int,float)],
+            "gamma": [gamma,(int,float)]
+        }
+    
+    for name, a in argumentTypes.items():
+        if not isinstance(a[0], a[1]):
+            raise TypeError(
+                f"'{name}' must be a {a[1]}, got {type(a[0]).__name__}"
+            )
+
     global _svrModel
 
     data = pd.read_csv(inputFileLoc)
