@@ -220,7 +220,7 @@ __marimo__/
 # Data for this project
 saturnSims/
 data/
-svr_model*
+*.npz
 
 # line profiler outputs
 profile_*
