@@ -147,3 +147,29 @@ def test_run_simulation():
     with pytest.raises(TypeError):
         set_constant_extension(0.5)
         run_simulation(0.01,270,100000,0.005,250,1000,0.4,0.5,0.181,0.25,24,constant_extension,"1")
+
+    # check type for extension_function
+    # should not raise an error
+    set_constant_extension(0.5)
+    run_simulation(0.01,270,100000,0.005,250,1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    # test not a function
+    with pytest.raises(TypeError):
+        run_simulation(0.01,270,100000,0.005,250,1000,0.4,0.5,0.181,0.25,24,"constant_extension",1)
+
+    # test with a function with incorrect arguments
+    def temp_function(i,have,wrong,arguments):
+        return 1
+    
+    with pytest.raises(TypeError):
+        run_simulation(0.01,270,100000,0.005,250,1000,0.4,0.5,0.181,0.25,24,temp_function,1)
+
+    # test with a function with correct inputs but wrong return type
+    def temp_function_2(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate):
+        return [1,2,3,4]
+
+    with pytest.raises(TypeError):
+        run_simulation(0.01,270,100000,0.005,250,1000,0.4,0.5,0.181,0.25,24,temp_function_2,1)
+    
+
+    
