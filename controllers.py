@@ -719,6 +719,13 @@ def train_svr(inputFileLoc,modelFileLoc,C,epsilon,gamma):
                 f"'{name}' must be a {a[1]}, got {type(a[0]).__name__}"
             )
 
+    if C <= 0:
+        raise ValueError(f"C must be greater than 0: got {C}")
+    if epsilon <= 0:
+        raise ValueError(f"epsilon must be greater than 0: got {epsilon}")
+    if gamma <= 0:
+        raise ValueError(f"gamma must be greater than 0: got {gamma}")
+
     global _svrModel
 
     data = pd.read_csv(inputFileLoc)
