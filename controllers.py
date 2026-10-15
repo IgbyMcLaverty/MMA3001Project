@@ -7,6 +7,7 @@ from sklearn.svm import SVR
 import copy
 import torch
 import torch.nn as nn
+import os.path
 
 setExtension = None # the extesion for constant_extension, set by set_constant_extension
 
@@ -345,6 +346,12 @@ def tune_p_controller(inputFileLoc,tolerance,modelFileLoc=P_CONTROLLER_MODEL_FIL
             raise TypeError(
                 f"'{name}' must be a {a[1]}, got {type(a[0]).__name__}"
             )
+
+    if os.path.isfile(inputFileLoc):
+        raise ValueError(f"input file '{inputFileLoc}' does not exists")
+
+    if inputFileLoc[-4:-1] == ".csv":
+        raise ValueError(f"input file '{inputFileLoc}' is not a csv")
 
     # load pControllerKP as a global variable so it can updated as we close in on a value
     global pControllerKP
