@@ -45,6 +45,17 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
         outputFileName (string): The name of the file which will be created in the supplied directory. Do not include .csv
         numberTrails (integer): The number of sets of initial conditions to generate.
     """
+    # type checks for input arguments
+    if not isinstance(outputDirectory,str):
+        raise TypeError(f"outputDirectory must be a string: got {type(outputDirectory).__name__}")
+    if not isinstance(outputFileName,str):
+        raise TypeError(f"outputFileName must be a string: got {type(outputFileName).__name__}")
+    if isinstance(numberTrails, bool) or not isinstance(numberTrails, int):
+        raise TypeError(f"numberTrails must be an integer: got {type(numberTrails).__name__}")
+
+    if numberTrails <= 0:
+        raise ValueError(f"numberTrails must be greater than 1: got {numberTrails}")
+
     # if the directory does not exist create it
     if not os.path.exists(outputDirectory):
         os.makedirs(outputDirectory)
