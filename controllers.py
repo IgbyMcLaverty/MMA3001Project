@@ -804,7 +804,6 @@ def train_svr(inputFileLoc,modelFileLoc,C,epsilon,gamma):
     # title for the whole figure showing the hyperparameters used (gamma as the resolved number)
     fig.suptitle(f"SVR residuals: C={C:.4g}, epsilon={epsilon:.4g}, gamma={gammaValue:.4g}")
     fig.tight_layout(rect=[0, 0, 1, 0.96]) # leave room at the top for the figure title
-    plt.show()
 
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -838,6 +837,53 @@ def train_nn(inputFileLoc,modelFileLoc,hiddenSizes=(64,64),activation="relu",lea
     Returns:
         None
     """
+
+    isNumber = lambda v: not isinstance(v, bool) and isinstance(v, (int, float, np.integer, np.floating))
+    isInteger = lambda v: not isinstance(v, bool) and isinstance(v, (int, np.integer))
+
+    # type checks
+    for name, value in [("inputFileLoc", inputFileLoc), ("modelFileLoc", modelFileLoc), ("activation", activation)]:
+        if not isinstance(value, str):
+            raise TypeError(f"Type of argument '{name}' is wrong: expected str, got {type(value).__name__}")
+
+    for name, value in [("learningRate", learningRate), ("valFraction", valFraction)]:
+        if not isNumber(value):
+            raise TypeError(f"Type of argument '{name}' is wrong: expected float or int, got {type(value).__name__}")
+
+    for name, value in [("batchSize", batchSize), ("maxEpochs", maxEpochs), ("patience", patience), ("seed", seed)]:
+        if not isInteger(value):
+            raise TypeError(f"Type of argument '{name}' is wrong: expected int, got {type(value).__name__}")
+
+    if not isinstance(hiddenSizes, (list, tuple)):
+        raise TypeError(f"Type of argument 'hiddenSizes' is wrong: expected list or tuple, got {type(hiddenSizes).__name__}")
+    for size in hiddenSizes:
+        if not isInteger(size):
+            raise TypeError(f"Every value in 'hiddenSizes' must be an int, got {type(size).__name__}")
+
+    # value checks
+    if inputFileLoc[-4:] != ".csv":
+        raise ValueError("'inputFileLoc' must end in '.csv'")
+    if not os.path.isfile(inputFileLoc):
+        raise ValueError(f"'inputFileLoc' does not exist: {inputFileLoc}")
+    if modelFileLoc[-4:] != ".npz":
+        raise ValueError("'modelFileLoc' must end in '.npz'")
+    if len(hiddenSizes) == 0:
+        raise ValueError("'hiddenSizes' must not be empty")
+    if any(size < 1 for size in hiddenSizes):
+        raise ValueError("Every value in 'hiddenSizes' must be at least 1")
+    if not learningRate > 0:
+        raise ValueError("'learningRate' must be greater than 0")
+    if batchSize < 1:
+        raise ValueError("'batchSize' must be at least 1")
+    if maxEpochs < 1:
+        raise ValueError("'maxEpochs' must be at least 1")
+    if patience < 1:
+        raise ValueError("'patience' must be at least 1")
+    if not 0 < valFraction < 1:
+        raise ValueError("'valFraction' must be strictly between 0 and 1")
+    if seed < 0:
+        raise ValueError("'seed' must be 0 or greater")
+
     global _nnModel
 
     if activation not in _NN_ACTIVATIONS_TORCH:
