@@ -97,3 +97,13 @@ def test_train_svr():
         train_svr("data/trainingData.csv","pytestTempDirectory/svr_model.npz",2,"0.1",0.1667)
     with pytest.raises(TypeError):
         train_svr("data/trainingData.csv","pytestTempDirectory/svr_model.npz",2,0.1,"0.1667")
+
+    # missing training file
+    with pytest.raises(ValueError): 
+        train_svr("data/trainingFarta.csv","pytestTempDirectory/svr_model.npz",2,0.1,0.1667)
+    # incorrect input file type
+    with pytest.raises(ValueError):
+        train_svr("controllers.py","pytestTempDirectory/svr_model.npz",2,0.1,0.1667)
+    # incorrect output file type
+    with pytest.raises(ValueError):
+        train_svr("data/trainingData.csv","pytestTempDirectory/svr_model.csv",2,0.1,0.1667)
