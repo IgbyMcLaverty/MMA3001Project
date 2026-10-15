@@ -182,11 +182,12 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
     initialConditions.to_csv(f"{outputDirectory}/{outputFileName}_initialConditions.csv", index=False)
     print(f"Saved initial condtions to {outputFileName}_initialConditions.csv")
 
-# generate training dataset
-generate_data("data","trainingData",NUM_TRIALS_TRAIN)
+if __name__ == "__main__":
+    # generate training dataset
+    generate_data("data","trainingData",NUM_TRIALS_TRAIN)
 
-# generatre validation dataset
-generate_data("data","validationData",NUM_TRIALS_VAL)
+    # generatre validation dataset
+    generate_data("data","validationData",NUM_TRIALS_VAL)
 
-# generatre test dataset
-generate_data("data","testData",NUM_TRIALS_TEST)
+    # generatre test dataset
+    generate_data("data","testData",NUM_TRIALS_TEST)
