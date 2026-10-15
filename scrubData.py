@@ -16,13 +16,13 @@ def scrub_data(inputLoc,outputLoc):
     """
     argumentTypes = {
             "inputLoc": [inputLoc,str],
-            "outputLoc": [inputLoc,str],
+            "outputLoc": [outputLoc,str],
         }
     
     for name, a in argumentTypes.items():
         if not isinstance(a[0], a[1]):
             raise TypeError(
-                f"'{name}' must be a number (int or float), got {type(a[0]).__name__}"
+                f"'{name}' must be a {a[1]}, got {type(a[0]).__name__}"
             )
 
     # check if input file exists
@@ -109,7 +109,8 @@ def scrub_data(inputLoc,outputLoc):
     initialConditions.to_csv(f"{outputLoc}/all_initialconds.csv", index=False)
     print("Function completed")
 
-scrub_data("saturnSims/Without_Airbrakes","saturnSims/Without_Airbrakes_Scrubbed")
-scrub_data("saturnSims/With_Airbrakes","saturnSims/With_Airbrakes_Scrubbed")
+if __name__ == "__main__":
+    scrub_data("saturnSims/Without_Airbrakes","saturnSims/Without_Airbrakes_Scrubbed")
+    scrub_data("saturnSims/With_Airbrakes","saturnSims/With_Airbrakes_Scrubbed")
 
-print("Program completed")
+    print("Program completed")
