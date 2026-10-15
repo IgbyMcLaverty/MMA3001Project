@@ -6,6 +6,7 @@ from controllers import eval_controller_mean
 from controllers import train_linear_regression
 from controllers import train_linear_regression_2
 from controllers import train_svr
+from controllers import train_nn
 
 def test_tune_p_controller():
     # test type checks
@@ -107,3 +108,40 @@ def test_train_svr():
     # incorrect output file type
     with pytest.raises(ValueError):
         train_svr("data/trainingData.csv","pytestTempDirectory/svr_model.csv",2,0.1,0.1667)
+
+def test_train_nn():
+    train_nn("data/trainingData.csv","pytestTempDirectory/nn_model",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
+
+    # type tests
+    with pytest.raises(TypeError):
+        train_nn(123,"pytestTempDirectory/nn_model",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
+
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv",123,hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
+
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model",hiddenSizes="64",activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
+
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model",hiddenSizes=(64,"64"),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
+
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model",hiddenSizes=(64,64),activation=1,learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
+
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model",hiddenSizes=(64,64),activation="relu",learningRate="1e-3",batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
+
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize="128",maxEpochs=500,patience=30,valFraction=0.15,seed=0)
+
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs="500",patience=30,valFraction=0.15,seed=0)
+
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience="30",valFraction=0.15,seed=0)
+
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction="0.15",seed=0)
+
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed="0")
