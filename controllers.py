@@ -334,6 +334,18 @@ def tune_p_controller(inputFileLoc,tolerance,modelFileLoc=P_CONTROLLER_MODEL_FIL
         None
     """
 
+    argumentTypes = {
+            "inputFileLoc": [inputFileLoc,str],
+            "tolerance": [tolerance,(int,float)],
+            "modelFileLoc": [modelFileLoc,str]
+        }
+    
+    for name, a in argumentTypes.items():
+        if not isinstance(a[0], a[1]):
+            raise TypeError(
+                f"'{name}' must be a {a[1]}, got {type(a[0]).__name__}"
+            )
+
     # load pControllerKP as a global variable so it can updated as we close in on a value
     global pControllerKP
 
