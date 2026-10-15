@@ -5,6 +5,7 @@ from controllers import tune_p_controller
 from controllers import eval_controller_mean
 from controllers import train_linear_regression
 from controllers import train_linear_regression_2
+from controllers import train_svr
 
 def test_tune_p_controller():
     # test type checks
@@ -80,3 +81,19 @@ def test_train_linear_regression_2():
         train_linear_regression_2("missing.csv","pytestTempDirectory/linear_regression_model.csv")
 
     train_linear_regression_2("data/trainingData.csv","pytestTempDirectory/linear_regression_model.npz")
+
+def test_train_svr():
+
+    train_svr("data/trainingData.csv","pytestTempDirectory/svr_model.npz",2,0.1,0.1667)
+
+    # test type errors
+    with pytest.raises(TypeError):
+        train_svr(21,"pytestTempDirectory/svr_model.npz",2,0.1,0.1667)
+    with pytest.raises(TypeError):
+        train_svr("data/trainingData.csv",123,2,0.1,0.1667)
+    with pytest.raises(TypeError):
+        train_svr("data/trainingData.csv","pytestTempDirectory/svr_model.npz","2",0.1,0.1667)
+    with pytest.raises(TypeError):
+        train_svr("data/trainingData.csv","pytestTempDirectory/svr_model.npz",2,"0.1",0.1667)
+    with pytest.raises(TypeError):
+        train_svr("data/trainingData.csv","pytestTempDirectory/svr_model.npz",2,0.1,"0.1667")
