@@ -14,6 +14,20 @@ def scrub_data(inputLoc,outputLoc):
         inputLoc (string): The folder containing the raw SATURN csv files. Do not include final slash
         outputLoc (string): The folder where the output will be written. Do not include final slash
     """
+    argumentTypes = {
+            "inputLoc": [inputLoc,str],
+            "outputLoc": [inputLoc,str],
+        }
+    
+    for name, a in argumentTypes.items():
+        if not isinstance(a[0], a[1]):
+            raise TypeError(
+                f"'{name}' must be a number (int or float), got {type(a[0]).__name__}"
+            )
+
+    # check if input file exists
+    if not os.path.exists(inputLoc):
+        raise ValueError(f"Input file directory '{inputLoc}' does not exist")
 
     # if the output directory does not exist, create it
     if not os.path.exists(outputLoc):
