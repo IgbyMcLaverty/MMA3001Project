@@ -222,5 +222,8 @@ saturnSims/
 data/
 *.npz
 
+# output files from running pytest
+pytestTempDirectory/
+
 # line profiler outputs
 profile_*
