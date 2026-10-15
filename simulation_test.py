@@ -1,6 +1,8 @@
 import pytest
-from simulation import calculate_pressure
-from simulation import calculate_drag
+from Simulation.simulation import calculate_pressure
+from Simulation.simulation import calculate_drag
+from Simulation.simulation import run_simulation
+from controllers import constant_extension,set_constant_extension
 
 def test_calculate_pressure():
 
@@ -95,3 +97,53 @@ def test_calculate_drag():
     assert calculate_drag(12,10.1,15.6,0.81) == pytest.approx(9188.8992)
     assert calculate_drag(276,1.273,8.87,0.98) == pytest.approx(421469.6122)
     assert calculate_drag(31,1.62,0.01,1.3) == pytest.approx(10.11933)
+
+def test_run_simulation():
+    # test type errors
+    with pytest.raises(TypeError):
+        set_constant_extension(0.5)
+        run_simulation("0.01",270,100000,0.005,250,1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    with pytest.raises(TypeError):
+        set_constant_extension(0.5)
+        run_simulation(0.01,"270",100000,0.005,250,1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    with pytest.raises(TypeError):
+        set_constant_extension(0.5)
+        run_simulation(0.01,270,"100000",0.005,250,1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    with pytest.raises(TypeError):
+        set_constant_extension(0.5)
+        run_simulation(0.01,270,100000,"0.005",250,1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    with pytest.raises(TypeError):
+        set_constant_extension(0.5)
+        run_simulation(0.01,270,100000,0.005,"250",1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    with pytest.raises(TypeError):
+        set_constant_extension(0.5)
+        run_simulation(0.01,270,100000,0.005,250,"1000",0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    with pytest.raises(TypeError):
+        set_constant_extension(0.5)
+        run_simulation(0.01,270,100000,0.005,250,1000,"0.4",0.5,0.181,0.25,24,constant_extension,1)
+
+    with pytest.raises(TypeError):
+        set_constant_extension(0.5)
+        run_simulation(0.01,270,100000,0.005,250,1000,0.4,"0.5",0.181,0.25,24,constant_extension,1)
+
+    with pytest.raises(TypeError):
+        set_constant_extension(0.5)
+        run_simulation(0.01,270,100000,0.005,250,1000,0.4,0.5,"0.181",0.25,24,constant_extension,1)
+
+    with pytest.raises(TypeError):
+        set_constant_extension(0.5)
+        run_simulation(0.01,270,100000,0.005,250,1000,0.4,0.5,0.181,"0.25",24,constant_extension,1)
+
+    with pytest.raises(TypeError):
+        set_constant_extension(0.5)
+        run_simulation(0.01,270,100000,0.005,250,1000,0.4,0.5,0.181,0.25,"24",constant_extension,1)
+
+    with pytest.raises(TypeError):
+        set_constant_extension(0.5)
+        run_simulation(0.01,270,100000,0.005,250,1000,0.4,0.5,0.181,0.25,24,constant_extension,"1")
