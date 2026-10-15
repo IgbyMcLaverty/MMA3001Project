@@ -1,4 +1,5 @@
 import numpy as np
+import inspect
 from line_profiler import profile
 
 AIR_R = 287 # J/kg*kelvin
@@ -90,6 +91,19 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
                         ("areaOpen", areaOpen), ("mass", mass), ("extensionSpeed", extensionSpeed)]:
         if isinstance(value, bool) or not isinstance(value, (int, float, np.integer, np.floating)):
             raise TypeError(f"Type of argument '{name}' is wrong: expected float or int, got {type(value).__name__}")
+
+    # type check for extension function
+    expected_args = {"alt", "vel", "acc", "extension", "seaTemp", "seaPressure", "lapseRate"}
+
+    if not callable(extension_function):
+        raise TypeError(f"Type of argument 'extension_function' is wrong: expected a function, got {type(extension_function).__name__}")
+
+    if set(inspect.signature(extension_function).parameters) != expected_args:
+        raise TypeError(f"extension_function must take exactly these arguments (any order): {sorted(expected_args)}")
+
+    test_result = extension_function(alt=100.0, vel=100.0, acc=0.0, extension=0.5, seaTemp=288.15, seaPressure=101325.0, lapseRate=0.0065)
+    if isinstance(test_result, bool) or not isinstance(test_result, (int, float, np.integer, np.floating)):
+        raise TypeError(f"extension_function must return a float or int, got {type(test_result).__name__}")
     # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     vel = initialVelocity
@@ -156,7 +170,15 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         alt += vel*dt
 
         # calculate the target extension based on the input algorithm
-        targetExtension = extension_function(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate)
+        targetExtension = extension_function(
+            alt=alt,
+            vel=vel,
+            acc=acc,
+            extension=extension,
+            seaTemp=seaTemp,
+            seaPressure=seaPressure,
+            lapseRate=lapseRate
+        )
 
         targetExtensionHistory.append(targetExtension)
 
