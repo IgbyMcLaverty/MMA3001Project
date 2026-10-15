@@ -355,7 +355,7 @@ def tune_p_controller(inputFileLoc,tolerance,modelFileLoc=P_CONTROLLER_MODEL_FIL
     # incorret file type
     if not inputFileLoc[-4:] == ".csv":
         raise ValueError(f"input file '{inputFileLoc}' is not a csv")
-    if not inputFileLoc[-4:] == ".npz":
+    if not modelFileLoc[-4:] == ".npz":
         raise ValueError(f"model file '{modelFileLoc}' is not a .npz file")
 
     if tolerance <= 0:
@@ -500,7 +500,7 @@ def train_linear_regression(inputFileLoc,modelFileLoc=LINEAR_REGRESSION_MODEL_FI
     # incorret file type
     if not inputFileLoc[-4:] == ".csv":
         raise ValueError(f"input file '{inputFileLoc}' is not a csv")
-    if not inputFileLoc[-4:] == ".npz":
+    if not modelFileLoc[-4:] == ".npz":
         raise ValueError(f"model file '{modelFileLoc}' is not a .npz file")
 
     global lrIntercept, lrAltCoef, lrVelCoef, lrSeaTempCoef, lrSeaPressureCoef, lrLapseRateCoef
@@ -565,7 +565,6 @@ def train_linear_regression(inputFileLoc,modelFileLoc=LINEAR_REGRESSION_MODEL_FI
         ax.set_title(f"Residuals vs {label}")
     axes[-1].axis("off") # 7 plots on a 2x4 grid, so hide the unused panel
     fig.tight_layout()
-    plt.show()
 
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
