@@ -678,7 +678,6 @@ def train_linear_regression_2(inputFileLoc,modelFileLoc=LINEAR_REGRESSION_2_MODE
         ax.set_title(f"Residuals vs {label}")
     axes[-1].axis("off") # 7 plots on a 2x4 grid, so hide the unused panel
     fig.tight_layout()
-    plt.show()
 
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

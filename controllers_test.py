@@ -4,6 +4,7 @@ from controllers import constant_extension, set_constant_extension
 from controllers import tune_p_controller
 from controllers import eval_controller_mean
 from controllers import train_linear_regression
+from controllers import train_linear_regression_2
 
 def test_tune_p_controller():
     # test type checks
@@ -59,3 +60,23 @@ def test_train_linear_regression():
         train_linear_regression("missing.csv","pytestTempDirectory/linear_regression_model.csv")
 
     train_linear_regression("data/trainingData.csv","pytestTempDirectory/linear_regression_model.npz")
+
+def test_train_linear_regression_2():
+
+    # test type errors
+    with pytest.raises(TypeError):
+        train_linear_regression_2(10,"pytestTempDirectory/linear_regression_model.npz")
+    with pytest.raises(TypeError):
+        train_linear_regression_2("data/trainingData.csv",10)
+
+    # missing input file
+    with pytest.raises(ValueError):
+        train_linear_regression_2("missing.csv","pytestTempDirectory/linear_regression_model.npz")
+    # incorrect input file type
+    with pytest.raises(ValueError):
+        train_linear_regression_2("controllers.py","pytestTempDirectory/linear_regression_model.npz")
+    # incorrect output type
+    with pytest.raises(ValueError):
+        train_linear_regression_2("missing.csv","pytestTempDirectory/linear_regression_model.csv")
+
+    train_linear_regression_2("data/trainingData.csv","pytestTempDirectory/linear_regression_model.npz")
