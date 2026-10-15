@@ -588,6 +588,28 @@ def train_linear_regression_2(inputFileLoc,modelFileLoc=LINEAR_REGRESSION_2_MODE
     Returns:
         None
     """
+
+    argumentTypes = {
+            "inputFileLoc": [inputFileLoc,str],
+            "modelFileLoc": [modelFileLoc,str]
+        }
+    
+    for name, a in argumentTypes.items():
+        if not isinstance(a[0], a[1]):
+            raise TypeError(
+                f"'{name}' must be a {a[1]}, got {type(a[0]).__name__}"
+            )
+
+    # input file doesn't exist
+    if not os.path.isfile(inputFileLoc):
+        raise ValueError(f"input file '{inputFileLoc}' does not exists")
+
+    # incorret file type
+    if not inputFileLoc[-4:] == ".csv":
+        raise ValueError(f"input file '{inputFileLoc}' is not a csv")
+    if not modelFileLoc[-4:] == ".npz":
+        raise ValueError(f"model file '{modelFileLoc}' is not a .npz file")
+
     global lr2Intercept, lr2AltCoef, lr2VelCoef, lr2VelSqCoef, lr2SeaTempCoef, lr2SeaPressureCoef, lr2LapseRateCoef
 
     data = pd.read_csv(inputFileLoc)
