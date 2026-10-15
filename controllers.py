@@ -347,11 +347,18 @@ def tune_p_controller(inputFileLoc,tolerance,modelFileLoc=P_CONTROLLER_MODEL_FIL
                 f"'{name}' must be a {a[1]}, got {type(a[0]).__name__}"
             )
 
-    if os.path.isfile(inputFileLoc):
+    # input file doesn't exist
+    if not os.path.isfile(inputFileLoc):
         raise ValueError(f"input file '{inputFileLoc}' does not exists")
 
-    if inputFileLoc[-4:-1] == ".csv":
+    # incorret file type
+    if not inputFileLoc[-4:] == ".csv":
         raise ValueError(f"input file '{inputFileLoc}' is not a csv")
+    if not inputFileLoc[-4:] == ".npz":
+        raise ValueError(f"model file '{modelFileLoc}' is not a .npz file")
+
+    if tolerance <= 0:
+        raise ValueError(f"tolerance must be greater than 0: got {tolerance}")
 
     # load pControllerKP as a global variable so it can updated as we close in on a value
     global pControllerKP
