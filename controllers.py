@@ -8,6 +8,7 @@ import copy
 import torch
 import torch.nn as nn
 import os.path
+import types
 
 setExtension = None # the extesion for constant_extension, set by set_constant_extension
 
@@ -426,6 +427,17 @@ def eval_controller_mean(initialConditions,controller):
         meanApogee (float): The mean apogee achieved across all initial conditions
         standardDeviation (float): The standard deviation in the achieved apogees
     """
+
+    argumentTypes = {
+            "initialConditions": [initialConditions, pd.DataFrame],
+            "controller": [controller,types.FunctionType]
+        }
+    
+    for name, a in argumentTypes.items():
+        if not isinstance(a[0], a[1]):
+            raise TypeError(
+                f"'{name}' must be a {a[1]}, got {type(a[0]).__name__}"
+            )
 
     numConditions = len(initialConditions)
     apogees = []
