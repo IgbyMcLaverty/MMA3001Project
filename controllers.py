@@ -719,6 +719,16 @@ def train_svr(inputFileLoc,modelFileLoc,C,epsilon,gamma):
                 f"'{name}' must be a {a[1]}, got {type(a[0]).__name__}"
             )
 
+    # input file doesn't exist
+    if not os.path.isfile(inputFileLoc):
+        raise ValueError(f"input file '{inputFileLoc}' does not exists")
+
+    # incorret file type
+    if not inputFileLoc[-4:] == ".csv":
+        raise ValueError(f"input file '{inputFileLoc}' is not a csv")
+    if not modelFileLoc[-4:] == ".npz":
+        raise ValueError(f"model file '{modelFileLoc}' is not a .npz file")
+
     if C <= 0:
         raise ValueError(f"C must be greater than 0: got {C}")
     if epsilon <= 0:
