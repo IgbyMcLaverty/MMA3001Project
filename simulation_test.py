@@ -170,6 +170,71 @@ def test_run_simulation():
 
     with pytest.raises(TypeError):
         run_simulation(0.01,270,100000,0.005,250,1000,0.4,0.5,0.181,0.25,24,temp_function_2,1)
-    
 
-    
+
+
+    # test range checks
+
+    # 0 dt
+    with pytest.raises(ValueError):
+        run_simulation(0,270,100000,0.005,250,1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    # too high sea temp
+    with pytest.raises(ValueError):
+        run_simulation(0.01,1000,100000,0.005,250,1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    # too low sea temp
+    with pytest.raises(ValueError):
+        run_simulation(0.01,100,100000,0.005,250,1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    # too low ground pressure
+    with pytest.raises(ValueError):
+        run_simulation(0.01,270,100,0.005,250,1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    # too high ground pressure
+    with pytest.raises(ValueError):
+        run_simulation(0.01,270,1000000,0.005,250,1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    # too high lapse rate
+    with pytest.raises(ValueError):
+        run_simulation(0.01,270,100000,0.1,250,1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    # too low lapse rate
+    with pytest.raises(ValueError):
+        run_simulation(0.01,270,100000,-0.1,250,1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    # velocity > mach 1
+    with pytest.raises(ValueError):
+        run_simulation(0.01,270,100000,0.005,400,1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    # negative velocity
+    with pytest.raises(ValueError):
+        run_simulation(0.01,270,100000,0.005,-250,1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    # negative initial altitude
+    with pytest.raises(ValueError):
+        run_simulation(0.01,270,100000,0.005,250,-1000,0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    # negative coedragClosed
+    with pytest.raises(ValueError):
+        run_simulation(0.01,270,100000,0.005,250,1000,-0.4,0.5,0.181,0.25,24,constant_extension,1)
+
+    # negative coedragOpen
+    with pytest.raises(ValueError):
+        run_simulation(0.01,270,100000,0.005,250,1000,0.4,-0.5,0.181,0.25,24,constant_extension,1)
+
+    # negative areaClosed
+    with pytest.raises(ValueError):
+        run_simulation(0.01,270,100000,0.005,250,1000,0.4,0.5,-0.181,0.25,24,constant_extension,1)
+
+    # negative area open
+    with pytest.raises(ValueError):
+        run_simulation(0.01,270,100000,0.005,250,1000,0.4,0.5,0.181,-0.25,24,constant_extension,1)
+
+    # negative mass
+    with pytest.raises(ValueError):
+        run_simulation(0.01,270,100000,0.005,250,1000,0.4,0.5,0.181,0.25,-24,constant_extension,1)
+
+    # negative extension speed
+    with pytest.raises(ValueError):
+        run_simulation(0.01,270,100000,0.005,250,1000,0.4,0.5,0.181,0.25,24,constant_extension,-1)

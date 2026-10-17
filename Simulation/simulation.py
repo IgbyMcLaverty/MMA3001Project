@@ -172,6 +172,11 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         raise ValueError(
             f"'mass' must be greater than 0, got {mass}"
         )
+
+    if not (0 <= extensionSpeed):
+        raise ValueError(
+            f"'extensionSpeed' must be non-negative, got {extensionSpeed}"
+        )
     # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     vel = initialVelocity
