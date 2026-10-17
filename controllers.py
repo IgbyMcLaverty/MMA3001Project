@@ -1186,7 +1186,7 @@ if __name__ == "__main__":
     #train_linear_regression_2("data/trainingData.csv")
     #train_svr("data/trainingData.csv",SVR_MODEL_FILE,2,0.1,0.1667)
     #eval_svr("data/validationData.csv","svr_model.npz")
-    train_nn("data/trainingData.csv",NN_MODEL_FILE,patience=100,hiddenSizes=[16,16,16],maxEpochs=1000)
+    train_nn("data/trainingData.csv",NN_MODEL_FILE,patience=100,hiddenSizes=[16],maxEpochs=1000)
     #train_nn_2("data/trainingData_initialConditions.csv",NN_MODEL_FILE,NN_MODEL_FILE,populationSize=4,sigma=0.1,learningRate=0.02)
     eval_nn("data/validationData.csv",NN_MODEL_FILE)
 
