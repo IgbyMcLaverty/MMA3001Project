@@ -21,6 +21,12 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
+## Updating documentation
+Run the following command to automatically generate the html documentation files
+```
+pdoc "controllers.py" "evalControllers.py" --docformat google -o ./docs
+```
+
 ## AI Acknowledgement
 
 This project was developed with assistance from generative artificial intelligence (AI) tools.

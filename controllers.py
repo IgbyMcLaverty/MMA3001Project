@@ -15,7 +15,7 @@ setExtension = None # the extesion for constant_extension, set by set_constant_e
 def constant_extension(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate):
     """
     Regardless of input arguments, simply outputs a constant extension value. Value can be changed
-    by calling set_constant_extension().
+    by calling `set_constant_extension`.
     Value is not clamped between 0 and 1 since this is done by the simulation.
     
     Args:
@@ -38,7 +38,7 @@ def constant_extension(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate):
 
 def set_constant_extension(newExtension):
     """
-    Sets the extension used by constant_extension().
+    Sets the extension used by `constant_extension`.
     Value is not not clamped between 0 and 1 since this is done by the simulation.
     
     Args:
@@ -64,8 +64,8 @@ pControllerKP = None # the proportional gain for p_controller, loaded from P_CON
 def p_controller(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate):
     """
     Applies a proportional gain to the altitude error (target-altitude) in order to determine extension value.
-    Uses the global variable "pControllerKP" as its gain. If it has not been set yet, it is loaded
-    from P_CONTROLLER_MODEL_FILE (saved by tune_p_controller) on the first call.
+    Uses the global variable `pControllerKP` as its gain. If it has not been set yet, it is loaded
+    from `P_CONTROLLER_MODEL_FILE` (saved by `tune_p_controller`) on the first call.
     
     Args:
         alt (float): The current altitude of the rocket in meters
