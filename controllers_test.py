@@ -145,3 +145,49 @@ def test_train_nn():
 
     with pytest.raises(TypeError):
         train_nn("data/trainingData.csv","pytestTempDirectory/nn_model.npz",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed="0")
+
+    # Range checks
+
+    #
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model.npz",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
+
+    # non csv file input
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.npz","pytestTempDirectory/nn_model.npz",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
+
+    # missing input file
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData67.csv","pytestTempDirectory/nn_model.npz",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
+
+    # incorrect type for model file
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model.csv",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
+
+    # incorrectly formatted hiddenSizes input
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model.npz",hiddenSizes=(-2,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
+
+    # negative learning rate
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model.npz",hiddenSizes=(64,64),activation="relu",learningRate=-1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
+
+    # negative batch size
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model.npz",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=-128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
+
+    # negative max epochs
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model.npz",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=-500,patience=30,valFraction=0.15,seed=0)
+
+    # negative patience
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model.npz",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=-30,valFraction=0.15,seed=0)
+
+    # negative val fraction
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model.npz",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=-0.15,seed=0)
+
+    # val fraction > 1
+    with pytest.raises(TypeError):
+        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model.npz",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=1.15,seed=0)
