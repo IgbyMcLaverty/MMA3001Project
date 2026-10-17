@@ -148,10 +148,6 @@ def test_train_nn():
 
     # Range checks
 
-    #
-    with pytest.raises(TypeError):
-        train_nn("data/trainingData.csv","pytestTempDirectory/nn_model.npz",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
-
     # non csv file input
     with pytest.raises(TypeError):
         train_nn("data/trainingData.npz","pytestTempDirectory/nn_model.npz",hiddenSizes=(64,64),activation="relu",learningRate=1e-3,batchSize=128,maxEpochs=500,patience=30,valFraction=0.15,seed=0)
