@@ -16,7 +16,7 @@ from controllers import _svrModel
 
 # Written manually then modified by Claude ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-def eval_controller(inputFileLoc,controller,controllerName):
+def eval_controller(inputFileLoc,controller,controllerName,plotHistogram=True):
     """
     Uses a set of initial conditions and a provided controller and calculates evaluation criteria.
     Initial conditions which result in over and under shooting are plot on one histogram. The undershooting and overshooting conditions are plot seperately where instead 
@@ -27,6 +27,7 @@ def eval_controller(inputFileLoc,controller,controllerName):
             Columns = ["initialAltitude","initialVelocity","seaTemp","groundPressure","lapserate","undershot","overshot"]
         controller (function): A function which contains the control algorithm being evaluated
         controllerName (straing): The name of the controller which will be put in title of plots
+        plotHistogram (bool): Flag for whether or not to plot the histograms of the achieved apogees. Defaults to True
     
     Returns:
         apogees (list): A 1D list containing the achieved apogees for the non-over/under shooting data.
@@ -35,6 +36,7 @@ def eval_controller(inputFileLoc,controller,controllerName):
     argumentTypes = {
             "inputFileLoc": [inputFileLoc,str],
             "controllerName": [controllerName,str],
+            "plotHistogram": [plotHistogram,bool]
         }
     
     for name, a in argumentTypes.items():
@@ -167,27 +169,28 @@ def eval_controller(inputFileLoc,controller,controllerName):
     # error of the controller relative to the best achievable apogee (arrays so they can be subtracted)
     overshotErrors = np.array(overshotApogees) - np.array(overshotBestApogees)
 
-    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+    if plotHistogram:
+        fig, axes = plt.subplots(1, 3, figsize=(18, 5))
 
-    # plot histogram for non shooting data
-    axes[0].hist(apogees,bins=np.arange(2000,4000,100),color="grey")
-    axes[0].set_title(f"{controllerName} apogee histogram")
-    axes[0].set_xlabel("Apogee")
-    axes[0].set_ylabel("Occurances")
+        # plot histogram for non shooting data
+        axes[0].hist(apogees,bins=np.arange(2000,4000,100),color="grey")
+        axes[0].set_title(f"{controllerName} apogee histogram")
+        axes[0].set_xlabel("Apogee")
+        axes[0].set_ylabel("Occurances")
 
-    # plot histogram for error with undershooting data
-    axes[1].hist(undershotErrors,bins=np.arange(np.min(undershotErrors),5,5),color="blue")
-    axes[1].set_title(f"{controllerName} undershot error histogram")
-    axes[1].set_xlabel("apogee with controller vs constant extension")
-    axes[1].set_ylabel("Occurances")
+        # plot histogram for error with undershooting data
+        axes[1].hist(undershotErrors,bins=np.arange(np.min(undershotErrors),5,5),color="blue")
+        axes[1].set_title(f"{controllerName} undershot error histogram")
+        axes[1].set_xlabel("apogee with controller vs constant extension")
+        axes[1].set_ylabel("Occurances")
 
-    # plot histogram for error with overshooting data
-    axes[2].hist(overshotErrors,bins=np.arange(0,np.max(overshotErrors),5),color="red")
-    axes[2].set_title(f"{controllerName} overshot error histogram")
-    axes[2].set_xlabel("apogee with controller vs constant extension")
-    axes[2].set_ylabel("Occurances")
+        # plot histogram for error with overshooting data
+        axes[2].hist(overshotErrors,bins=np.arange(0,np.max(overshotErrors),5),color="red")
+        axes[2].set_title(f"{controllerName} overshot error histogram")
+        axes[2].set_xlabel("apogee with controller vs constant extension")
+        axes[2].set_ylabel("Occurances")
 
-    fig.tight_layout()
+        fig.tight_layout()
 
     return apogees
 
@@ -199,15 +202,15 @@ if __name__ == "__main__":
     inputData = "data/validationData_initialConditions.csv"
 
     print("Evaluating P controller...")
-    dataP = eval_controller(inputData,p_controller,"P controller")
+    dataP = eval_controller(inputData,p_controller,"P controller",False)
     print("Evaluating linear regression...")
-    dataLR = eval_controller(inputData,linear_regression_controller,"Linear Regression controller")
+    dataLR = eval_controller(inputData,linear_regression_controller,"Linear Regression controller",False)
     print("Evaluating linear regression 2...")
-    dataLR2 = eval_controller(inputData,linear_regression_2_controller,"Linear Regression 2 controller")
+    dataLR2 = eval_controller(inputData,linear_regression_2_controller,"Linear Regression 2 controller",False)
     print("Evaluating evaluating SVR...")
-    dataSVR = eval_controller(inputData,svr_controller,"SVR controller")
+    dataSVR = eval_controller(inputData,svr_controller,"SVR controller",False)
     print("Evaluating NN...")
-    dataNN = eval_controller(inputData,nn_controller,"NN controller")
+    dataNN = eval_controller(inputData,nn_controller,"NN controller",False)
 
     dataAll = [dataP, dataLR, dataLR2, dataSVR, dataNN]
 
