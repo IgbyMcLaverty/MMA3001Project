@@ -21,8 +21,8 @@ MIN_LAPSE = -0.015 # Kelvin/m
 MAX_LAPSE = 0.015 # Kelvin/m
 
 NUM_TRIALS_TRAIN = 150
-NUM_TRIALS_VAL = 50
-NUM_TRIALS_TEST = 100
+NUM_TRIALS_VAL = 150
+NUM_TRIALS_TEST = 150
 
 SAMPLES_PER_TRAIL = 100
 
@@ -194,11 +194,15 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
     print(f"Saved initial condtions to {outputFileName}_initialConditions.csv")
 
 if __name__ == "__main__":
+    print("Begin dataset generation...")
     # generate training dataset
+    print("Begin generating training data")
     generate_data("data","trainingData",NUM_TRIALS_TRAIN)
 
     # generatre validation dataset
+    print("Begin generating validation data")
     generate_data("data","validationData",NUM_TRIALS_VAL)
 
     # generatre test dataset
+    print("Begin generating test data")
     generate_data("data","testData",NUM_TRIALS_TEST)
