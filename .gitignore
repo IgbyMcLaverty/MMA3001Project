@@ -218,7 +218,9 @@ __marimo__/
 .streamlit/secrets.toml
 
 # Data for this project
-saturnSims/
+SATURN_*
+With_Airbrakes_Scrubbed/
+Without_Airbrakes_Scrubbed/
 data/
 *.npz
 
