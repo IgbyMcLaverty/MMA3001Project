@@ -217,16 +217,15 @@ if __name__ == "__main__":
     dataAll = [dataP, dataLR, dataLR2, dataSVR, dataNN]
     dataOSAll = [dataOSP, dataOSLR, dataOSLR2, dataOSSVR, dataOSNN]
 
-    # Edit these to rename each box/strip (same order as the data lists)
     boxLabels = ["P Controller", "Linear Regression", "Linear Regression 2", "SVR", "Neural Network"]
-
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 7))
 
     # --- Left subplot: box plot ---
     ax1.boxplot(dataAll, tick_labels=boxLabels)
-    ax1.set_title("Box Plot Title")
-    ax1.set_xlabel("X Axis Label")
-    ax1.set_ylabel("Y Axis Label")
+    ax1.axhline(y=3048, color="lightgray", linestyle="--", linewidth=2,label="Target: 3048", zorder=1)
+    ax1.set_title("Controller Comparison in Normal Conditions")
+    ax1.set_xlabel("CONTROLLER")
+    ax1.set_ylabel("Apogee (m)")
 
     # --- Right subplot: strip plot ---
     rng = np.random.default_rng(0)  # fixed seed so the jitter is repeatable
@@ -234,14 +233,12 @@ if __name__ == "__main__":
         d = np.asarray(d)
         x = i + rng.uniform(-0.2, 0.2, size=len(d))  # horizontal jitter
         ax2.scatter(x, d, s=25, alpha=0.6, edgecolors="none", zorder=3)
-        # short horizontal line marking the median of each dataset
-        ax2.hlines(np.median(d), i - 0.3, i + 0.3, color="black", linewidth=2, zorder=4)
 
     ax2.set_xticks(range(1, len(dataOSAll) + 1))
     ax2.set_xticklabels(boxLabels)
-    ax2.set_title("Strip Plot Title")
-    ax2.set_xlabel("X Axis Label")
-    ax2.set_ylabel("Y Axis Label")
+    ax2.set_title("Apogee Error for Overshooting Conditions")
+    ax2.set_xlabel("CONTROLLER")
+    ax2.set_ylabel("Error (m)")
 
     fig.tight_layout()
     plt.show()
