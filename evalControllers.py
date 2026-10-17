@@ -29,7 +29,7 @@ def eval_controller(inputFileLoc,controller,controllerName):
         controllerName (straing): The name of the controller which will be put in title of plots
     
     Returns:
-        None
+        apogees (list): A 1D list containing the achieved apogees for the non-over/under shooting data.
     """
 
     argumentTypes = {
@@ -188,13 +188,39 @@ def eval_controller(inputFileLoc,controller,controllerName):
     axes[2].set_ylabel("Occurances")
 
     fig.tight_layout()
-    plt.show()
+
+    return apogees
 
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 if __name__ == "__main__":
-    #eval_controller("data/validationData_initialConditions.csv",p_controller,"P controller")
-    #eval_controller("data/validationData_initialConditions.csv",linear_regression_controller,"Linear Regression controller")
-    #eval_controller("data/validationData_initialConditions.csv",linear_regression_2_controller,"Linear Regression 2 controller")
-    #eval_controller("data/validationData_initialConditions.csv",svr_controller,"SVR controller")
-    eval_controller("data/validationData_initialConditions.csv",nn_controller,"NN controller")
+    print("Program Start...")
+
+    inputData = "data/validationData_initialConditions.csv"
+
+    print("Evaluating P controller...")
+    dataP = eval_controller(inputData,p_controller,"P controller")
+    print("Evaluating linear regression...")
+    dataLR = eval_controller(inputData,linear_regression_controller,"Linear Regression controller")
+    print("Evaluating linear regression 2...")
+    dataLR2 = eval_controller(inputData,linear_regression_2_controller,"Linear Regression 2 controller")
+    print("Evaluating evaluating SVR...")
+    dataSVR = eval_controller(inputData,svr_controller,"SVR controller")
+    print("Evaluating NN...")
+    dataNN = eval_controller(inputData,nn_controller,"NN controller")
+
+    dataAll = [dataP, dataLR, dataLR2, dataSVR, dataNN]
+
+    # Edit these to rename each box plot (same order as dataAll)
+    boxLabels = ["P Controller", "Linear Regression", "Linear Regression 2", "SVR", "Neural Network"]
+
+    fig, ax = plt.subplots(figsize=(10, 7))
+    ax.axhline(y=3048, color="lightgray", linestyle="--", linewidth=2, label="Target: 3048m", zorder=1)
+    bp = ax.boxplot(dataAll, tick_labels=boxLabels)
+
+    ax.set_title("Comparison of controllers")
+    ax.set_xlabel("Controller")
+    ax.set_ylabel("Apogee(m)")
+
+    fig.tight_layout()
+    plt.show()
