@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from Simulation.simulation import run_simulation_default
+import os
 
 from controllers import p_controller
 from controllers import linear_regression_controller
@@ -30,6 +31,22 @@ def eval_controller(inputFileLoc,controller,controllerName):
     Returns:
         None
     """
+
+    argumentTypes = {
+            "inputFileLoc": [inputFileLoc,str],
+            "controllerName": [controllerName,str],
+        }
+    
+    for name, a in argumentTypes.items():
+        if not isinstance(a[0], a[1]):
+            raise TypeError(
+                f"'{name}' must be a {a[1]}, got {type(a[0]).__name__}"
+            )
+
+    if inputFileLoc[-4:] != ".csv":
+        raise ValueError("'inputFileLoc' must end in '.csv'")
+    if not os.path.isfile(inputFileLoc):
+        raise ValueError(f"'inputFileLoc' does not exist: {inputFileLoc}")
 
     allConditions = pd.read_csv(inputFileLoc)
 
