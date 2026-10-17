@@ -220,7 +220,10 @@ if __name__ == "__main__":
     dataUSAll = [dataUSP, dataUSLR, dataUSLR2, dataUSSVR, dataUSNN]
 
     boxLabels = ["P Controller", "Linear Regression", "Linear Regression 2", "SVR", "Neural Network"]
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20, 7))
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(14, 7))
+
+    # Overall title for the whole figure
+    fig.suptitle("Performance Comparison of all Controllers", fontsize=18, fontweight="bold")
 
     # --- Left subplot: box plot ---
     ax1.boxplot(dataAll, tick_labels=boxLabels)
