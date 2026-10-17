@@ -493,10 +493,11 @@ def manual_sim_eval():
 
     plt.show()
 
-print("Program Start...")
-# uncomment required function
-#manual_sim_eval()
-#eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-#eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
-eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
-#eval_sim_convergance(10,1)
+if __name__ == "__main__":
+    print("Program Start...")
+    # uncomment required function
+    #manual_sim_eval()
+    #eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
+    #eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
+    eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
+    #eval_sim_convergance(10,1)
