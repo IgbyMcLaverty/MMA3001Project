@@ -31,6 +31,8 @@ def eval_controller(inputFileLoc,controller,controllerName,plotHistogram=True):
     
     Returns:
         apogees (list): A 1D list containing the achieved apogees for the non-over/under shooting data.
+        overshotErrors (list): A 1D list containing the errors the controller achieved on the over shooting data.
+        undershotErrors (list): A 1D list containing the errors the controller achieved on the under shooting data.
     """
 
     argumentTypes = {
@@ -192,7 +194,7 @@ def eval_controller(inputFileLoc,controller,controllerName,plotHistogram=True):
 
         fig.tight_layout()
 
-    return apogees
+    return apogees, overshotErrors, undershotErrors
 
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -202,28 +204,44 @@ if __name__ == "__main__":
     inputData = "data/validationData_initialConditions.csv"
 
     print("Evaluating P controller...")
-    dataP = eval_controller(inputData,p_controller,"P controller",False)
+    dataP,dataOSP,dataUSP = eval_controller(inputData,p_controller,"P controller",False)
     print("Evaluating linear regression...")
-    dataLR = eval_controller(inputData,linear_regression_controller,"Linear Regression controller",False)
+    dataLR,dataOSLR,dataUSLR = eval_controller(inputData,linear_regression_controller,"Linear Regression controller",False)
     print("Evaluating linear regression 2...")
-    dataLR2 = eval_controller(inputData,linear_regression_2_controller,"Linear Regression 2 controller",False)
+    dataLR2,dataOSLR2,dataUSLR2 = eval_controller(inputData,linear_regression_2_controller,"Linear Regression 2 controller",False)
     print("Evaluating evaluating SVR...")
-    dataSVR = eval_controller(inputData,svr_controller,"SVR controller",False)
+    dataSVR,dataOSSVR,dataUSSVR = eval_controller(inputData,svr_controller,"SVR controller",False)
     print("Evaluating NN...")
-    dataNN = eval_controller(inputData,nn_controller,"NN controller",False)
+    dataNN,dataOSNN,dataUSNN = eval_controller(inputData,nn_controller,"NN controller",False)
 
     dataAll = [dataP, dataLR, dataLR2, dataSVR, dataNN]
+    dataOSAll = [dataOSP, dataOSLR, dataOSLR2, dataOSSVR, dataOSNN]
 
-    # Edit these to rename each box plot (same order as dataAll)
+    # Edit these to rename each box/strip (same order as the data lists)
     boxLabels = ["P Controller", "Linear Regression", "Linear Regression 2", "SVR", "Neural Network"]
 
-    fig, ax = plt.subplots(figsize=(10, 7))
-    ax.axhline(y=3048, color="lightgray", linestyle="--", linewidth=2, label="Target: 3048m", zorder=1)
-    bp = ax.boxplot(dataAll, tick_labels=boxLabels)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 7))
 
-    ax.set_title("Comparison of controllers")
-    ax.set_xlabel("Controller")
-    ax.set_ylabel("Apogee(m)")
+    # --- Left subplot: box plot ---
+    ax1.boxplot(dataAll, tick_labels=boxLabels)
+    ax1.set_title("Box Plot Title")
+    ax1.set_xlabel("X Axis Label")
+    ax1.set_ylabel("Y Axis Label")
+
+    # --- Right subplot: strip plot ---
+    rng = np.random.default_rng(0)  # fixed seed so the jitter is repeatable
+    for i, d in enumerate(dataOSAll, start=1):
+        d = np.asarray(d)
+        x = i + rng.uniform(-0.2, 0.2, size=len(d))  # horizontal jitter
+        ax2.scatter(x, d, s=25, alpha=0.6, edgecolors="none", zorder=3)
+        # short horizontal line marking the median of each dataset
+        ax2.hlines(np.median(d), i - 0.3, i + 0.3, color="black", linewidth=2, zorder=4)
+
+    ax2.set_xticks(range(1, len(dataOSAll) + 1))
+    ax2.set_xticklabels(boxLabels)
+    ax2.set_title("Strip Plot Title")
+    ax2.set_xlabel("X Axis Label")
+    ax2.set_ylabel("Y Axis Label")
 
     fig.tight_layout()
     plt.show()
