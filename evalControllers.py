@@ -216,29 +216,52 @@ if __name__ == "__main__":
 
     dataAll = [dataP, dataLR, dataLR2, dataSVR, dataNN]
     dataOSAll = [dataOSP, dataOSLR, dataOSLR2, dataOSSVR, dataOSNN]
+    dataUSAll = [dataUSP, dataUSLR, dataUSLR2, dataUSSVR, dataUSNN]
 
     boxLabels = ["P Controller", "Linear Regression", "Linear Regression 2", "SVR", "Neural Network"]
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 7))
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(24,7))
 
     # --- Left subplot: box plot ---
     ax1.boxplot(dataAll, tick_labels=boxLabels)
+    # horizontal line showing the target apogee
     ax1.axhline(y=3048, color="lightgray", linestyle="--", linewidth=2,label="Target: 3048", zorder=1)
     ax1.set_title("Controller Comparison in Normal Conditions")
     ax1.set_xlabel("CONTROLLER")
     ax1.set_ylabel("Apogee (m)")
 
-    # --- Right subplot: strip plot ---
+    # --- Middle subplot: overshoot response ---
     rng = np.random.default_rng(0)  # fixed seed so the jitter is repeatable
     for i, d in enumerate(dataOSAll, start=1):
         d = np.asarray(d)
         x = i + rng.uniform(-0.2, 0.2, size=len(d))  # horizontal jitter
         ax2.scatter(x, d, s=25, alpha=0.6, edgecolors="none", zorder=3)
-
+    
     ax2.set_xticks(range(1, len(dataOSAll) + 1))
     ax2.set_xticklabels(boxLabels)
+
+    # horizontal line to show the optimal value
+    ax2.axhline(y=0, color="lightgray", linestyle="--", linewidth=2,label="Optimal value (error = 0)", zorder=1)
+
     ax2.set_title("Apogee Error for Overshooting Conditions")
     ax2.set_xlabel("CONTROLLER")
     ax2.set_ylabel("Error (m)")
+
+    # --- Right subplot: undershoot response ---
+    rng = np.random.default_rng(0)  # fixed seed so the jitter is repeatable
+    for i, d in enumerate(dataUSAll, start=1):
+        d = np.asarray(d)
+        x = i + rng.uniform(-0.2, 0.2, size=len(d))  # horizontal jitter
+        ax3.scatter(x, d, s=25, alpha=0.6, edgecolors="none", zorder=3)
+    
+    ax3.set_xticks(range(1, len(dataOSAll) + 1))
+    ax3.set_xticklabels(boxLabels)
+
+    # horizontal line to show the optimal value
+    ax3.axhline(y=0, color="lightgray", linestyle="--", linewidth=2,label="Optimal value (error = 0)", zorder=1)
+
+    ax3.set_title("Apogee Error for undershooting Conditions")
+    ax3.set_xlabel("CONTROLLER")
+    ax3.set_ylabel("Error (m)")
 
     fig.tight_layout()
     plt.show()
