@@ -201,7 +201,7 @@ def eval_controller(inputFileLoc,controller,controllerName,plotHistogram=True):
 if __name__ == "__main__":
     print("Program Start...")
 
-    inputData = "data/validationData_initialConditions.csv"
+    inputData = "data/testData_initialConditions.csv"
 
     print("Evaluating P controller...")
     dataP,dataOSP,dataUSP = eval_controller(inputData,p_controller,"P controller",False)
