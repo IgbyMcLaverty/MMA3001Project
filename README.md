@@ -24,7 +24,7 @@ pip install -r requirements.txt
 ## Updating documentation
 Run the following command to automatically generate the html documentation files
 ```
-pdoc "controllers.py" "evalControllers.py" --docformat google -o ./docs
+.\makeDocs.ps1
 ```
 
 ## AI Acknowledgement
