@@ -25,14 +25,14 @@ def eval_controller(inputFileLoc,controller,controllerName,plotHistogram=True):
     Args:
         inputFileLoc (string): The location of the initial condition data csv file. Include directory and .csv in string
             Columns = ["initialAltitude","initialVelocity","seaTemp","groundPressure","lapserate","undershot","overshot"]
-        controller (function): A function which contains the control algorithm being evaluated
+        controller (function): A function which contains the control algorithm being evaluated. Arguments must match the format layed out in `run_simulation`
         controllerName (straing): The name of the controller which will be put in title of plots
         plotHistogram (bool): Flag for whether or not to plot the histograms of the achieved apogees. Defaults to True
     
     Returns:
-        apogees (list): A 1D list containing the achieved apogees for the non-over/under shooting data.
-        overshotErrors (list): A 1D list containing the errors the controller achieved on the over shooting data.
-        undershotErrors (list): A 1D list containing the errors the controller achieved on the under shooting data.
+    - **apogees (list)**: A 1D list containing the achieved apogees for the non-over/under shooting data.
+    - **overshotErrors (list)**: A 1D list containing the errors the controller achieved on the over shooting data.
+    - **undershotErrors (list)**: A 1D list containing the errors the controller achieved on the under shooting data.
     """
 
     argumentTypes = {

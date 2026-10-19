@@ -83,14 +83,14 @@ evalControllers    </h1>
 </span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a><span class="sd">    Args:</span>
 </span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a><span class="sd">        inputFileLoc (string): The location of the initial condition data csv file. Include directory and .csv in string</span>
 </span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a><span class="sd">            Columns = ["initialAltitude","initialVelocity","seaTemp","groundPressure","lapserate","undershot","overshot"]</span>
-</span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a><span class="sd">        controller (function): A function which contains the control algorithm being evaluated</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a><span class="sd">        controller (function): A function which contains the control algorithm being evaluated. Arguments must match the format layed out in `run_simulation`</span>
 </span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a><span class="sd">        controllerName (straing): The name of the controller which will be put in title of plots</span>
 </span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a><span class="sd">        plotHistogram (bool): Flag for whether or not to plot the histograms of the achieved apogees. Defaults to True</span>
 </span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a><span class="sd">    </span>
 </span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a><span class="sd">    Returns:</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a><span class="sd">        apogees (list): A 1D list containing the achieved apogees for the non-over/under shooting data.</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a><span class="sd">        overshotErrors (list): A 1D list containing the errors the controller achieved on the over shooting data.</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a><span class="sd">        undershotErrors (list): A 1D list containing the errors the controller achieved on the under shooting data.</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a><span class="sd">    - **apogees (list)**: A 1D list containing the achieved apogees for the non-over/under shooting data.</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a><span class="sd">    - **overshotErrors (list)**: A 1D list containing the errors the controller achieved on the over shooting data.</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a><span class="sd">    - **undershotErrors (list)**: A 1D list containing the errors the controller achieved on the under shooting data.</span>
 </span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a><span class="sd">    """</span>
 </span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>
 </span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a>    <span class="n">argumentTypes</span> <span class="o">=</span> <span class="p">{</span>
@@ -352,14 +352,14 @@ evalControllers    </h1>
 </span><span id="eval_controller-26"><a href="#eval_controller-26"><span class="linenos"> 26</span></a><span class="sd">    Args:</span>
 </span><span id="eval_controller-27"><a href="#eval_controller-27"><span class="linenos"> 27</span></a><span class="sd">        inputFileLoc (string): The location of the initial condition data csv file. Include directory and .csv in string</span>
 </span><span id="eval_controller-28"><a href="#eval_controller-28"><span class="linenos"> 28</span></a><span class="sd">            Columns = ["initialAltitude","initialVelocity","seaTemp","groundPressure","lapserate","undershot","overshot"]</span>
-</span><span id="eval_controller-29"><a href="#eval_controller-29"><span class="linenos"> 29</span></a><span class="sd">        controller (function): A function which contains the control algorithm being evaluated</span>
+</span><span id="eval_controller-29"><a href="#eval_controller-29"><span class="linenos"> 29</span></a><span class="sd">        controller (function): A function which contains the control algorithm being evaluated. Arguments must match the format layed out in `run_simulation`</span>
 </span><span id="eval_controller-30"><a href="#eval_controller-30"><span class="linenos"> 30</span></a><span class="sd">        controllerName (straing): The name of the controller which will be put in title of plots</span>
 </span><span id="eval_controller-31"><a href="#eval_controller-31"><span class="linenos"> 31</span></a><span class="sd">        plotHistogram (bool): Flag for whether or not to plot the histograms of the achieved apogees. Defaults to True</span>
 </span><span id="eval_controller-32"><a href="#eval_controller-32"><span class="linenos"> 32</span></a><span class="sd">    </span>
 </span><span id="eval_controller-33"><a href="#eval_controller-33"><span class="linenos"> 33</span></a><span class="sd">    Returns:</span>
-</span><span id="eval_controller-34"><a href="#eval_controller-34"><span class="linenos"> 34</span></a><span class="sd">        apogees (list): A 1D list containing the achieved apogees for the non-over/under shooting data.</span>
-</span><span id="eval_controller-35"><a href="#eval_controller-35"><span class="linenos"> 35</span></a><span class="sd">        overshotErrors (list): A 1D list containing the errors the controller achieved on the over shooting data.</span>
-</span><span id="eval_controller-36"><a href="#eval_controller-36"><span class="linenos"> 36</span></a><span class="sd">        undershotErrors (list): A 1D list containing the errors the controller achieved on the under shooting data.</span>
+</span><span id="eval_controller-34"><a href="#eval_controller-34"><span class="linenos"> 34</span></a><span class="sd">    - **apogees (list)**: A 1D list containing the achieved apogees for the non-over/under shooting data.</span>
+</span><span id="eval_controller-35"><a href="#eval_controller-35"><span class="linenos"> 35</span></a><span class="sd">    - **overshotErrors (list)**: A 1D list containing the errors the controller achieved on the over shooting data.</span>
+</span><span id="eval_controller-36"><a href="#eval_controller-36"><span class="linenos"> 36</span></a><span class="sd">    - **undershotErrors (list)**: A 1D list containing the errors the controller achieved on the under shooting data.</span>
 </span><span id="eval_controller-37"><a href="#eval_controller-37"><span class="linenos"> 37</span></a><span class="sd">    """</span>
 </span><span id="eval_controller-38"><a href="#eval_controller-38"><span class="linenos"> 38</span></a>
 </span><span id="eval_controller-39"><a href="#eval_controller-39"><span class="linenos"> 39</span></a>    <span class="n">argumentTypes</span> <span class="o">=</span> <span class="p">{</span>
@@ -534,18 +534,18 @@ of plotting the achieved apogees directly, it plots the error between what the c
 <ul>
 <li><strong>inputFileLoc (string):</strong>  The location of the initial condition data csv file. Include directory and .csv in string
 Columns = ["initialAltitude","initialVelocity","seaTemp","groundPressure","lapserate","undershot","overshot"]</li>
-<li><strong>controller (function):</strong>  A function which contains the control algorithm being evaluated</li>
+<li><strong>controller (function):</strong>  A function which contains the control algorithm being evaluated. Arguments must match the format layed out in <code>run_simulation</code></li>
 <li><strong>controllerName (straing):</strong>  The name of the controller which will be put in title of plots</li>
 <li><strong>plotHistogram (bool):</strong>  Flag for whether or not to plot the histograms of the achieved apogees. Defaults to True</li>
 </ul>
 
-<h6 id="returns">Returns:</h6>
+<p>Returns:</p>
 
-<blockquote>
-  <p>apogees (list): A 1D list containing the achieved apogees for the non-over/under shooting data.
-  overshotErrors (list): A 1D list containing the errors the controller achieved on the over shooting data.
-  undershotErrors (list): A 1D list containing the errors the controller achieved on the under shooting data.</p>
-</blockquote>
+<ul>
+<li><strong>apogees (list)</strong>: A 1D list containing the achieved apogees for the non-over/under shooting data.</li>
+<li><strong>overshotErrors (list)</strong>: A 1D list containing the errors the controller achieved on the over shooting data.</li>
+<li><strong>undershotErrors (list)</strong>: A 1D list containing the errors the controller achieved on the under shooting data.</li>
+</ul>
 </div>
 
 
