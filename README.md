@@ -21,6 +21,9 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
+## Documentation
+The documentation for this project can be found [here](https://igbymclaverty.github.io/MMA3001Project/).
+
 ## Updating documentation
 Run the following command to automatically generate the html documentation files
 ```
