@@ -3,17 +3,25 @@ import inspect
 from line_profiler import profile
 
 AIR_R = 287 # J/kg*kelvin
+"""float: Ideal gas constant for air in Joules per kilogram Kelvin"""
 GRAVITY = 9.81 # m/s^2
+"""float: Acceleration due to gravity in meters/second^2"""
 
 COE_DRAG_CLOSED = 0.39146244 # the default coefficient of drag with the flaps retracted to be applied across the whole flight
+"""float: The default coefficient of drag for when the Air Brakes and fully retracted"""
 COE_DRAG_OPEN = 0.53332019 # the default coefficient of drag with the flaps extended to be applied across the whole flight
+"""float: The default coefficient of drag for when the Air Brakes are fully extended"""
 AREA_CLOSED = 0.01824 # the default cross sectional area of rocket with the air brakes retracted
+"""float: The default cross-sectional area when the Air Brakes are fully retracted in meters squared"""
 AREA_OPEN = AREA_CLOSED + 0.0108 # the default cross sectional area of rocket with the air brakes extended
+"""float: The default cross-sectional area when the Air Brakes are fully extended in meters squared"""
 MASS = 24.510768830369635 # the default mass of the rocket
+"""float: The default mass of the rocket in kilograms"""
 DT = 0.01 # the default timestep in seconds
+"""float: The default time step in seconds"""
 
 def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude, extension_function):
-    """Runs the 1DOF simulation with the time step, default coefficient of drag, cross sectional area and mass
+    """Runs `run_simulation` with the default time step, coefficients of drag, cross sectional areas and mass
     
     Args:
         seaTemp (float): The temperature at sea level in kelvin
@@ -24,14 +32,14 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
         extension_function (function): The function which takes in the rocket state and returns the requested Air Brakes extension. See run_simulation for argument structure
     
     Returns:
-        returnDictionary (dictionary): A dictionary containing the results of the simulation. Entries:
-            "apogee" (float): The maximum altitude the simulation reached in meters
-            "timeHistory" (list): A list containing the time of each timestep
-            "altHistory" (list): A list containing the calculated altitude at each timestep
-            "accHistory" (list): A list containing the calculated acceleration at each timestep
-            "densityHistory" (list): A list containing the calcualte air density at each timestep
-            "tempHistory" (list): A list containing the calculated temperature at each timestep
-            "pressureHistory" (list): A list containing the calculated pressure at each timestep
+    - **returnDictionary (dictionary)**: A dictionary containing the results of the simulation. Entries:
+        - "apogee" (float): The maximum altitude the simulation reached in meters
+        - "timeHistory" (list): A list containing the time of each timestep
+        - "altHistory" (list): A list containing the calculated altitude at each timestep
+        - "accHistory" (list): A list containing the calculated acceleration at each timestep
+        - "densityHistory" (list): A list containing the calcualte air density at each timestep
+        - "tempHistory" (list): A list containing the calculated temperature at each timestep
+        - "pressureHistory" (list): A list containing the calculated pressure at each timestep
 
     """
 
@@ -54,7 +62,9 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
 # @profile placed here for use with timeSim.py. Does not effect code otherwise
 @profile
 def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDragClosed,coeDragOpen,areaClosed,areaOpen,mass,extension_function,extensionSpeed):
-    """Runs the 1DOF simulation
+    """Runs the 1DOF simulation with the chosen settings. Calculates drag force at each time step and uses and RK2 approach to integrate the altitude up until apogee.
+    Takes in an extension function which is evaluated once at the end of each time step to determine the extension for the next time step.
+    The speed of the Air Brakes extension can be controlled using the 'extensionSpeed' input.
     
     Args:
         dt (float): The timestep of the simulation in seconds
@@ -68,18 +78,24 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         areaClosed (float): The cross sectional area of the body with the flaps retracted in m^2
         areaOpen (float): The cross sectional area of the body with the flaps extened in m^2
         mass (float): The mass of the body in kg 
-        extension_function (function): The function which takes in the rocket state and returns the requested Air Brakes extension. Must return a single float. Arguments: alt (altitude in meters), vel (velocity in m/s), acc (acceleration in m/s^2), currExt (The current extension between 0 and 1), gndTemp (The ground temperature in Kelvin), gndPres (The ground pressure in pascal)
+        extension_function (function): The function which takes in the rocket state and returns the requested Air Brakes extension. Must return a single float. Arguments: 
+            - alt (altitude in meters)
+            - vel (velocity in m/s) 
+            - acc (acceleration in m/s^2)
+            - currExt (The current extension between 0 and 1)
+            - gndTemp (The ground temperature in Kelvin)
+            - gndPres (The ground pressure in pascal)
         extensionSpeed (float): The time taken to extended from 0 to 100 percent in seconds. Set to 0 for no extension delay
     
     Returns:
-        returnDictionary (dictionary): A dictionary containing the results of the simulation. Entries:
-            "apogee" (float): The maximum altitude the simulation reached in meters
-            "timeHistory" (list): A list containing the time of each timestep
-            "altHistory" (list): A list containing the calculated altitude at each timestep
-            "accHistory" (list): A list containing the calculated acceleration at each timestep
-            "densityHistory" (list): A list containing the calcualte air density at each timestep
-            "tempHistory" (list): A list containing the calculated temperature at each timestep
-            "pressureHistory" (list): A list containing the calculated pressure at each timestep
+    - **returnDictionary (dictionary)**: A dictionary containing the results of the simulation. Entries:
+        - "apogee" (float): The maximum altitude the simulation reached in meters
+        - "timeHistory" (list): A list containing the time of each timestep
+        - "altHistory" (list): A list containing the calculated altitude at each timestep
+        - "accHistory" (list): A list containing the calculated acceleration at each timestep
+        - "densityHistory" (list): A list containing the calcualte air density at each timestep
+        - "tempHistory" (list): A list containing the calculated temperature at each timestep
+        - "pressureHistory" (list): A list containing the calculated pressure at each timestep
 
     """
     # type checks for input data
@@ -306,7 +322,7 @@ def calculate_pressure(altitude, seaTemp, seaPressure, lapseRate):
         lapseRate (float): The change in tempature as altitude increases in kelvin per meter
     
     Returns:
-        pressure (float): The pressure at the given altitude in pascal
+    - **pressure (float)**: The pressure at the given altitude in pascal
     """
 
     # Generated by Claude then modified manually ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -372,7 +388,7 @@ def calculate_drag(velocity, coeDrag, area, airDensity):
         airDensity (float): The air density in kg/m^3
     
     Returns:
-        dragForce (float): The drag force experienced by the body in Newtons
+    - **dragForce (float)**: The drag force experienced by the body in Newtons
     """
 
     # do type checks on all inputs
