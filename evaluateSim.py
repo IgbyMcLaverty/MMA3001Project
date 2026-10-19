@@ -132,7 +132,6 @@ def eval_on_frames(frameLoc,dt,numFrames):
     ax.set_ylabel("Residual (m)")
 
     plt.tight_layout()
-    plt.show()
 
 def eval_on_frames_with_brakes(frameLoc,numFrames):
     """
@@ -256,7 +255,6 @@ def eval_on_frames_with_brakes(frameLoc,numFrames):
     ax.set_ylabel("Residual (m)")
 
     plt.tight_layout()
-    plt.show()
 
 def eval_sim_convergance(maxdt,tolerance):
     """
@@ -438,7 +436,6 @@ def eval_on_frame(fileLoc,frameLoc,frameNumber,dt):
     ax.legend()
 
     plt.tight_layout()
-    plt.show()
 
 def manual_sim_eval():
     """
@@ -491,13 +488,12 @@ def manual_sim_eval():
     plt.xlabel("Index")
     plt.ylabel("Acceleration (m/s^2)")
 
-    plt.show()
-
 if __name__ == "__main__":
     print("Program Start...")
     # uncomment required function
     #manual_sim_eval()
-    #eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
-    #eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
+    eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
+    eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
     eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
     #eval_sim_convergance(10,1)
+    plt.show()
