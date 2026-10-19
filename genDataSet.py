@@ -6,32 +6,47 @@ import pandas as pd
 from controllers import constant_extension, set_constant_extension
 
 MIN_VEL = 200 # m/s
+"""float: The minimum initial velocity to be present in the generated data in meters per second"""
 MAX_VEL = 260 # m/s
+"""float: The maximum initial velocity to be present in the generated data in meters per second"""
 
 MIN_ALT = 1100 # m
+"""float: The minimum initial altitude to be present in the generated data in meters"""
 MAX_ALT = 1500 # m
+"""float: The maximum initial altitude to be present in the generated data in meters"""
 
 MIN_TEMP = 250 # Kelvin
+"""float: The minimum ground temperature to be present in the generated data in kelvin"""
 MAX_TEMP = 310 # Kelvin
+"""float: The maximum ground temperature to be present in the generated data in kelvin"""
 
 MIN_PRES = 98500 # Pascal
+"""float: The minimum ground pressure to be present in the generated data in pascal"""
 MAX_PRES = 100000 # Pascal
+"""float: The maximum ground pressure to be present in the generated data in pascal"""
 
 MIN_LAPSE = -0.015 # Kelvin/m
+"""float: The minimum lapse rate to be present in the generated data in kelvin per meter"""
 MAX_LAPSE = 0.015 # Kelvin/m
+"""float: The maximum lapse rate to be present in the generated data in kelvin per meter"""
 
 NUM_TRIALS_TRAIN = 150
+"""int: The number of initial conditions to generate for the training data"""
 NUM_TRIALS_VAL = 150
+"""int: The number of initial conditions to generate for the validation data"""
 NUM_TRIALS_TEST = 150
+"""int: The number of initial conditions to generate for the testing data"""
 
 SAMPLES_PER_TRAIL = 100
+"""int: The number of timesteps to save per initial condition"""
 
 RAND_SEED = 1234
+"""int: The seed for the random number generator"""
 
 TARGET_ALT = 3048 # m, 10,000 feet in meters
+"""float: The target apogee which extension wil be optimised for in meters"""
 TARGET_TOLERANCE = 0.1 # m, altitude above or below which is considered close enough
-
-random.seed(RAND_SEED)
+"""float: The distance above or below the target apogee which is considered acceptable in meters"""
 
 def generate_data(outputDirectory,outputFileName,numberTrails):
     """
@@ -43,7 +58,9 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
     Args:
         outputDirectory (string): The folder to which the data should be saved
         outputFileName (string): The name of the file which will be created in the supplied directory. Do not include .csv
-        numberTrails (integer): The number of sets of initial conditions to generate.
+        numberTrails (integer): The number ofinitial conditions to generate.
+    Returns:
+    - **None**
     """
     # type checks for input arguments
     if not isinstance(outputDirectory,str):
@@ -194,6 +211,7 @@ def generate_data(outputDirectory,outputFileName,numberTrails):
     print(f"Saved initial condtions to {outputFileName}_initialConditions.csv")
 
 if __name__ == "__main__":
+    random.seed(RAND_SEED)
     print("Begin dataset generation...")
     # generate training dataset
     print("Begin generating training data")
