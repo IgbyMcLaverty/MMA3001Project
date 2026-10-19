@@ -556,6 +556,7 @@ def train_linear_regression(inputFileLoc,modelFileLoc=LINEAR_REGRESSION_MODEL_FI
     plotLabels = featureColumns + ["predicted extension","acceleration"]
  
     fig, axes = plt.subplots(2, 4, figsize=(16, 8))
+    fig.suptitle("Linear Regression Residuals")
     axes = axes.flatten()
     for ax, x, label in zip(axes, plotX, plotLabels):
         ax.scatter(x, residuals, s=4, alpha=0.3)
@@ -669,6 +670,7 @@ def train_linear_regression_2(inputFileLoc,modelFileLoc=LINEAR_REGRESSION_2_MODE
     plotLabels = featureColumns + ["predicted extension","acceleration"]
 
     fig, axes = plt.subplots(2, 4, figsize=(16, 8))
+    fig.suptitle("Revised Linear Regression Residuals")
     axes = axes.flatten()
     for ax, x, label in zip(axes, plotX, plotLabels):
         ax.scatter(x, residuals, s=4, alpha=0.3)
@@ -1189,5 +1191,6 @@ if __name__ == "__main__":
     train_nn("data/trainingData.csv",NN_MODEL_FILE,patience=100,hiddenSizes=[16],maxEpochs=1000)
     #train_nn_2("data/trainingData_initialConditions.csv",NN_MODEL_FILE,NN_MODEL_FILE,populationSize=4,sigma=0.1,learningRate=0.02)
     #eval_nn("data/validationData.csv",NN_MODEL_FILE)
+    plt.show()
 
     
