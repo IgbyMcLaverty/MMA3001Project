@@ -9,10 +9,21 @@ import os
 def scrub_data(inputLoc,outputLoc):
     """
     Removes extraneous columns and rows from the raw SATURN frames. Only includes the time between burnout and apogee.
+    Only columns which remain are:
+        - time
+        - dt
+        - altitude_barometric
+        - mass_total
+        - density
+        - air_temperature
+        - air_brakes_extension,
+        - air_pressure
 
     Args:
         inputLoc (string): The folder containing the raw SATURN csv files. Do not include final slash
         outputLoc (string): The folder where the output will be written. Do not include final slash
+    Returns:
+    - **None**
     """
     argumentTypes = {
             "inputLoc": [inputLoc,str],
