@@ -49,6 +49,8 @@ The documentation for this project can be found [here](https://igbymclaverty.git
 
 Note that you need to select a specific file on the left for any code to appear.
 
+Pytest report can be found [here](https://igbymclaverty.github.io/MMA3001Project/pytestReport.html)
+
 ## Running the code
 ### Evaluating the simulation
 Follow the steps in this order:
