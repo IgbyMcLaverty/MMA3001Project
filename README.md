@@ -20,6 +20,7 @@ python -m venv .venv
 ```
 pip install -r requirements.txt
 ```
+7. Download the SATURN data and place it into the With_Airbrakes and Without_Airbrakes folders
 
 ## Documentation
 The documentation for this project can be found [here](https://igbymclaverty.github.io/MMA3001Project/).
@@ -28,6 +29,14 @@ The documentation for this project can be found [here](https://igbymclaverty.git
 Run the following command to automatically generate the html documentation files
 ```
 .\makeDocs.ps1
+```
+To update the pytest report run:
+```
+pytest –html=docs/pytestReport.html
+```
+If new modules are imported, use the following command to update requirements.txt
+```
+pip freeze > requirements.txt
 ```
 
 ## AI Acknowledgement
