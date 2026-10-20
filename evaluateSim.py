@@ -150,7 +150,7 @@ def eval_on_frames(frameLoc,dt,numFrames):
 
     plt.tight_layout()
 
-def eval_on_frames_with_brakes(frameLoc,numFrames):
+def eval_on_frames_with_brakes(frameLoc,numFrames,firstFrame=0):
     """
     Runs the sim with intial condtions from the supplied saturn sim with the set dt value. Plots residuals and RMSE.
     Coefficient of drag and cross sectional area are interpolated based on extension. Extension is constant based on the initial conditions
@@ -167,6 +167,7 @@ def eval_on_frames_with_brakes(frameLoc,numFrames):
             - extension: 0 to 1
         dt (float): The dt value to be used in the sim
         numFrames (int): The number of frames to compare against. Count starts from frame 0
+        firstFrame (int): The index of the first frame to be evaluated. Defaults to 0.
     
     Returns:
     - **None**
@@ -186,7 +187,7 @@ def eval_on_frames_with_brakes(frameLoc,numFrames):
     calcApogees = []
 
     # each loop is a different set of initial condtions
-    for i in range(numFrames):
+    for i in range(firstFrame,numFrames+firstFrame):
         seaLevelTemp = frame["seaTemp"][i]
         seaLevelPressure = frame["groundPressure"][i]
         lapseRate = frame["lapserate"][i]
@@ -211,15 +212,15 @@ def eval_on_frames_with_brakes(frameLoc,numFrames):
 
         calcApogees.append(simResults['apogee'])
 
-        print(f"progess: {(i/numFrames)*100:.0f}%",end='\r')
+        print(f"progess: {((i-firstFrame)/numFrames)*100:.0f}%",end='\r')
 
-    rmse = root_mean_squared_error(frame.loc[0:(numFrames-1), "apogee"],calcApogees)
+    rmse = root_mean_squared_error(frame.loc[firstFrame:(firstFrame+numFrames-1), "apogee"],calcApogees)
 
     print()
     print(f"All sims complete")
     print(f"final RMSE: {rmse:.2f} meters")
 
-    residuals = calcApogees - frame.loc[0:(numFrames-1), "apogee"]
+    residuals = calcApogees - frame.loc[firstFrame:(firstFrame+numFrames-1), "apogee"]
 
     residualsNP = np.array(residuals)
 
@@ -517,8 +518,15 @@ if __name__ == "__main__":
     print("Program Start...")
     # uncomment required function
     #manual_sim_eval()
+    print("Begin evaluation without Air Brakes...")
     eval_on_frames("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv",0.0003,150)
+    print("Begin evaluation with on specific frame")
     eval_on_frame("saturnSims/Without_Airbrakes_Scrubbed/all_initialconds.csv","saturnSims/Without_Airbrakes_Scrubbed",87,0.0003)
-    eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
+    print("Begin evaluation with Air Brakes...")
+    # Below evaluates the sim on the training saturn data
+    #eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",150)
+    # Below evaluates the sim on the testing saturn data
+    eval_on_frames_with_brakes("saturnSims/With_Airbrakes_Scrubbed/all_initialconds.csv",50,150)
+    print("Begin evaluation of sim convergence...")
     eval_sim_convergance(10,1)
     plt.show()

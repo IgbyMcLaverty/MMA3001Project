@@ -145,9 +145,9 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
 
     # sea temperature: must be a physically valid, positive Kelvin value.
     # Limited between reasonable upper and lower bounds, approximately -20 to 60 degrees celius
-    if not (250 <= seaTemp <= 330):
+    if not (240 <= seaTemp <= 330):
         raise ValueError(
-            f"'seaTemp' must be between -250 and 330 Kelvin, got {seaTemp}"
+            f"'seaTemp' must be between 250 and 330 Kelvin, got {seaTemp}"
         )
 
     # sea pressure: must be positive; upper bound generous (sea-level is
@@ -352,7 +352,7 @@ def calculate_pressure(altitude, seaTemp, seaPressure, lapseRate):
 
     # sea temperature: must be a physically valid, positive Kelvin value.
     # Limited between reasonable upper and lower bounds, approximately -20 to 60 degrees celius
-    if not (250 <= seaTemp <= 330):
+    if not (240 <= seaTemp <= 330):
         raise ValueError(
             f"'seaTemp' must be between -250 and 330 Kelvin, got {seaTemp}"
         )
