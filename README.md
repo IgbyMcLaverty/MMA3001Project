@@ -47,6 +47,8 @@ pip install -r requirements.txt
 ## Documentation
 The documentation for this project can be found [here](https://igbymclaverty.github.io/MMA3001Project/).
 
+Note that you need to select a specific file on the left for any code to appear.
+
 ## Running the code
 ### Evaluating the simulation
 Follow the steps in this order:
