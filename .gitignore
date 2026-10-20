@@ -218,9 +218,14 @@ __marimo__/
 .streamlit/secrets.toml
 
 # Data for this project
-saturnSims/
+SATURN_*
+With_Airbrakes_Scrubbed/
+Without_Airbrakes_Scrubbed/
 data/
-svr_model*
+*.npz
+
+# output files from running pytest
+pytestTempDirectory/
 
 # line profiler outputs
 profile_*

@@ -9,11 +9,36 @@ import os
 def scrub_data(inputLoc,outputLoc):
     """
     Removes extraneous columns and rows from the raw SATURN frames. Only includes the time between burnout and apogee.
+    Only columns which remain are:
+        - time
+        - dt
+        - altitude_barometric
+        - mass_total
+        - density
+        - air_temperature
+        - air_brakes_extension,
+        - air_pressure
 
     Args:
         inputLoc (string): The folder containing the raw SATURN csv files. Do not include final slash
         outputLoc (string): The folder where the output will be written. Do not include final slash
+    Returns:
+    - **None**
     """
+    argumentTypes = {
+            "inputLoc": [inputLoc,str],
+            "outputLoc": [outputLoc,str],
+        }
+    
+    for name, a in argumentTypes.items():
+        if not isinstance(a[0], a[1]):
+            raise TypeError(
+                f"'{name}' must be a {a[1]}, got {type(a[0]).__name__}"
+            )
+
+    # check if input file exists
+    if not os.path.exists(inputLoc):
+        raise ValueError(f"Input file directory '{inputLoc}' does not exist")
 
     # if the output directory does not exist, create it
     if not os.path.exists(outputLoc):
@@ -95,7 +120,8 @@ def scrub_data(inputLoc,outputLoc):
     initialConditions.to_csv(f"{outputLoc}/all_initialconds.csv", index=False)
     print("Function completed")
 
-scrub_data("saturnSims/Without_Airbrakes","saturnSims/Without_Airbrakes_Scrubbed")
-scrub_data("saturnSims/With_Airbrakes","saturnSims/With_Airbrakes_Scrubbed")
+if __name__ == "__main__":
+    scrub_data("saturnSims/Without_Airbrakes","saturnSims/Without_Airbrakes_Scrubbed")
+    scrub_data("saturnSims/With_Airbrakes","saturnSims/With_Airbrakes_Scrubbed")
 
-print("Program completed")
+    print("Program completed")

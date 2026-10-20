@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from Simulation.simulation import run_simulation_default
+import os
 
 from controllers import p_controller
 from controllers import linear_regression_controller
@@ -15,7 +16,7 @@ from controllers import _svrModel
 
 # Written manually then modified by Claude ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-def eval_controller(inputFileLoc,controller,controllerName):
+def eval_controller(inputFileLoc,controller,controllerName,plotHistogram=True):
     """
     Uses a set of initial conditions and a provided controller and calculates evaluation criteria.
     Initial conditions which result in over and under shooting are plot on one histogram. The undershooting and overshooting conditions are plot seperately where instead 
@@ -24,12 +25,32 @@ def eval_controller(inputFileLoc,controller,controllerName):
     Args:
         inputFileLoc (string): The location of the initial condition data csv file. Include directory and .csv in string
             Columns = ["initialAltitude","initialVelocity","seaTemp","groundPressure","lapserate","undershot","overshot"]
-        controller (function): A function which contains the control algorithm being evaluated
+        controller (function): A function which contains the control algorithm being evaluated. Arguments must match the format layed out in `run_simulation`
         controllerName (straing): The name of the controller which will be put in title of plots
+        plotHistogram (bool): Flag for whether or not to plot the histograms of the achieved apogees. Defaults to True
     
     Returns:
-        None
+    - **apogees (list)**: A 1D list containing the achieved apogees for the non-over/under shooting data.
+    - **overshotErrors (list)**: A 1D list containing the errors the controller achieved on the over shooting data.
+    - **undershotErrors (list)**: A 1D list containing the errors the controller achieved on the under shooting data.
     """
+
+    argumentTypes = {
+            "inputFileLoc": [inputFileLoc,str],
+            "controllerName": [controllerName,str],
+            "plotHistogram": [plotHistogram,bool]
+        }
+    
+    for name, a in argumentTypes.items():
+        if not isinstance(a[0], a[1]):
+            raise TypeError(
+                f"'{name}' must be a {a[1]}, got {type(a[0]).__name__}"
+            )
+
+    if inputFileLoc[-4:] != ".csv":
+        raise ValueError("'inputFileLoc' must end in '.csv'")
+    if not os.path.isfile(inputFileLoc):
+        raise ValueError(f"'inputFileLoc' does not exist: {inputFileLoc}")
 
     allConditions = pd.read_csv(inputFileLoc)
 
@@ -150,34 +171,102 @@ def eval_controller(inputFileLoc,controller,controllerName):
     # error of the controller relative to the best achievable apogee (arrays so they can be subtracted)
     overshotErrors = np.array(overshotApogees) - np.array(overshotBestApogees)
 
-    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+    if plotHistogram:
+        fig, axes = plt.subplots(1, 3, figsize=(18, 5))
 
-    # plot histogram for non shooting data
-    axes[0].hist(apogees,bins=np.arange(2000,4000,100),color="grey")
-    axes[0].set_title(f"{controllerName} apogee histogram")
-    axes[0].set_xlabel("Apogee")
-    axes[0].set_ylabel("Occurances")
+        # plot histogram for non shooting data
+        axes[0].hist(apogees,bins=np.arange(2000,4000,100),color="grey")
+        axes[0].set_title(f"{controllerName} apogee histogram")
+        axes[0].set_xlabel("Apogee")
+        axes[0].set_ylabel("Occurances")
 
-    # plot histogram for error with undershooting data
-    axes[1].hist(undershotErrors,bins=np.arange(np.min(undershotErrors),5,5),color="blue")
-    axes[1].set_title(f"{controllerName} undershot error histogram")
-    axes[1].set_xlabel("apogee with controller vs constant extension")
-    axes[1].set_ylabel("Occurances")
+        # plot histogram for error with undershooting data
+        axes[1].hist(undershotErrors,bins=np.arange(np.min(undershotErrors),5,5),color="blue")
+        axes[1].set_title(f"{controllerName} undershot error histogram")
+        axes[1].set_xlabel("apogee with controller vs constant extension")
+        axes[1].set_ylabel("Occurances")
 
-    # plot histogram for error with overshooting data
-    axes[2].hist(overshotErrors,bins=np.arange(0,np.max(overshotErrors),5),color="red")
-    axes[2].set_title(f"{controllerName} overshot error histogram")
-    axes[2].set_xlabel("apogee with controller vs constant extension")
-    axes[2].set_ylabel("Occurances")
+        # plot histogram for error with overshooting data
+        axes[2].hist(overshotErrors,bins=np.arange(0,np.max(overshotErrors),5),color="red")
+        axes[2].set_title(f"{controllerName} overshot error histogram")
+        axes[2].set_xlabel("apogee with controller vs constant extension")
+        axes[2].set_ylabel("Occurances")
 
-    fig.tight_layout()
-    plt.show()
+        fig.tight_layout()
+
+    return apogees, overshotErrors, undershotErrors
 
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 if __name__ == "__main__":
-    #eval_controller("data/validationData_initialConditions.csv",p_controller,"P controller")
-    #eval_controller("data/validationData_initialConditions.csv",linear_regression_controller,"Linear Regression controller")
-    #eval_controller("data/validationData_initialConditions.csv",linear_regression_2_controller,"Linear Regression 2 controller")
-    #eval_controller("data/validationData_initialConditions.csv",svr_controller,"SVR controller")
-    eval_controller("data/validationData_initialConditions.csv",nn_controller,"NN controller")
+    print("Program Start...")
+
+    inputData = "data/testData_initialConditions.csv"
+
+    print("Evaluating P controller...")
+    dataP,dataOSP,dataUSP = eval_controller(inputData,p_controller,"P controller",False)
+    print("Evaluating linear regression...")
+    dataLR,dataOSLR,dataUSLR = eval_controller(inputData,linear_regression_controller,"Linear Regression controller",False)
+    print("Evaluating linear regression 2...")
+    dataLR2,dataOSLR2,dataUSLR2 = eval_controller(inputData,linear_regression_2_controller,"Linear Regression 2 controller",False)
+    print("Evaluating evaluating SVR...")
+    dataSVR,dataOSSVR,dataUSSVR = eval_controller(inputData,svr_controller,"SVR controller",False)
+    print("Evaluating NN...")
+    dataNN,dataOSNN,dataUSNN = eval_controller(inputData,nn_controller,"NN controller",False)
+
+    # Generated by claude then modified manually ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    dataAll = [dataP, dataLR, dataLR2, dataSVR, dataNN]
+    dataOSAll = [dataOSP, dataOSLR, dataOSLR2, dataOSSVR, dataOSNN]
+    dataUSAll = [dataUSP, dataUSLR, dataUSLR2, dataUSSVR, dataUSNN]
+
+    boxLabels = ["P Controller", "Linear Regression", "Linear Regression 2", "SVR", "Neural Network"]
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(14, 7))
+
+    # Overall title for the whole figure
+    fig.suptitle("Performance Comparison of all Controllers", fontsize=18, fontweight="bold")
+
+    # --- Left subplot: box plot ---
+    ax1.boxplot(dataAll, tick_labels=boxLabels)
+    # horizontal line showing the target apogee
+    ax1.axhline(y=3048, color="lightgray", linestyle="--", linewidth=2, label="Target: 3048", zorder=1)
+    ax1.set_title("Controller Comparison in Normal Conditions")
+    ax1.set_ylabel("Apogee (m)")
+    ax1.tick_params(axis="x", labelrotation=90)
+
+    # --- Middle subplot: overshoot response ---
+    rng = np.random.default_rng(0)  # fixed seed so the jitter is repeatable
+    for i, d in enumerate(dataOSAll, start=1):
+        d = np.asarray(d)
+        x = i + rng.uniform(-0.2, 0.2, size=len(d))  # horizontal jitter
+        ax2.scatter(x, d, s=25, alpha=0.6, edgecolors="none", zorder=3)
+
+    ax2.set_xticks(range(1, len(dataOSAll) + 1))
+    ax2.set_xticklabels(boxLabels)
+    ax2.tick_params(axis="x", labelrotation=90)
+
+    # horizontal line to show the optimal value
+    ax2.axhline(y=0, color="lightgray", linestyle="--", linewidth=2, label="Optimal value (error = 0)", zorder=1)
+
+    ax2.set_title("Apogee Error for Overshooting Conditions")
+    ax2.set_ylabel("Error (m)")
+
+    # --- Right subplot: undershoot response ---
+    rng = np.random.default_rng(0)  # fixed seed so the jitter is repeatable
+    for i, d in enumerate(dataUSAll, start=1):
+        d = np.asarray(d)
+        x = i + rng.uniform(-0.2, 0.2, size=len(d))  # horizontal jitter
+        ax3.scatter(x, d, s=25, alpha=0.6, edgecolors="none", zorder=3)
+
+    ax3.set_xticks(range(1, len(dataUSAll) + 1))
+    ax3.set_xticklabels(boxLabels)
+    ax3.tick_params(axis="x", labelrotation=90)
+
+    # horizontal line to show the optimal value
+    ax3.axhline(y=0, color="lightgray", linestyle="--", linewidth=2, label="Optimal value (error = 0)", zorder=1)
+
+    ax3.set_title("Apogee Error for Undershooting Conditions")
+    ax3.set_ylabel("Error (m)")
+
+    fig.tight_layout()
+    plt.show()
+    # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

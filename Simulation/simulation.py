@@ -1,18 +1,27 @@
 import numpy as np
+import inspect
 from line_profiler import profile
 
 AIR_R = 287 # J/kg*kelvin
+"""float: Ideal gas constant for air in Joules per kilogram Kelvin"""
 GRAVITY = 9.81 # m/s^2
+"""float: Acceleration due to gravity in meters/second^2"""
 
 COE_DRAG_CLOSED = 0.39146244 # the default coefficient of drag with the flaps retracted to be applied across the whole flight
+"""float: The default coefficient of drag for when the Air Brakes and fully retracted"""
 COE_DRAG_OPEN = 0.53332019 # the default coefficient of drag with the flaps extended to be applied across the whole flight
+"""float: The default coefficient of drag for when the Air Brakes are fully extended"""
 AREA_CLOSED = 0.01824 # the default cross sectional area of rocket with the air brakes retracted
+"""float: The default cross-sectional area when the Air Brakes are fully retracted in meters squared"""
 AREA_OPEN = AREA_CLOSED + 0.0108 # the default cross sectional area of rocket with the air brakes extended
+"""float: The default cross-sectional area when the Air Brakes are fully extended in meters squared"""
 MASS = 24.510768830369635 # the default mass of the rocket
+"""float: The default mass of the rocket in kilograms"""
 DT = 0.01 # the default timestep in seconds
+"""float: The default time step in seconds"""
 
 def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude, extension_function):
-    """Runs the 1DOF simulation with the time step, default coefficient of drag, cross sectional area and mass
+    """Runs `run_simulation` with the default time step, coefficients of drag, cross sectional areas and mass
     
     Args:
         seaTemp (float): The temperature at sea level in kelvin
@@ -23,14 +32,14 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
         extension_function (function): The function which takes in the rocket state and returns the requested Air Brakes extension. See run_simulation for argument structure
     
     Returns:
-        returnDictionary (dictionary): A dictionary containing the results of the simulation. Entries:
-            "apogee" (float): The maximum altitude the simulation reached in meters
-            "timeHistory" (list): A list containing the time of each timestep
-            "altHistory" (list): A list containing the calculated altitude at each timestep
-            "accHistory" (list): A list containing the calculated acceleration at each timestep
-            "densityHistory" (list): A list containing the calcualte air density at each timestep
-            "tempHistory" (list): A list containing the calculated temperature at each timestep
-            "pressureHistory" (list): A list containing the calculated pressure at each timestep
+    - **returnDictionary (dictionary)**: A dictionary containing the results of the simulation. Entries:
+        - "apogee" (float): The maximum altitude the simulation reached in meters
+        - "timeHistory" (list): A list containing the time of each timestep
+        - "altHistory" (list): A list containing the calculated altitude at each timestep
+        - "accHistory" (list): A list containing the calculated acceleration at each timestep
+        - "densityHistory" (list): A list containing the calcualte air density at each timestep
+        - "tempHistory" (list): A list containing the calculated temperature at each timestep
+        - "pressureHistory" (list): A list containing the calculated pressure at each timestep
 
     """
 
@@ -53,7 +62,9 @@ def run_simulation_default(seaTemp, seaPressure, lapseRate, initialVelocity, ini
 # @profile placed here for use with timeSim.py. Does not effect code otherwise
 @profile
 def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initialAltitude,coeDragClosed,coeDragOpen,areaClosed,areaOpen,mass,extension_function,extensionSpeed):
-    """Runs the 1DOF simulation
+    """Runs the 1DOF simulation with the chosen settings. Calculates drag force at each time step and uses and RK2 approach to integrate the altitude up until apogee.
+    Takes in an extension function which is evaluated once at the end of each time step to determine the extension for the next time step.
+    The speed of the Air Brakes extension can be controlled using the 'extensionSpeed' input.
     
     Args:
         dt (float): The timestep of the simulation in seconds
@@ -67,20 +78,123 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         areaClosed (float): The cross sectional area of the body with the flaps retracted in m^2
         areaOpen (float): The cross sectional area of the body with the flaps extened in m^2
         mass (float): The mass of the body in kg 
-        extension_function (function): The function which takes in the rocket state and returns the requested Air Brakes extension. Must return a single float. Arguments: alt (altitude in meters), vel (velocity in m/s), acc (acceleration in m/s^2), currExt (The current extension between 0 and 1), gndTemp (The ground temperature in Kelvin), gndPres (The ground pressure in pascal)
+        extension_function (function): The function which takes in the rocket state and returns the requested Air Brakes extension. Must return a single float. Arguments: 
+            - alt (altitude in meters)
+            - vel (velocity in m/s) 
+            - acc (acceleration in m/s^2)
+            - currExt (The current extension between 0 and 1)
+            - gndTemp (The ground temperature in Kelvin)
+            - gndPres (The ground pressure in pascal)
         extensionSpeed (float): The time taken to extended from 0 to 100 percent in seconds. Set to 0 for no extension delay
     
     Returns:
-        returnDictionary (dictionary): A dictionary containing the results of the simulation. Entries:
-            "apogee" (float): The maximum altitude the simulation reached in meters
-            "timeHistory" (list): A list containing the time of each timestep
-            "altHistory" (list): A list containing the calculated altitude at each timestep
-            "accHistory" (list): A list containing the calculated acceleration at each timestep
-            "densityHistory" (list): A list containing the calcualte air density at each timestep
-            "tempHistory" (list): A list containing the calculated temperature at each timestep
-            "pressureHistory" (list): A list containing the calculated pressure at each timestep
+    - **returnDictionary (dictionary)**: A dictionary containing the results of the simulation. Entries:
+        - "apogee" (float): The maximum altitude the simulation reached in meters
+        - "timeHistory" (list): A list containing the time of each timestep
+        - "altHistory" (list): A list containing the calculated altitude at each timestep
+        - "accHistory" (list): A list containing the calculated acceleration at each timestep
+        - "densityHistory" (list): A list containing the calcualte air density at each timestep
+        - "tempHistory" (list): A list containing the calculated temperature at each timestep
+        - "pressureHistory" (list): A list containing the calculated pressure at each timestep
 
     """
+    # type checks for input data
+    # Generated by Claude ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    for name, value in [("dt", dt), ("seaTemp", seaTemp), ("seaPressure", seaPressure),
+                        ("lapseRate", lapseRate), ("initialVelocity", initialVelocity),
+                        ("initialAltitude", initialAltitude), ("coeDragClosed", coeDragClosed),
+                        ("coeDragOpen", coeDragOpen), ("areaClosed", areaClosed),
+                        ("areaOpen", areaOpen), ("mass", mass), ("extensionSpeed", extensionSpeed)]:
+        if isinstance(value, bool) or not isinstance(value, (int, float, np.integer, np.floating)):
+            raise TypeError(f"Type of argument '{name}' is wrong: expected float or int, got {type(value).__name__}")
+
+    # type check for extension function
+    expected_args = {"alt", "vel", "acc", "extension", "seaTemp", "seaPressure", "lapseRate"}
+
+    if not callable(extension_function):
+        raise TypeError(f"Type of argument 'extension_function' is wrong: expected a function, got {type(extension_function).__name__}")
+
+    if set(inspect.signature(extension_function).parameters) != expected_args:
+        raise TypeError(f"extension_function must take exactly these arguments (any order): {sorted(expected_args)}")
+
+    test_result = extension_function(alt=100.0, vel=100.0, acc=0.0, extension=0.5, seaTemp=288.15, seaPressure=101325.0, lapseRate=0.0065)
+    if isinstance(test_result, bool) or not isinstance(test_result, (int, float, np.integer, np.floating)):
+        raise TypeError(f"extension_function must return a float or int, got {type(test_result).__name__}")
+    # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    # Generated by Claude then modified manually ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    # ---- Range checks ----
+
+    # can't have a negative time step
+    if not (0 < dt):
+        raise ValueError(
+            f"'dt' must be greater than 0, got {dt}"
+        )
+
+    # Altitude: do not allow for negative altitudes. Maximum value up to edge of usable atmosphere for the barometric formula.
+    if not (0 <= initialAltitude <= 100_000.0):
+        raise ValueError(
+            f"'initialAltitude' must be between 0 and 100000 meters, got {initialAltitude}"
+        )
+
+    # initial velocity: Drag assumptions do not hold above mach 1
+    if not (0 <= initialVelocity <= 343):
+        raise ValueError(
+            f"'initialVelocity' must be between 0 and 343 meters per second, got {initialVelocity}"
+        )
+
+    # sea temperature: must be a physically valid, positive Kelvin value.
+    # Limited between reasonable upper and lower bounds, approximately -20 to 60 degrees celius
+    if not (240 <= seaTemp <= 330):
+        raise ValueError(
+            f"'seaTemp' must be between 250 and 330 Kelvin, got {seaTemp}"
+        )
+
+    # sea pressure: must be positive; upper bound generous (sea-level is
+    # ~101325 Pa, extreme highs are still well under 150000 Pa). Lower bound set to prevent accidentally inputting kilopascal
+    if not (70_000 < seaPressure <= 150_000.0):
+        raise ValueError(
+            f"'seaPressure' must be between 0 (exclusive) and 150000 pascal, got {seaPressure}"
+        )
+
+    # Lapse rate: typical atmospheric lapse rates are a few degrees C per km;
+    # allow a generous margin for unusual/inverted conditions.
+    if not (-0.05 <= lapseRate <= 0.05):
+        raise ValueError(
+            f"'lapseRate' must be between -0.05 and 0.05 Kelvin per meter, got {lapseRate}"
+        )
+
+    if not (0 <= coeDragClosed):
+        raise ValueError(
+            f"'coeDragClose' must be between non-negative, got {coeDragClosed}"
+        )
+
+    if not (0 <= coeDragOpen):
+        raise ValueError(
+            f"'coeDragOpen' must be between non-negative, got {coeDragOpen}"
+        )
+
+    if not (0 < areaClosed):
+        raise ValueError(
+            f"'areaClosed' must be greater than 0, got {areaClosed}"
+        )
+
+    if not (0 < areaOpen):
+        raise ValueError(
+            f"'areaOpen' must be greater than 0, got {areaOpen}"
+        )
+
+    if not (0 < mass):
+        raise ValueError(
+            f"'mass' must be greater than 0, got {mass}"
+        )
+
+    if not (0 <= extensionSpeed):
+        raise ValueError(
+            f"'extensionSpeed' must be non-negative, got {extensionSpeed}"
+        )
+    # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
     vel = initialVelocity
     alt = initialAltitude
     time = 0
@@ -145,7 +259,15 @@ def run_simulation(dt, seaTemp, seaPressure, lapseRate, initialVelocity, initial
         alt += vel*dt
 
         # calculate the target extension based on the input algorithm
-        targetExtension = extension_function(alt,vel,acc,extension,seaTemp,seaPressure,lapseRate)
+        targetExtension = extension_function(
+            alt=alt,
+            vel=vel,
+            acc=acc,
+            extension=extension,
+            seaTemp=seaTemp,
+            seaPressure=seaPressure,
+            lapseRate=lapseRate
+        )
 
         targetExtensionHistory.append(targetExtension)
 
@@ -200,7 +322,7 @@ def calculate_pressure(altitude, seaTemp, seaPressure, lapseRate):
         lapseRate (float): The change in tempature as altitude increases in kelvin per meter
     
     Returns:
-        pressure (float): The pressure at the given altitude in pascal
+    - **pressure (float)**: The pressure at the given altitude in pascal
     """
 
     # Generated by Claude then modified manually ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -230,7 +352,7 @@ def calculate_pressure(altitude, seaTemp, seaPressure, lapseRate):
 
     # sea temperature: must be a physically valid, positive Kelvin value.
     # Limited between reasonable upper and lower bounds, approximately -20 to 60 degrees celius
-    if not (250 <= seaTemp <= 330):
+    if not (240 <= seaTemp <= 330):
         raise ValueError(
             f"'seaTemp' must be between -250 and 330 Kelvin, got {seaTemp}"
         )
@@ -266,7 +388,7 @@ def calculate_drag(velocity, coeDrag, area, airDensity):
         airDensity (float): The air density in kg/m^3
     
     Returns:
-        dragForce (float): The drag force experienced by the body in Newtons
+    - **dragForce (float)**: The drag force experienced by the body in Newtons
     """
 
     # do type checks on all inputs
